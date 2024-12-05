@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <settings>
+        <setting name="jdbcTypeForNull" value="NULL" />
+    </settings>
+
+ 
+
+    <typeAliases>
+		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+
+		<typeAlias alias="comDefaultCodeVO" type="egovframework.cms.cmm.ComDefaultCodeVO"/>
+
+		<!-- 공통코드 -->
+		<typeAlias alias="cmmnClCodeVO" type="egovframework.cms.system.code.vo.CmmnClCodeVO"/>
+		<typeAlias alias="cmmnCodeVO" type="egovframework.cms.system.code.vo.CmmnCodeVO"/>
+		<typeAlias alias="cmmnDetailCodeVO" type="egovframework.cms.system.code.vo.CmmnDetailCodeVO"/>
+
+		<!-- 사이트 -->
+		<typeAlias alias="siteInfoVO" type="egovframework.cms.site.vo.SiteInfoVO"/>
+		<typeAlias alias="siteDomainVO" type="egovframework.cms.site.vo.SiteDomainVO"/>
+		<typeAlias alias="siteMenuVO" type="egovframework.cms.site.vo.SiteMenuVO"/>
+		<typeAlias alias="siteMenuJsonVO" type="egovframework.cms.site.vo.SiteMenuJsonVO"/>
+		<typeAlias alias="siteContentVO" type="egovframework.cms.site.vo.SiteContentVO"/>
+		<typeAlias alias="siteContentCommentVO" type="egovframework.cms.site.vo.SiteContentCommentVO"/>
+
+		<!-- 템플릿 -->
+		<typeAlias alias="templateInfoVO" type="egovframework.cms.template.vo.TemplateInfoVO"/>
+		<typeAlias alias="templateFileVO" type="egovframework.cms.template.vo.TemplateFileVO"/>
+		
+		<!-- 관리자메뉴 -->
+		<typeAlias alias="adminMenuVO" type="egovframework.cms.system.menu.vo.AdminMenuVO"/>
+
+		<!-- 권한 -->
+		<typeAlias alias="authorityLevelVO" type="egovframework.cms.system.authority.vo.AuthorityLevelVO"/>
+		<typeAlias alias="authorityGroupVO" type="egovframework.cms.system.authority.vo.AuthorityGroupVO"/>
+
+		<!-- 조직 -->
+		<typeAlias alias="organizationDeptVO" type="egovframework.cms.system.organization.vo.OrganizationDeptVO"/>
+		<typeAlias alias="organizationStaffVO" type="egovframework.cms.system.organization.vo.OrganizationStaffVO"/>
+
+		<!-- 관리자 -->
+		<typeAlias alias="employerVO" type="egovframework.cms.system.employer.vo.EmployerVO"/>
+
+		
+		<!-- 게시판 -->
+		<typeAlias alias="boardInfoVO" type="egovframework.cms.board.vo.BoardInfoVO"/>
+		<typeAlias alias="boardCategoryVO" type="egovframework.cms.board.vo.BoardCategoryVO"/>
+		<typeAlias alias="boardArticleVO" type="egovframework.cms.board.vo.BoardArticleVO"/>
+		<typeAlias alias="boardAnswerVO" type="egovframework.cms.board.vo.BoardAnswerVO"/>
+		<typeAlias alias="boardFileVO" type="egovframework.cms.board.vo.BoardFileVO"/>
+		<typeAlias alias="boardCommentVO" type="egovframework.cms.board.vo.BoardCommentVO"/>
+
+		<!-- front 게시판  김재광  20.08.03 -->
+		<typeAlias alias="frontBoardInfoVO" type="egovframework.front.board.vo.FrontBoardInfoVO"/>
+		<typeAlias alias="frontBoardCategoryVO" type="egovframework.front.board.vo.FrontBoardCategoryVO"/>
+		<typeAlias alias="frontBoardArticleVO" type="egovframework.front.board.vo.FrontBoardArticleVO"/>
+		<typeAlias alias="frontBoardAnswerVO" type="egovframework.front.board.vo.FrontBoardAnswerVO"/>
+		<typeAlias alias="frontBoardFileVO" type="egovframework.front.board.vo.FrontBoardFileVO"/>
+		<typeAlias alias="frontBoardCommentVO" type="egovframework.front.board.vo.FrontBoardCommentVO"/>
+
+		<!-- front 게시판  김재광 20.08.25 -->
+		<typeAlias alias="marketInfoVO" type="egovframework.front.market.vo.MarketInfoVO"/>
+		<typeAlias alias="marketFileVO" type="egovframework.front.market.vo.MarketFileVO"/>
+		<typeAlias alias="marketReviewVO" type="egovframework.front.market.vo.MarketReviewVO"/>
+		<!-- 회원
+		<typeAlias alias="memberConfigVO" type="egovframework.cms.member.vo.MemberConfigVO"/>
+		<typeAlias alias="gnrlMemberVO" type="egovframework.cms.member.vo.GnrlMemberVO"/>
+ -->
+		<!-- 팝업
+		<typeAlias alias="popupVO" type="egovframework.cms.popup.vo.PopupVO"/>
+ -->
+		<!-- 템플릿 -->
+		<typeAlias alias="templateInfoVO" type="egovframework.cms.template.vo.TemplateInfoVO"/>
+		<typeAlias alias="templateFileVO" type="egovframework.cms.template.vo.TemplateFileVO"/>
+    </typeAliases>
+</configuration>

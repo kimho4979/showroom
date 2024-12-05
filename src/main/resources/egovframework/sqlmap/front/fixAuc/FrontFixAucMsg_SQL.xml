@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.fixAuc.service.impl.FrontFixAucMsgMapper">
+	
+	<select id="fixSmsProcChul" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL FIX_SMS_PROC_CHUL(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bidStrArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bunChk, jdbcType=VARCHAR, mode=IN}
+		)}
+	</select>
+	
+	<select id="fixSmsProcJ" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL FIX_SMS_PROC_J(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bidStrArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bunChk, jdbcType=VARCHAR, mode=IN}
+		)}
+	</select>
+	
+	
+	<select id="fixSmallSmsProcJ" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL FIX_SMALL_SMS_PROC_J(
+		  #{bidStrArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bunChk, jdbcType=VARCHAR, mode=IN}
+		)}
+	</select>
+	
+	<select id="reqSmsProcChul" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL REQ_SMS_PROC_CHUL(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{applyArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bunChk, jdbcType=VARCHAR, mode=IN}
+		)}
+	</select>
+	
+	<select id="reqSmsProcJ" parameterType="java.util.HashMap" statementType="CALLABLE">
+	
+		{ CALL REQ_SMS_PROC_J(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{applyArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bunChk, jdbcType=VARCHAR, mode=IN}
+		)}
+	</select>
+	
+</mapper>

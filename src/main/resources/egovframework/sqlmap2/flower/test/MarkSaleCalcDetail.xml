@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :MarkSaleCalcDetail.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 판매내역정산(상세)조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="MarkSaleCalcDetail">	
+	<!-- 판매정산내역[상세] 상세보기  resutlMap -->
+	<resultMap id="MarkSaleCalcDetail.SelectMap" class="java.util.HashMap">
+	    <result property="gCode"            column="gCode"          columnIndex="1" /> 
+	    <result property="gName"            column="gName"          columnIndex="2" /> 
+	    <result property="chulCode"         column="chulCode"       columnIndex="3" /> 
+	    <result property="chulName"         column="chulName"       columnIndex="4" /> 
+	    <result property="panDay"           column="panDay"         columnIndex="5" /> 
+	    <result property="pMokName"         column="pMokName"       columnIndex="6" /> 
+	    <result property="pJongName"        column="pJongName"      columnIndex="7" /> 
+	    <result property="levelName"        column="levelName"      columnIndex="8" /> 
+	    <result property="boxCnt"           column="boxCnt"         columnIndex="9" /> 
+	    <result property="sokCnt"           column="sokCnt"         columnIndex="10" /> 
+	    <result property="kmPNew"           column="kmPNew"         columnIndex="11" /> 
+	    <result property="panPrice"         column="panPrice"       columnIndex="12" /> 
+	    <result property="suSuP"            column="suSuP"          columnIndex="13" /> 
+	    <result property="downReP"          column="downReP"        columnIndex="14" /> 
+	    <result property="daegiPrice"       column="daegiPrice"     columnIndex="15" /> 
+	    <result property="reBoxP"           column="reBoxP"         columnIndex="16" /> 
+	    <result property="transPrice"       column="transPrice"     columnIndex="17" /> 
+	    <result property="misuNuge"         column="misuNuge"       columnIndex="18" /> 
+	    <result property="sangHwan"         column="sangHwan"       columnIndex="19" /> 
+	    <result property="gongjeAmt"        column="gongjeAmt"      columnIndex="20" /> 
+	    <result property="chainAmt"         column="chainAmt"       columnIndex="21" /> 
+	    <result property="faxOut"           column="faxOut"         columnIndex="22" /> 
+	    <result property="returnAmt"        column="returnAmt"      columnIndex="23" /> 
+	    <result property="selfAmt"          column="selfAmt"        columnIndex="24" /> 
+	    <result property="kmList"           column="kmList"         columnIndex="25" /> 
+	    <result property="feeAmt"           column="feeAmt"         columnIndex="26" /> 
+	    <result property="transPriceAdd"    column="transPriceAdd"  columnIndex="27" /> 
+	    <result property="baekAmt" 		    column="baekAmt" 	 	columnIndex="28" /> 
+	</resultMap>
+
+	<resultMap id="MarkSaleCalcDetail.SelectInfoListMap" class="java.util.HashMap">
+	    <result property="gCode"         column="gCode"         columnIndex="1" /> 
+	    <result property="gName"         column="gName"         columnIndex="2" /> 
+	    <result property="bunChk"        column="bunChk"        columnIndex="3" /> 
+	    <result property="toDay"         column="toDay"         columnIndex="4" /> 
+	    <result property="startDate"     column="startDate"     columnIndex="5" /> 
+	    <result property="endDate"       column="endDate"       columnIndex="6" /> 
+	</resultMap>
+	
+	<select id="MarkSaleCalcDetail.selectInfoList" resultMap="MarkSaleCalcDetail.SelectInfoListMap">
+		<![CDATA[
+				SELECT  g_code as gCode,
+				        g_name as gName,
+				        decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk,
+				        to_char(sysdate,'yyyy-mm-dd')             as toDay,
+				        to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate,
+				        to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				  FROM  A_C_GROUP@flower G 
+				 WHERE  G.G_CODE = #domeCode# 
+		 ]]>
+	</select>
+	
+	<select id="MarkSaleCalcDetail.select" resultMap="MarkSaleCalcDetail.SelectMap">
+		<![CDATA[
+			SELECT  max(e.g_code)                                                    as  gCode,    
+				max(e.g_Name)                                                    as  gName,    
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',b.chul_code),'') as chulCode, 
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','출하자계 '||count(a.name)||'건','3','',max(a.name)),'단체총계 '||count(a.name)||'건')        as chulName,
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',to_char(to_date(max(b.pan_day)),'yyyy-mm-dd')),'') as panDay,   
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(d.p_mok_name)),'') as pMokName, 				
+        		nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(d.p_jong_name)||decode(max(b.f_songe_cnt),'0','',' /'||max(b.f_songe_cnt))),'') as pJongName,
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(c.name)),'') as levelName,
+			
+				sum(b.p_box_cnt)                                                 as  boxCnt,  
+				sum(b.p_sok_cnt)                                                 as  sokCnt,  
+				sum(b.km_p_new )                                                 as  kmPNew,  
+				sum(b.pan_price)                                                 as  panPrice,
+				sum(b.su_su_p  )                                                 as  suSuP,   
+				case when max(b.p_bun_chk) = 'Y'
+				     then sum(b.down_re_pg)
+				     else sum(b.down_re_p )                                           
+				 end                                                             as  downReP,        
+				sum(b.daegi_price)                                               as  daegiPrice,   
+				sum(b.p_re_box_p )                                               as  reBoxP,       
+				sum(b.trans_price)                                               as  transPrice,   
+				sum(b.misu_nuge  )                                               as  misuNuge,     
+				sum(b.sang_hwan  )                                               as  sangHwan,     
+				sum(b.pan_price) - sum(b.chain)                                  as  gongjeAmt,    
+				sum(b.chain     )                                                as  chainAmt,     
+				max(e.fax_out   )                                                as  faxOut,       
+				sum(b.return_amt)                                                as  returnAmt,    
+				sum(b.self_amt  )                                                as  selfAmt,      
+				nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',sum(b.km_list)), '') as kmlist,
+				sum(b.fee_amt   )                                                as  feeAmt,       
+				sum(b.trans_price_add)                                           as  transPriceAdd,
+				sum(b.baek_amt  )   	                                         as  baekAmt
+			  FROM  a_chul_info@flower a, 
+				v_sang_pan_list@flower b, 
+				a_level@flower c, 
+				v_mok_jong_list@flower d, 
+				a_c_group@flower e, 
+				a_day_magam@flower f 
+			 WHERE  b.chul_code  = a.code   
+			   AND  b.p_bun_chk  = c.bun_chk   
+			   AND  b.acc_level  = c.code   
+			   AND  b.pum_code   = d.pum_code   
+			   AND  a.g_code     = e.g_code   
+			   AND  b.p_bun_chk  = f.bun_chk   
+			   AND  b.pan_day    = f.magam_ilja   
+			   AND  b.p_bun_chk  = #bunChk#   
+			   AND  b.pan_day    = #panDate#   
+			   AND  b.group_code = #domeCode# 
+			 group  by rollup( b.chul_code, b.up_no)
+		 ]]>
+	</select>
+
+</sqlMap>

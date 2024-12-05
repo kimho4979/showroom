@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd">
+    
+    
+    <bean id="adminAuthProvider" class="egovframework.cms.cmm.AdminAuthService"/>
+	
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+  		<constructor-arg name="strength" value="256"></constructor-arg>
+	</bean>
+    
+    <bean id="customAuthenticationDetailsSource" class="egovframework.cms.cmm.CustomAuthenticationDetailsSource"/>
+    
+    <sec:authentication-manager id="adminAuthManager">
+       <sec:authentication-provider ref="adminAuthProvider">
+       	
+ 	   </sec:authentication-provider>
+	</sec:authentication-manager> 
+	
+    
+    <!-- 정적 리소스 파일 -->
+    <sec:http pattern="/css/**" security="none" />
+    <sec:http pattern="/img/**" security="none" />
+    <sec:http pattern="/js/**" security="none" />
+    <sec:http pattern="/assets/**" security="none" />
+    
+    
+    <!-- admin security -->
+	<sec:http 
+		pattern="/admin/**" 
+		auto-config="true" 
+		use-expressions="true"
+		authentication-manager-ref="adminAuthManager"	
+	> 
+		<!-- csrf 사용여부 - true:사용안함 , false:사용함 -->
+		<sec:csrf disabled="true"/> 
+		
+		<sec:intercept-url pattern="/admin/login.do"  access="permitAll" />
+		<sec:intercept-url pattern="/admin/**"     access="hasAnyRole('ROLE_ADMIN')" />
+		
+		<!-- 로그인 시 처리
+		-->
+		<sec:form-login 
+			login-page="/admin/login.do" 
+			username-parameter="userId" 
+			password-parameter="password"
+			login-processing-url="/admin/loginProc.do"
+			default-target-url="/admin/site/menu.do"
+			authentication-failure-url="/admin/login.do?status=fail"
+			authentication-details-source-ref="customAuthenticationDetailsSource"
+		/> 
+		
+		<!-- 로그아웃 시 처리
+		 -->
+		<sec:logout 
+			logout-url="/admin/logout.do" 
+			logout-success-url="/admin/login.do?status=logout"
+			invalidate-session="true" 
+			delete-cookies ="true" 
+		/> 
+		<!-- 중복 세션관리 
+		-->
+		<sec:session-management invalid-session-url="/admin/login.do"> 
+			<sec:concurrency-control 
+				max-sessions="1" 
+				error-if-maximum-exceeded="false" 
+				expired-url="/admin/loginDuplicate.do"
+			/> 
+		</sec:session-management> 
+		
+	</sec:http> 
+    
+    <!-- 권한 관리 -->
+    
+    
+    
+	   <!-- 
+    <sec:authentication-manager>
+        <sec:authentication-provider>
+            <sec:user-service>
+                <sec:user name="user" password="1234" authorities="ROLE_USER"/>
+            </sec:user-service>
+        </sec:authentication-provider>
+    </sec:authentication-manager> -->
+</beans>

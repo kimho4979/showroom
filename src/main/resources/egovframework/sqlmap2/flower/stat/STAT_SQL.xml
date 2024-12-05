@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.StatMapper">
+	
+		<select id="maxBunChkPanDay" resultType="egovMap">
+			<![CDATA[
+			SELECT BUN_CHK
+			     , CASE WHEN BUN_CHK = 'N' THEN '절화'
+			            WHEN BUN_CHK = 'Y' THEN '난'
+			            WHEN BUN_CHK = 'C' THEN '관엽'
+			       ELSE '' END AS BUN_NAME
+			     , TO_CHAR(TO_DATE(MAX(PAN_DAY),'YYYYMMDD'),'YYYY-MM-DD') AS MAX_PAN_DAY
+			     , TO_CHAR(TO_DATE(MAX(PAN_DAY),'YYYYMMDD'),'DY','NLS_DATE_LANGUAGE=korean') AS MAX_PAN_DY
+			FROM (SELECT * 
+                  FROM FLOMEJANG.V_SANG_PAN_LIST T2
+                  WHERE PAN_DAY = (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = T2.BUN_CHK)
+                  ) T1
+			WHERE T1.KM_LIST IN ('1','3','4')
+			AND T1.PAN_DAY BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD') AND TO_CHAR(SYSDATE,'YYYYMMDD') 
+			GROUP BY T1.BUN_CHK
+			ORDER BY DECODE(BUN_CHK, 'N',1,'Y',2,'C',3) ASC
+			 ]]>
+		</select>
+		
+		<select id="aucPriceList" resultType="egovMap">
+			SELECT T1.PUM_CODE AS PUM_CODE
+			     , T2.P_MOK_NAME AS P_MOK_NAME
+			     , T2.P_JONG_NAME AS P_JONG_NAME
+			     , SUM(T1.P_SOK_CNT) AS P_SOK_CNT
+			     , MAX(T1.KM_P_NEW) AS MAX_KM_P_NEW
+			     , MIN(T1.KM_P_NEW) AS MIN_KM_P_NEW
+			     , TRUNC(SUM(T1.KM_P_NEW*P_SOK_CNT)/SUM(T1.P_SOK_CNT)) AS AVG_KM_P_NEW
+			FROM FLOMEJANG.V_SANG_PAN_LIST T1
+			   , FLOMEJANG.V_MOK_JONG_LIST T2
+			WHERE T1.PUM_CODE = T2.PUM_CODE
+			AND T1.BUN_CHK = #{bunChk, jdbcType = VARCHAR}
+			AND T1.PAN_DAY BETWEEN REPLACE(#{startDate, jdbcType = VARCHAR},'-','') AND REPLACE(#{endDate, jdbcType = VARCHAR},'-','')
+			<if test='mokCode != null and mokCode != ""'>
+			AND T2.FLOWER_CODE || T2.P_MOK_CODE = #{mokCode, jdbcType = VARCHAR}
+			</if>
+			AND T1.KM_LIST IN ('1','3','4') 
+			AND T1.PAN_DAY <![CDATA[<=]]> (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = #{bunChk, jdbcType = VARCHAR})
+			GROUP BY T1.PUM_CODE, T2.P_MOK_NAME, T2.P_JONG_NAME
+			ORDER BY P_MOK_NAME ASC, P_JONG_NAME ASC
+		</select>
+
+		<select id="whslDealCalcMdateSelect" resultType="egovMap">
+			SELECT NVL(max(pan_day),TO_CHAR(SYSDATE,'YYYYMMDD')) as mPanDay
+				FROM FLOMEJANG.v_sang_pan_list T1
+				   , FLOMEJANG.a_dome_info T2
+				   , FLOMEJANG.a_chul_info T3
+				WHERE T1.j_dome_code = T2.code
+				AND T1.chul_code = T3.code
+				AND T1.km_list IN ('1', '3', '4')
+				AND T1.j_dome_code = #{domeCode}
+				AND T1.PAN_DAY BETWEEN TO_NUMBER(TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD')) AND TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))
+		</select>
+		
+		<select id="whslDealCalcSelectList" resultType="egovMap">
+		<![CDATA[
+				select a.pan_day as panDay,
+				       to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+				       a.j_dome_code as jDomeCode,
+				       c.name as domeName,
+				       b.p_mok_name as pMokName,
+				       b.p_jong_name as pJongName,
+				       a.pum_code as pumCode,
+				       e.name as levelName,
+				       a.p_box_cnt as pBoxCnt,
+				       a.p_sok_cnt as pSokCnt,
+				       a.km_p_new as kmPNew,
+				       a.pan_price as panPrice,
+				       a.pan_no||'-'||a.serial_no as panNo,
+				       d.name as chulName 
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			           ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+			           ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				  from FLOMEJANG.v_sang_pan_list a,
+				       FLOMEJANG.v_mok_jong_list b,
+				       FLOMEJANG.a_dome_info c,
+				       FLOMEJANG.a_chul_info d,
+				       FLOMEJANG.a_level e 
+				 where a.pum_code = b.pum_code 
+				   and a.j_dome_code = c.code 
+				   and a.chul_code   = d.code 
+				   and a.bun_chk     = e.bun_chk 
+				   and a.acc_level   = e.code 
+				   and a.pan_day     = replace(#{panDate, jdbcType = VARCHAR},'-','')
+				   and a.km_list    in ('1','3','4') 
+				   and a.j_dome_code = #{domeCode, jdbcType = VARCHAR}
+				   and a.p_bun_chk   = #{bunChk, jdbcType = VARCHAR}
+				 order by 7, 13 
+		 ]]>
+	</select>
+	
+	<select id="whslDealCalcSumList" resultType="egovMap">
+		<![CDATA[
+				select pMokName,
+				       sum(pBoxCnt)  as pBoxCntSum,
+				       sum(pSokCnt)  as pSokCntSum,
+				       sum(panPrice) as panPriceSum
+				  from (
+					    select a.pan_day as panDay,
+					           to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+					           a.j_dome_code as jDomeCode,
+					           c.name as domeName,
+					           b.p_mok_name as pMokName,
+					           b.p_jong_name as pJongName,
+					           a.pum_code as pumCode,
+					           e.name as levelName,
+					           a.p_box_cnt as pBoxCnt,
+					           a.p_sok_cnt as pSokCnt,
+					           a.km_p_new as kmPNew,
+					           a.pan_price as panPrice,
+					           a.pan_no||'-'||a.serial_no as panNo,
+					           d.name as chulName 
+					      from FLOMEJANG.v_sang_pan_list a,
+					           FLOMEJANG.v_mok_jong_list b,
+					           FLOMEJANG.a_dome_info c,
+					           FLOMEJANG.a_chul_info d,
+					           FLOMEJANG.a_level e 
+					     where a.pum_code = b.pum_code 
+					       and a.j_dome_code = c.code 
+					       and a.chul_code   = d.code 
+					       and a.bun_chk     = e.bun_chk 
+					       and a.acc_level   = e.code 
+					       and a.pan_day     = replace(#{panDate, jdbcType = VARCHAR},'-','')
+					       and a.km_list    in ('1','3','4') 
+					       and a.j_dome_code = #{domeCode, jdbcType = VARCHAR}
+					       and a.p_bun_chk   = #{bunChk, jdbcType = VARCHAR}
+				       )
+				 group by  pMokName
+		 ]]>
+	</select>
+	
+	<select id="whslDealCalcTotList" resultType="egovMap">
+		<![CDATA[
+				select sum(pBoxCnt)  as pBoxCntTot,
+				       sum(pSokCnt)  as pSokCntTot,
+				       sum(panPrice) as panPriceTot
+				  from (
+					    select a.pan_day as panDay,
+					           to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+					           a.j_dome_code as jDomeCode,
+					           c.name as domeName,
+					           b.p_mok_name as pMokName,
+					           b.p_jong_name as pJongName,
+					           a.pum_code as pumCode,
+					           e.name as levelName,
+					           a.p_box_cnt as pBoxCnt,
+					           a.p_sok_cnt as pSokCnt,
+					           a.km_p_new as kmPNew,
+					           a.pan_price as panPrice,
+					           a.pan_no||'-'||a.serial_no as panNo,
+					           d.name as chulName 
+					      from FLOMEJANG.v_sang_pan_list a,
+					           FLOMEJANG.v_mok_jong_list b,
+					           FLOMEJANG.a_dome_info c,
+					           FLOMEJANG.a_chul_info d,
+					           FLOMEJANG.a_level e 
+					     where a.pum_code = b.pum_code 
+					       and a.j_dome_code = c.code 
+					       and a.chul_code   = d.code 
+					       and a.bun_chk     = e.bun_chk 
+					       and a.acc_level   = e.code 
+					       and a.pan_day     = replace(#{panDate, jdbcType = VARCHAR},'-','')
+					       and a.km_list     in ('1','3','4') 
+					       and a.j_dome_code = #{domeCode, jdbcType = VARCHAR}
+					       and a.p_bun_chk   = #{bunChk, jdbcType = VARCHAR}
+				       )
+		 ]]>
+	</select>
+	
+	<select id="whslDealBlotterBuryuList" resultType="egovMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM FLOMEJANG.e_concern b, 
+				       FLOMEJANG.a_public_info d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #{domeCode, jdbcType = VARCHAR}  
+		 ]]>
+	</select>
+
+	<select id="whslDealBlotterNameSelect" resultType="egovMap">
+		select max(name) AS name 
+		from FLOMEJANG.A_DOME_INFO G 
+		WHERE  G.CODE = #{domeCode, jdbcType=VARCHAR}
+	</select>
+
+	<select id="whslDealBlotterSelectList" resultType="egovMap">
+		<![CDATA[
+				select  to_char(to_date(a.j_day),'yyyy-mm-dd') as jDay, 
+				        nvl(b.db_money, 0) + nvl(d.bo_add_amt, 0) as boAddTot, 
+				        nvl(b.db_money, 0) + nvl(d.add_amt, 0) as limitAddTot, 
+				        case when (a.meip > 0 and a.ipgum > 0) 
+				             then '매입,입금' when a.meip > 0 
+				             then '매입' when a.ipgum > 0  
+				             then '입금' 
+				             else '거래없음' 
+				         end as summary, 
+				        a.meip as meip, 
+				        a.ipgum as ipgum, 
+				        a.org_meip as orgMeip, 
+				        a.today_ret as todayRet, 
+				        a.un_p_tot + a.dly_tot as misuTotal, 
+				        a.un_p_tot as unPTot,
+				        a.dly_tot  as dlyTot,
+				        a.today_dly as todayDly,
+				        a.dly_p_tot as dlyPTot,
+				        a.today_bo as  todayBo,
+				        c.name,
+				        a.j_code as domeCode
+				        ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			            ,decode(c.bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			            ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+			            ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				   from FLOMEJANG.a_j_dome_cnt a, 
+				        ( select dome_code, sum(CASE WHEN #{endDate, jdbcType = VARCHAR} between s_day and e_day THEN db_money ELSE 0 END) as db_money 
+				            from FLOMEJANG.a_dome_dambo where dome_code = #{domeCode, jdbcType = VARCHAR} group by dome_code ) b, 
+				        FLOMEJANG.a_dome_info c, 
+				        ( select x.j_code, x.add_amt, x.bo_add_amt 
+				            from FLOMEJANG.a_j_dome_cnt x, 
+				                 ( select /*+ INDEX_DESC( a XIE1A_J_DOME_CNT) */  j_day 
+				                     from FLOMEJANG.a_j_dome_cnt a 
+				                    where j_code = #{domeCode, jdbcType = VARCHAR} and j_day <= replace(#{endDate, jdbcType = VARCHAR},'-','') and rownum = 1 ) y 
+				           where  x.j_day = y.j_day ) d 
+				  where a.j_code = b.dome_code(+) 
+				    and a.j_code = d.j_code(+) 
+				    and a.j_code = c.code 
+				    and a.j_code = #{domeCode, jdbcType = VARCHAR}
+				    and a.j_day  between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','') 
+				    and c.bun_chk = #{bunChk, jdbcType = VARCHAR}
+		 ]]>
+	</select>
+	
+	<select id="whslDealBlotterSumList" resultType="egovMap">
+		<![CDATA[
+			WITH 
+			dome_dambo AS (
+				select
+					dome_code
+					, sum(CASE WHEN #{endDate, jdbcType = VARCHAR} between s_day and e_day THEN db_money ELSE 0 END) as db_money 
+				from FLOMEJANG.a_dome_dambo 
+				where dome_code = #{domeCode, jdbcType = VARCHAR} 
+				group by dome_code
+			),
+			dome_cnt AS (
+				select
+					x.j_code
+					, x.add_amt
+					, x.bo_add_amt 
+	            from FLOMEJANG.a_j_dome_cnt x, 
+	            	(select /*+ INDEX_DESC( a XIE1A_J_DOME_CNT) */  j_day 
+	            		from FLOMEJANG.a_j_dome_cnt a 
+	           		 where j_code = #{domeCode, jdbcType = VARCHAR} 
+	           		 and j_day <= #{endDate, jdbcType = VARCHAR} 
+	           		 and rownum = 1 ) y 
+	           	where  x.j_day = y.j_day
+			)
+			 select   sum(meip)      as meipSum,
+					  sum(ipgum)     as ipgumSum,
+					  sum(orgMeip)   as orgMeipSum,
+					  sum(todayRet)  as todayRetSum,
+					  sum(misuTotal) as misuTotalSum,
+					  sum(unPTot)    as unPTotSum,
+					  sum(dlyTot)    as dlyTotSum,
+					  sum(todayDly)  as todayDlySum
+			  from (
+					select  a.j_day  as jDay, 
+					        nvl(b.db_money, 0) + nvl(d.bo_add_amt, 0) as boAddTot, 
+					        nvl(b.db_money, 0) + nvl(d.add_amt, 0) as limitAddTot, 
+					        case when (a.meip > 0 and a.ipgum > 0) 
+					             then '1' when a.meip > 0 
+					             then '2' when a.ipgum > 0 
+					             then '3' 
+					             else '4' 
+					         end as summary, 
+					        a.meip as meip, 
+					        a.ipgum as ipgum, 
+					        a.org_meip as orgMeip, 
+					        a.today_ret as todayRet, 
+					        a.un_p_tot + a.dly_tot as misuTotal, 
+					        a.un_p_tot as unPTot,
+					        a.dly_tot  as dlyTot,
+					        a.today_dly as todayDly,
+					        a.dly_p_tot as dlyPTot,   
+					        a.today_bo as  todayBo,
+					        c.name
+					        ,to_char(sysdate,'yyyy-mm-dd') as toDay
+					   from FLOMEJANG.a_j_dome_cnt a,
+					   		FLOMEJANG.dome_dambo b,
+					        FLOMEJANG.a_dome_info c, 
+					        FLOMEJANG.dome_cnt d 
+					  where a.j_code = b.dome_code(+) 
+					    and a.j_code = d.j_code(+) 
+					    and a.j_code = c.code 
+					    and a.j_code = #{domeCode, jdbcType = VARCHAR}
+					    and a.j_day  between replace(#{startDate, jdbcType = VARCHAR},'-','') and replace(#{endDate, jdbcType = VARCHAR},'-','') 
+					    and c.bun_chk = #{bunChk, jdbcType = VARCHAR}
+			)
+		]]>
+	</select>	
+	
+	<select id="transDateParticularsSelectList" resultType="egovMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				       ,(SELECT nvl(c_name,'')  FROM FLOMEJANG.e_member_info WHERE id = #{id}) as transName
+				  from  FLOMEJANG.v_sang_pan_list a
+				 where  a.p_bun_chk = #{bunChk}
+				   and  a.pan_day   between #{startDate, jdbcType = VARCHAR} and #{endDate, jdbcType = VARCHAR}
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 group  by a.pan_day, a.p_bun_chk
+		 ]]>
+	</select>
+	
+	<select id="transDateParticularsSumList" resultType="egovMap">
+		<![CDATA[
+				select  sum(chulCount)  as  chulCountSum,
+				        sum(sBoxCnt  )  as  sBoxCntSum  ,
+				        sum(uBoxCnt  )  as  uBoxCntSum  ,
+				        sum(tBoxCnt  )  as  tBoxCntSum  ,
+				        sum(trPri    )  as  trPriSum    ,
+				        sum(pumkg    )  as  pumKgSum     
+				  from  (
+						select  a.pan_day as panDay, 
+						        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+						        count(distinct a.chul_code)                                                             as chulCount, 
+						        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+						        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+						        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+						        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+						        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+						       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+						       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+						       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+						  from  FLOMEJANG.v_sang_pan_list a
+						 where  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+						   and  a.pan_day   between #{startDate, jdbcType = VARCHAR} and #{endDate, jdbcType = VARCHAR}
+						   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+						 group  by a.pan_day, a.p_bun_chk
+		                )
+		 ]]>
+	</select>
+	
+	<select id="transDateParticularsSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				  from  FLOMEJANG.v_sang_pan_list a
+				 where  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				   and  a.pan_day   between #{startDate, jdbcType = VARCHAR} and #{endDate, jdbcType = VARCHAR}
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 group  by a.pan_day, a.p_bun_chk
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiDetailSelectList" resultType="egovMap">
+		<![CDATA[
+				select to_char(to_date(a.pan_day),'yyyy-mm-dd')    as panDay, 
+				       to_char(to_date(a.f_up_day),'yyyy-mm-dd')   as fUpDay, 
+				       a.chul_code  as chulCode, 
+				       b.name       as chulName, 
+				       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+				       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+				       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+				       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+				       nvl(a.trans_price, 0)                                                              as trPri, 
+				       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+				       case when a.km_list in ('1','3','4') 
+				            then '1' when a.km_list = '2' 
+				                     then '2' when a.km_list = '8' 
+				                              then '3' 
+				                              else '4' 
+				        end                                              as kmList 
+				      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+				      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			          ,(SELECT nvl(c_name,'')  FROM FLOMEJANG.e_member_info WHERE id = #{id, jdbcType = VARCHAR}) as transName
+				  from  FLOMEJANG.v_sang_pan_list a, 
+				        FLOMEJANG.a_chul_info b 
+				 where  a.chul_code = b.code 
+				   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				   and  a.pan_day   = #{panDate, jdbcType = VARCHAR}
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 order  by a.chul_code, a.f_up_day, pan_no
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiDetailSumList" resultType="egovMap">
+		<![CDATA[
+			    select  count(chulCode) as  chulCount ,
+			            sum(sBoxCnt  )  as  sBoxCntSum,
+			            sum(uBoxCnt  )  as  uBoxCntSum,
+			            sum(tBoxCnt  )  as  tBoxCntSum,
+			            sum(trPri    )  as  trPriSum  ,
+			            sum(pumkg    )  as  pumKgSum  
+			      from  (
+						select a.pan_day    as panDay, 
+						       a.f_up_day   as fUpDay, 
+						       a.chul_code  as chulCode, 
+						       b.name       as chulName, 
+						       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+						       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+						       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+						       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+						       nvl(a.trans_price, 0)                                                              as trPri, 
+						       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+						       case when a.km_list in ('1','3','4') 
+						            then '1' when a.km_list = '2' 
+						                     then '2' when a.km_list = '8' 
+						                              then '3' 
+						                              else '4' 
+						        end                                              as kmList 
+						      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+						      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						  from  FLOMEJANG.v_sang_pan_list a, 
+						        FLOMEJANG.a_chul_info b 
+						 where  a.chul_code = b.code 
+						   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+						   and  a.pan_day   = #{panDate, jdbcType = VARCHAR}
+						   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+						 order  by a.chul_code, a.f_up_day, pan_no
+		                )
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiDetailSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				select a.pan_day    as panDay, 
+				       a.f_up_day   as fUpDay, 
+				       a.chul_code  as chulCode, 
+				       b.name       as chulName, 
+				       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+				       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+				       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+				       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+				       nvl(a.trans_price, 0)                                                              as trPri, 
+				       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+				       case when a.km_list in ('1','3','4') 
+				            then '1' when a.km_list = '2' 
+				                     then '2' when a.km_list = '8' 
+				                              then '3' 
+				                              else '4' 
+				        end                                              as kmList 
+				      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+				      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				  from  FLOMEJANG.v_sang_pan_list a, 
+				        FLOMEJANG.a_chul_info b 
+				 where  a.chul_code = b.code 
+				   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				   and  a.pan_day   = #{panDate, jdbcType = VARCHAR}
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 order  by a.chul_code, a.f_up_day, pan_no
+		 ]]>
+	</select>
+	
+	<select id="wholesalerShippingSelectList" resultType="egovMap">
+		<![CDATA[
+			SELECT
+				NVL(B.J_DOME_CODE, '합계') AS J_DOME_CODE
+			    ,(SELECT NAME FROM FLOMEJANG.A_DOME_INFO WHERE CODE = B.J_DOME_CODE) AS NAME
+			    ,'' AS SUMT
+			    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT30
+			    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT30
+			    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50
+			    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT50
+			    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50UP
+			    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1500 Else 0 End), 0) AS AMT50UP
+			    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 1 Else 0 End), 0) AS CNT0
+			    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 500 Else 0 End), 0) AS AMT0
+			    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNTW
+			    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT * 500 Else 0 End), 0) AS AMTW
+			FROM (
+			    SELECT J_DOME_CODE
+				    ,TRADE_TYPE,Round(P_SOK_CNT / Decode(P_BOX_CNT,0,1,P_BOX_CNT), 0) SOK_CNT
+				    ,P_BOX_CNT BOX_CNT 
+				FROM FLOMEJANG.V_SANG_PAN_LIST
+			    WHERE 1 = 1
+		]]>
+		<if test="gubun != null or gubun != ''">
+		<![CDATA[
+					AND P_BUN_CHK = #{gubun, jdbcType = VARCHAR}
+		]]>
+		</if>
+		<if test="startDate != null or startDate != ''">
+	
+			<if test="endDate != null or endDate != ''">
+			<![CDATA[
+			        AND PAN_DAY BETWEEN #{startDate, jdbcType = VARCHAR} AND #{endDate, jdbcType = VARCHAR}
+			]]>
+			</if>
+		</if>
+		<![CDATA[
+			        AND KM_LIST IN ('1','3','4')
+			        AND PAN_TYPE <> '01'
+			        AND BOX_TYPE <> '900'
+			) B
+			GROUP BY ROLLUP(B.J_DOME_CODE)
+			ORDER BY B.J_DOME_CODE ASC
+		]]>
+	</select>
+	
+	<select id="boxLoadingSelectList" resultType="egovMap">
+		<![CDATA[
+			SELECT
+			    NVL(A_PAN_MAE.PAN_DAY, '합계') PAN_DAY
+			    ,A_BOX.BOX_CODE
+			    ,A_BOX.BOX_NAME
+			    ,NVL(SUM(A_PAN_MAE.BOX_CNT),0) BOX_CNT
+			    ,NVL(SUM(A_PAN_MAE.SOK_CNT),0) SOK_CNT
+			    ,NVL(MAX(A_SANG_JANG.DOWN_P),0) DOWN_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) DOWN_RE_P 
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) DOWN_RE_PG
+			    ,NVL(SUM(A_PAN_MAE.RE_BOX_P),0) RE_BOX_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) + NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) + NVL(SUM(A_PAN_MAE.RE_BOX_P),0) SUM_P
+			FROM FLOMEJANG.A_BOX, FLOMEJANG.A_SANG_JANG, FLOMEJANG.A_PAN_MAE
+			WHERE A_SANG_JANG.BUN_CHK = A_PAN_MAE.BUN_CHK
+			    AND A_SANG_JANG.UP_DAY = A_PAN_MAE.PAN_DAY
+			    AND A_SANG_JANG.UP_NO = A_PAN_MAE.PAN_NO
+			    AND A_SANG_JANG.BUN_CHK = A_BOX.BUN_CHK
+			    AND A_SANG_JANG.BOX_TYPE = A_BOX.BOX_CODE
+			    AND A_PAN_MAE.BUN_CHK = #{gubun, jdbcType = VARCHAR}
+			    AND A_PAN_MAE.PAN_DAY BETWEEN #{startDate, jdbcType = VARCHAR} AND #{endDate, jdbcType = VARCHAR}
+		]]>
+		<if test="gubun == 'N'">
+		<if test="kmList == '1'">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('1', '3', '4')
+			]]>
+		</if>
+		<if test="kmList == '2'">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('9')
+			]]>
+		</if>
+		<if test="kmList == '3'">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('1', '3', '4', '9')
+			]]>
+		</if>
+		</if>
+		<if test="gubun == 'N'">
+	
+		<![CDATA[
+			AND (A_PAN_MAE.KM_LIST IN ('1','3','4')
+			OR (A_PAN_MAE.KM_LIST = '2' AND A_SANG_JANG.UP_DAY = A_SANG_JANG.F_UP_DAY))
+		]]>
+		</if>
+		<![CDATA[
+			GROUP BY ROLLUP((A_PAN_MAE.PAN_DAY, A_BOX.BOX_CODE, A_BOX.BOX_NAME))
+			ORDER BY A_PAN_MAE.PAN_DAY ASC, A_BOX.BOX_CODE ASC	
+		]]>
+	</select>
+	
+	<select id="pumAucPriceList" resultType="egovMap">
+	
+		<if test="searchType eq 'A'.toString()">
+				SELECT /*+ INDEX(C IDX_A_PUM_MOK_INFO_01) INDEX(B IDX_A_PUM_JONG_INFO_01) */
+				      A.MOK_CODE
+	                , C.P_MOK_NAME
+	                , TO_CHAR(TO_DATE(A.PM_DAY,'YYYYMMDD'),'YYYY-MM-DD') AS PM_DAY
+	                , A.SOK_CNT
+	                , A.TOP_AMOUNT
+	                , A.BOT_AMOUNT
+	                , A.SUM
+	                , A.TOTAL_PRICE
+	            FROM (
+	                SELECT  DECODE(SUBSTR(A.PM_CODE,0,4), '6043', '6002', SUBSTR(A.PM_CODE,0,4)) AS MOK_CODE
+	                    , A.PM_DAY
+	                    , SUM(A.SOK_CNT) SOK_CNT
+	                    , MAX(A.TOP_AMOUNT) TOP_AMOUNT
+	                    , MIN(A.BOT_AMOUNT) BOT_AMOUNT
+	                    , ROUND(SUM(A.P_PRICE) / SUM(A.SOK_CNT), 0) SUM
+	                    , SUM(A.P_PRICE) TOTAL_PRICE
+	                    , MAX(A.F_SONGE_CNT) F_SONGE_CNT
+	                FROM FLOMEJANG.A_LEVEL_PRICE A
+	                WHERE A.PM_DAY BETWEEN REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+	                AND BUN_CHK = #{bunChk}
+	                <if test="mokCode != null and mokCode != '' ">
+						<choose>
+		                	<when test="mokCode eq '6002' or mokCode eq '6043'">
+		                	 AND SUBSTR(A.PM_CODE,0,4) in ('6002', '6043')
+		                	</when>
+		                	<otherwise>
+		                	  AND SUBSTR(A.PM_CODE,0,4) = #{mokCode}
+		                	</otherwise>
+	                	</choose>
+	                </if>
+	                <if test="bunChk eq 'N'.toString()">
+	                AND TO_CHAR(TO_DATE(SUBSTR(PM_DAY, 3, 2) || '-' || SUBSTR(PM_DAY, 5, 2) || '-' || SUBSTR(PM_DAY, 7, 2)), 'DY') IN ('월', '수', '금')
+	                </if>
+	                GROUP BY ROLLUP (DECODE(SUBSTR(A.PM_CODE,0,4), '6043', '6002', SUBSTR(A.PM_CODE,0,4)), A.PM_DAY)
+	                ) A
+	                , FLOMEJANG.A_PUM_MOK_INFO C
+	            WHERE C.FLOWER_CODE  || C.P_MOK_CODE = A.MOK_CODE
+	            ORDER BY  C.P_MOK_NAME
+	                , A.PM_DAY
+			
+		</if>
+		<if test="searchType eq 'B'.toString()">
+				 SELECT /*+ INDEX(C IDX_A_PUM_MOK_INFO_01) INDEX(B IDX_A_PUM_JONG_INFO_01) */  
+				 		A.PM_CODE
+		                , B.P_MOK_NAME
+		                , B.P_JONG_NAME || DECODE(A.F_SONGE_CNT, '0', '', '/' || A.F_SONGE_CNT) AS P_JONG_NAME
+		                , TO_CHAR(TO_DATE(A.PM_DAY,'YYYYMMDD'),'YYYY-MM-DD') AS PM_DAY
+		                , A.SOK_CNT
+		                , A.TOP_AMOUNT
+		                , A.BOT_AMOUNT
+		                , A.SUM
+		                , A.TOTAL_PRICE
+		            FROM (
+		                SELECT A.PM_CODE
+		                    , A.PM_DAY
+		                    , SUM(A.SOK_CNT) SOK_CNT
+		                    , MAX(A.TOP_AMOUNT) TOP_AMOUNT
+		                    , MIN(A.BOT_AMOUNT) BOT_AMOUNT
+		                    , ROUND(SUM(A.P_PRICE) / SUM(A.SOK_CNT), 0) SUM
+		                    , SUM(A.P_PRICE) TOTAL_PRICE
+		                    , MAX(A.F_SONGE_CNT) F_SONGE_CNT
+		                FROM FLOMEJANG.A_LEVEL_PRICE A
+		                WHERE A.PM_DAY BETWEEN REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+		                AND BUN_CHK = #{bunChk}
+		                <if test="mokCode != null and mokCode != '' ">
+							<choose>
+			                	<when test="mokCode eq '6002' or mokCode eq '6043'">
+			                	 AND SUBSTR(A.PM_CODE,0,4) in ('6002', '6043')
+			                	</when>
+			                	<otherwise>
+			                	  AND SUBSTR(A.PM_CODE,0,4) = #{mokCode}
+			                	</otherwise>
+		                	</choose>	              
+	                	</if>
+		                
+		                <if test="pumCode != null and pumCode != '' ">
+		                AND A.PM_CODE = #{pumCode}
+		                </if>
+		                <if test="bunChk eq 'N'.toString()">
+		                AND TO_CHAR(TO_DATE(SUBSTR(PM_DAY, 3, 2) || '-' || SUBSTR(PM_DAY, 5, 2) || '-' || SUBSTR(PM_DAY, 7, 2)), 'DY') IN ('월', '수', '금')
+		                </if>
+		                GROUP BY ROLLUP (A.PM_CODE, A.PM_DAY)
+		                ) A
+		                , FLOMEJANG.V_MOK_JONG_LIST B
+		            WHERE A.PM_CODE = B.PUM_CODE
+		            ORDER BY  B.P_MOK_NAME
+		                , B.P_JONG_NAME
+		                , A.PM_DAY
+		</if>
+	</select>
+	
+</mapper>

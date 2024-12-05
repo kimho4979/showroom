@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :BoxLoading.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 상자별 하역비내역.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="BoxLoading">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="panDay"		column="PAN_DAY"		columnIndex="1" /><!-- -->
+	    <result property="boxCode"		column="BOX_CODE"		columnIndex="2" /><!-- -->
+	    <result property="boxName"		column="BOX_NAME"		columnIndex="3" /><!-- -->
+	    <result property="boxCnt"		column="BOX_CNT"		columnIndex="4" /><!-- -->
+	    <result property="sokCnt"		column="SOK_CNT"		columnIndex="5" /><!-- -->
+	    <result property="downP"		column="DOWN_P"			columnIndex="6" /><!-- -->
+	    <result property="downRep"		column="DOWN_RE_P"		columnIndex="7" /><!-- -->
+	    <result property="downRepg"		column="DOWN_RE_PG"		columnIndex="8" /><!-- -->
+	    <result property="reBoxp"		column="RE_BOX_P"		columnIndex="9" /><!-- -->
+	    <result property="sumP"			column="SUM_P"			columnIndex="10" /><!-- -->
+
+	</resultMap>
+	
+	<select id="BoxLoading.selectList" resultMap="SelectListMap">
+		<![CDATA[
+			SELECT
+			    NVL(A_PAN_MAE.PAN_DAY, '합계') PAN_DAY
+			    ,A_BOX.BOX_CODE
+			    ,A_BOX.BOX_NAME
+			    ,NVL(SUM(A_PAN_MAE.BOX_CNT),0) BOX_CNT
+			    ,NVL(SUM(A_PAN_MAE.SOK_CNT),0) SOK_CNT
+			    ,NVL(MAX(A_SANG_JANG.DOWN_P),0) DOWN_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) DOWN_RE_P 
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) DOWN_RE_PG
+			    ,NVL(SUM(A_PAN_MAE.RE_BOX_P),0) RE_BOX_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) + NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) + NVL(SUM(A_PAN_MAE.RE_BOX_P),0) SUM_P
+			FROM A_BOX@flower, A_SANG_JANG@flower, A_PAN_MAE@flower
+			WHERE A_SANG_JANG.BUN_CHK = A_PAN_MAE.BUN_CHK
+			    AND A_SANG_JANG.UP_DAY = A_PAN_MAE.PAN_DAY
+			    AND A_SANG_JANG.UP_NO = A_PAN_MAE.PAN_NO
+			    AND A_SANG_JANG.BUN_CHK = A_BOX.BUN_CHK
+			    AND A_SANG_JANG.BOX_TYPE = A_BOX.BOX_CODE
+			    AND A_PAN_MAE.BUN_CHK = #gubun#
+			    AND A_PAN_MAE.PAN_DAY BETWEEN #startDate# AND #endDate#
+		]]>
+	<isEqual property="gubun" compareValue="N">
+		<isEqual property="kmList" compareValue="1">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('1', '3', '4')
+			]]>
+		</isEqual>
+		<isEqual property="kmList" compareValue="2">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('9')
+			]]>
+		</isEqual>
+		<isEqual property="kmList" compareValue="3">
+			<![CDATA[
+					AND A_PAN_MAE.KM_LIST IN ('1', '3', '4', '9')
+			]]>
+		</isEqual>
+	</isEqual>
+	<isNotEqual property="gubun" compareValue="N">
+		<![CDATA[
+			AND (A_PAN_MAE.KM_LIST IN ('1','3','4')
+			OR (A_PAN_MAE.KM_LIST = '2' AND A_SANG_JANG.UP_DAY = A_SANG_JANG.F_UP_DAY))
+		]]>
+	</isNotEqual>
+		<![CDATA[
+			GROUP BY ROLLUP((A_PAN_MAE.PAN_DAY, A_BOX.BOX_CODE, A_BOX.BOX_NAME))
+			ORDER BY A_PAN_MAE.PAN_DAY ASC, A_BOX.BOX_CODE ASC	
+		]]>
+	</select>
+</sqlMap>

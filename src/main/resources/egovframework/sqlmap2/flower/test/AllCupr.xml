@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :AllCupr.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 전품목시세조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="AllCupr">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="pMokName"       column="pMokName"         columnIndex="1" /><!--품목명    -->
+	    <result property="pJongName"      column="pJongName"        columnIndex="2" /><!--품종명    -->
+	    <result property="pmDay"          column="pmDay"            columnIndex="3" /><!--경매일자 -->
+	    <result property="formattedDay"   column="formattedDay"     columnIndex="4" /><!--경매일자요일 -->
+	    <result property="pmCode"         column="pmCode"           columnIndex="5" /><!-- -->
+	    <result property="sokCnt"         column="sokCnt"           columnIndex="6" /><!--거래량 -->
+	    <result property="topAmount"      column="topAmount"        columnIndex="7" /><!--최고가 -->
+	    <result property="botAmount"      column="botAmount"        columnIndex="8" /><!--최저가 -->
+	    <result property="sum"            column="sum"              columnIndex="9" /><!--평균가 -->
+	    <result property="pJongName2"     column="pJongName2"       columnIndex="10" /><!-- -->
+	    <result property="toDay"          column="toDay"            columnIndex="11" />  
+	    <result property="startDate"      column="startDate"        columnIndex="12" /> 
+	    <result property="endDate"        column="endDate"          columnIndex="13" /> 
+	</resultMap>
+	
+	<resultMap id="AllCupr.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="flowerName"    column="flowerName"    columnIndex="2" /><!--플라워 명-->
+	</resultMap>
+	
+	<select id="AllCupr.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				SELECT   max(C.P_MOK_NAME) as pMokName,
+				         max(nvl(B.P_JONG_NAME,0))||''||max(nvl(decode(a.f_songe_cnt,'0','','/'||a.f_songe_cnt),' ')) as pJongName,  
+				         to_char(to_date(PM_DAY),'yyyy-mm-dd') as pmDay,
+				         to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY') as formattedDay,
+				         max(substr(A.PM_CODE,1,4)) as pmCode,
+				         sum(A.SOK_CNT) as sokCnt,
+				         max(A.TOP_AMOUNT) as topAmount,
+				         min(A.BOT_AMOUNT) as botAmount,
+				         round(sum(A.P_PRICE) / sum(A.SOK_CNT),0) as sum,
+				         MAX(B.P_JONG_NAME) as pJongName2,
+				         to_char(sysdate,'yyyy-mm-dd') as toDay
+			            ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+			            ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				    FROM A_LEVEL_PRICE@flower A,
+				         A_PUM_JONG_INFO@flower B,
+				         A_PUM_MOK_INFO@flower C
+				   WHERE ( A.PM_CODE = B.PUM_CODE ) and
+				         ( B.FLOWER_CODE = C.FLOWER_CODE ) and
+				         ( B.P_MOK_CODE = C.P_MOK_CODE ) and
+				         (
+				           (A.PM_DAY between #startDate# and #endDate#)  and (a.bun_chk = #items#) and
+				           (A.PM_CODE not in ('10010000','10020000','10030000','10050000','10030145','10010674', '10110000','10100000','10870000','10030261'))
+				         )
+ 		 ]]>
+ 		 <isEqual property="items" compareValue="N">
+		 	<![CDATA[
+                         /* 절화의 경우 월,수,금 요일만 조회 */
+                         and to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY') in ('월','수','금')
+		    ]]>
+		 </isEqual>
+		 <![CDATA[
+				   GROUP BY PM_DAY, A.PM_CODE, A.F_SONGE_CNT
+				   ORDER BY 1 asc, 2 asc, 3 desc
+		 ]]>
+	</select>
+	
+	<select id="AllCupr.buryuList" resultMap="AllCupr.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #id#  
+		 ]]>
+	</select>
+	
+
+</sqlMap>

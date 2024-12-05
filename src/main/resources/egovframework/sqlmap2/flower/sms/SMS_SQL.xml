@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.SmsMapper">
+	
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		
+	</resultMap>
+	 
+	<select id="smsList" resultMap="egovResultMap">
+		SELECT SMS_SEQ, RECV_NUMBER, SEND_NUMBER, 
+		   SEND_REQ_DATE, SEND_FIN_DATE, MSG_TYPE, 
+		   MESSAGE, STATUS, RES_CODE, 
+		   RES_DATE, RECV_NETWORK, SEND_PROG, 
+		   COL01, COL02, COL03, 
+		   COL04, COL05, SESSION_ID, 
+		   LAST_MODIFIED,
+		   TO_CHAR(SEND_REQ_DATE, 'YYYY-MM-DD') AS SEND_REQ_DATE_TEXT
+		FROM DB_SMS.SMS_QUEUE
+		WHERE 1=1
+		AND COL02 IN
+		<foreach collection="floMemberList" item="item" index="index" open="(" close=")" separator=",">
+	      	#{item.chulCd}
+	    </foreach>
+		ORDER BY SEND_REQ_DATE DESC
+	</select>
+	
+	<select id="mmsList" resultMap="egovResultMap">
+		SELECT 
+		MMS_SEQ, RECV_NUMBER, SEND_NUMBER, 
+		   SEND_REQ_DATE, SEND_FIN_DATE, MSG_TYPE, 
+		   SUBJECT, MESSAGE, STATUS, 
+		   RES_CODE, RES_DATE, RECV_NETWORK, 
+		   SEND_PROG, COL01, COL02, 
+		   COL03, COL04, COL05, 
+		   FILE_CNT, FILE_CNT_REAL, FILE_PATH1, 
+		   FILE_PATH2, FILE_PATH3, FILE_PATH4, 
+		   FILE_PATH5, SESSION_ID, LAST_MODIFIED,
+		   TO_CHAR(SEND_REQ_DATE, 'YYYY-MM-DD') AS SEND_REQ_DATE_TEXT
+		FROM DB_SMS.MMS_QUEUE
+		WHERE 1=1
+		AND COL02 IN
+		<foreach collection="floMemberList" item="item" index="index" open="(" close=")" separator=",">
+	      	#{item.chulCd}
+	    </foreach>
+		ORDER BY SEND_REQ_DATE DESC
+	</select>
+	 
+	 <select id="getSmsApp" resultMap="egovResultMap">
+		   SELECT BUN_CHK
+		        , CODE
+		        , LOGIN_ID
+		        , MEMBER_ID
+		        , INSERT_ID
+		        , INSERT_DATE
+		        , UPDATE_ID
+		        , UPDATE_DATE
+		   FROM TB_SMS_APP
+		   WHERE BUN_CHK = #{bunChk}
+		   AND CODE = #{code}
+		   AND LOGIN_ID = #{loginId}
+	 </select>
+	 
+	 <insert id="insertSmsApp">
+	 	INSERT INTO TB_SMS_APP(
+				  BUN_CHK
+		        , CODE
+		        , LOGIN_ID
+		        , MEMBER_ID
+		        , INSERT_ID
+		        , INSERT_DATE
+		        , UPDATE_ID
+		        , UPDATE_DATE
+			)VALUES(
+				  #{bunChk}
+				, #{code}
+				, #{loginId}
+				, #{memberId}
+				, #{loginId}
+				, SYSDATE
+				, #{loginId}
+				, SYSDATE
+			)
+	 </insert>
+	 
+	 <delete id="deleteSmsApp">
+	 	DELETE FROM TB_SMS_APP
+	 	WHERE BUN_CHK = #{bunChk}
+	    AND CODE = #{code}
+	    AND LOGIN_ID = #{loginId} 
+	 </delete>
+	
+	
+	
+	
+</mapper>

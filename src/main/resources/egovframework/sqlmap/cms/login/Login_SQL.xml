@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.login.service.impl.LoginMapper">
+
+	<resultMap id="loginMap" type="egovframework.cms.login.service.LoginVO">
+		<result property="id" column="LOGIN_ID"/>
+		<result property="pwd" column="LOGIN_PASSWORD"/>
+		<result property="authKey" column="AUTH_KEY"/>
+		<result property="lvl" column="LVL"/>
+	</resultMap>
+
+	
+    <select id="getAdminInfo" resultMap="loginMap">
+        <![CDATA[
+            SELECT LOGIN_ID
+                 , LOGIN_PASSWORD
+                 , DEPT_NM AS NAME
+                 , AUTH_KEY
+                 , LVL
+			FROM WMS_ORGNZT_DEPT
+			WHERE 1=1
+			AND LOGIN_ID = #{userId}
+			AND LOGIN_PASSWORD = #{password}            
+        ]]>
+    </select>
+
+	<insert id="registAccessInfo" parameterType="java.util.HashMap">
+		<![CDATA[
+			INSERT INTO WMS_LOG_ACCESSPRIVACY
+			(
+				SEQ
+				, USER_ID
+				, ACCESS_DTTM
+				, ACCESS_IP
+				, URL
+				, QUERYSTRING
+			)
+			VALUES
+			(
+				ACCESS_SEQ.NEXTVAL
+				,#{userId}
+				, SYSDATE
+				, #{accessIp}
+				, #{url}
+				, #{querystring}
+			)
+		]]>
+	</insert>
+
+</mapper>
+

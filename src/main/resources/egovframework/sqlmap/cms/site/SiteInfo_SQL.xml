@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.site.service.impl.SiteInfoMapper">
+
+	<resultMap id="siteInfo" type="egovframework.cms.site.vo.SiteInfoVO">
+		<result property="siteId" column="SITE_ID"/>
+		<result property="siteNm" column="SITE_NM"/>
+		<result property="siteTitle" column="SITE_TITLE"/>
+		<result property="siteLang" column="SITE_LANG"/>
+		<result property="template" column="TEMPLATE"/>
+		<result property="layout" column="LAYOUT"/>
+		<result property="serviceSt" column="SERVICE_ST"/>
+		<result property="position" column="POSITION"/>
+		<result property="permitLevelId" column="PERMIT_LEVEL_ID"/>
+		<result property="limitGroupIds" column="LIMIT_GROUP_IDS"/>
+		<result property="permitIp" column="PERMIT_IP"/>
+		<result property="limitIp" column="LIMIT_IP"/>
+		<result property="useIntroAt" column="USE_INTRO_AT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectSiteInfoListCnt" parameterType="siteInfoVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_SITE_INFO
+		 WHERE  1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "siteId"'>
+		   AND	SITE_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "siteNm"'>
+		   AND	SITE_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='siteIdArr != null and siteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="siteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+		<if test='adminSiteIdArr != null and adminSiteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="adminSiteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+	</select>
+
+	<select id="selectSiteInfoList" parameterType="siteInfoVO" resultMap="siteInfo">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  SITE_ID
+			 ,  SITE_NM
+			 ,  SITE_TITLE
+			 ,  SITE_LANG
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  SERVICE_ST
+		  FROM	WMS_SITE_INFO
+		 WHERE	1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "siteId"'>
+		   AND	SITE_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "siteNm"'>
+		   AND	SITE_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='siteIdArr != null and siteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="siteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+		<if test='adminSiteIdArr != null and adminSiteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="adminSiteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+		ORDER BY POSITION ASC
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+
+	<select id="selectSiteInfoListAll" parameterType="siteInfoVO" resultMap="siteInfo">
+		SELECT  SITE_ID
+			 ,  SITE_NM
+			 ,  SITE_TITLE
+			 ,  SITE_LANG
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  SERVICE_ST
+		FROM	WMS_SITE_INFO
+		WHERE	1=1
+		<if test='siteId != null and siteId != ""'>
+			AND SITE_ID = 'flower'
+		</if>
+		<if test='siteIdArr != null and siteIdArr.length > 0'>
+			AND SITE_ID IN
+			<foreach collection="siteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+		<if test='adminSiteIdArr != null and adminSiteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="adminSiteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+		ORDER BY POSITION ASC
+	</select>
+
+	<select id="selectSiteInfo" parameterType="siteInfoVO" resultMap="siteInfo">
+		SELECT  SITE_ID
+			 ,  SITE_NM
+			 ,  SITE_TITLE
+			 ,  SITE_LANG
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  SERVICE_ST
+			 ,  POSITION
+			 ,  PERMIT_LEVEL_ID
+			 ,  LIMIT_GROUP_IDS
+			 ,  PERMIT_IP
+			 ,  LIMIT_IP
+			 ,  USE_INTRO_AT
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+			 ,  UPDATE_DTTM
+			 ,  UPDATE_ID
+		  FROM  WMS_SITE_INFO
+		 WHERE  SITE_ID = 'flower'
+		<if test='adminSiteIdArr != null and adminSiteIdArr.length > 0'>
+		   AND  SITE_ID IN
+			<foreach collection="adminSiteIdArr" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+    		</foreach>
+		</if>
+	</select>
+
+	<insert id="insertSiteInfo">
+		INSERT
+		  INTO  WMS_SITE_INFO
+		     (  SITE_ID
+			 ,  SITE_NM
+			 ,  SITE_TITLE
+			 ,  SITE_LANG
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  SERVICE_ST
+			 ,  POSITION
+			 ,  PERMIT_LEVEL_ID
+			 ,  LIMIT_GROUP_IDS
+			 ,  PERMIT_IP
+			 ,  LIMIT_IP
+			 ,  USE_INTRO_AT
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  'flower'
+			 ,  #{siteNm}
+			 ,  #{siteTitle}
+			 ,  #{siteLang}
+			 ,  #{template}
+			 ,  #{layout}
+			 ,  #{serviceSt}
+			 ,  #{position}
+			 ,  #{permitLevelId}
+			 ,  #{limitGroupIds}
+			 ,  #{permitIp}
+			 ,  #{limitIp}
+			 ,  #{useIntroAt}
+			 ,  SYSDATE
+			 ,  #{registId}
+		     )
+	</insert>
+
+	<update id="updateSiteInfo">
+		UPDATE  WMS_SITE_INFO
+		   SET  SITE_NM = #{siteNm}
+			 ,  SITE_TITLE = #{siteTitle}
+			 ,  SITE_LANG = #{siteLang}
+			 ,  TEMPLATE = #{template}
+			 ,  LAYOUT = #{layout}
+			 ,  SERVICE_ST = #{serviceSt}
+			 ,  POSITION = #{position}
+			 ,  PERMIT_LEVEL_ID = #{permitLevelId}
+			 ,  LIMIT_GROUP_IDS = #{limitGroupIds}
+			 ,  PERMIT_IP = #{permitIp}
+			 ,  LIMIT_IP = #{limitIp}
+			 ,  USE_INTRO_AT = #{useIntroAt}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId}
+		 WHERE  SITE_ID = 'flower'
+	</update>
+
+    <delete id="deleteSiteInfo">
+		DELETE
+		  FROM  WMS_SITE_INFO
+		 WHERE  SITE_ID = 'flower'
+    </delete>
+</mapper>

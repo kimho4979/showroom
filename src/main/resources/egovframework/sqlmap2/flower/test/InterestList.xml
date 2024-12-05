@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :InterestList.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 관심품목시세조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="InterestList">
+	<typeAlias alias="InterestDTO" type="at.service.business.FLOMEJANG.interestcupr.dto.InterestDTO" />
+	
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="pMokName"       column="pMokName"         columnIndex="1" />
+	    <result property="pJongName"      column="pJongName"        columnIndex="2" />
+	    <result property="pmDay"          column="pmDay"            columnIndex="3" />
+	    <result property="formattedDay"   column="formattedDay"     columnIndex="4" />
+	    <result property="pmCode"         column="pmCode"           columnIndex="5" />
+	    <result property="sokCnt"         column="sokCnt"           columnIndex="6" />
+	    <result property="topAmount"      column="topAmount"        columnIndex="7" />
+	    <result property="botAmount"      column="botAmount"        columnIndex="8" />
+	    <result property="sum"            column="sum"              columnIndex="9" />
+	    <result property="pJongName2"     column="pJongName2"       columnIndex="10" />
+	    <result property="toDay"          column="toDay"            columnIndex="11" />  
+	    <result property="startDate"      column="startDate"        columnIndex="12" /> 
+	    <result property="endDate"        column="endDate"          columnIndex="13" /> 
+
+	</resultMap>
+	
+	<resultMap id="InterestList.selectCodeListMap" class="java.util.HashMap">
+	    <result property="flowerCode"    column="flowerCode"    columnIndex="1" />
+	    <result property="flowerName"    column="flowerName"    columnIndex="2" />
+	    <result property="pMokCode"      column="pMokCode"      columnIndex="3" />
+	    <result property="pMokName"      column="pMokName"      columnIndex="4" />
+	    <result property="pJongCode"     column="pJongCode"     columnIndex="5" />
+	    <result property="pJongName"     column="pJongName"     columnIndex="6" />
+	    <result property="sMokCode"      column="sMokCode"      columnIndex="3" />
+	</resultMap>
+	
+	<resultMap id="InterestList.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" />
+		<result property="flowerName"    column="flowerName"    columnIndex="2" />
+	</resultMap>
+	
+	<resultMap id="InterestList.pmokListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" />
+		<result property="pMokCode"    column="pMokCode"    columnIndex="2" />
+		<result property="pMokName"    column="pMokName"    columnIndex="3" />
+	</resultMap>
+	
+	<resultMap id="InterestList.pjongListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" />
+		<result property="pMokCode"    column="pMokCode"    columnIndex="2" />
+		<result property="pJongCode"    column="pJongCode"    columnIndex="3" />
+		<result property="pJongName"    column="pJongName"    columnIndex="4" />
+	</resultMap>
+	
+	<!-- 엑셀 출력을 위한 업체 목록 resutlMap -->
+	<resultMap id="InterestList.selectListForExcelMap" class="java.util.HashMap">
+	    <result property="pMokName"       column="pMokName"         columnIndex="1" />
+	    <result property="pJongName"      column="pJongName"        columnIndex="2" />
+	    <result property="pmDay"          column="pmDay"            columnIndex="3" />
+	    <result property="formattedDay"   column="formattedDay"     columnIndex="4" />
+	    <result property="pmCode"         column="pmCode"           columnIndex="5" />
+	    <result property="sokCnt"         column="sokCnt"           columnIndex="6" />
+	    <result property="topAmount"      column="topAmount"        columnIndex="7" />
+	    <result property="botAmount"      column="botAmount"        columnIndex="8" />
+	    <result property="sum"            column="sum"              columnIndex="9" />
+	    <result property="pJongName2"     column="pJongName2"       columnIndex="10" />
+	    <result property="toDay"          column="toDay"            columnIndex="11" />  
+	</resultMap>
+	
+	<select id="InterestList.selectList" resultMap="SelectListMap">
+		<![CDATA[
+			/*InterestList.selectList*/
+				SELECT   max(C.P_MOK_NAME) as pMokName,
+				         max(nvl(B.P_JONG_NAME,0))||''||max(nvl(decode(a.f_songe_cnt,'0','','/'||a.f_songe_cnt),' ')) as pJongName,  
+				         to_char(to_date(PM_DAY),'yyyy-mm-dd') as pmDay,
+				         to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY') as formattedDay,
+				         max(substr(A.PM_CODE,1,4)) as pmCode,
+				         sum(A.SOK_CNT) as sokCnt,
+				         max(A.TOP_AMOUNT) as topAmount,
+				         min(A.BOT_AMOUNT) as botAmount,
+				         round(sum(A.P_PRICE) / sum(A.SOK_CNT),0) as sum,
+				         MAX(B.P_JONG_NAME) as pJongName2,
+				         to_char(sysdate,'yyyy-mm-dd') as toDay
+			            ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+			            ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				    FROM A_LEVEL_PRICE@flower A,
+				         A_PUM_JONG_INFO@flower B,
+				         A_PUM_MOK_INFO@flower C
+				   WHERE ( A.PM_CODE = B.PUM_CODE ) and
+				         ( B.FLOWER_CODE = C.FLOWER_CODE ) and
+				         ( B.P_MOK_CODE = C.P_MOK_CODE ) and
+				         (
+				           (A.PM_DAY between #startDate# and #endDate#)
+		]]>
+		<isNotEmpty property="pMokCode">
+		<![CDATA[
+				           and (A.PM_CODE in #pMokCode#)
+		]]>
+		</isNotEmpty>
+		<![CDATA[
+				           and (A.PM_CODE not in ('10010000','10020000','10030000','10050000','10030145','10010674', '10110000','10100000','10870000','10030261'))
+				         )
+ 		 ]]>
+ 		 <isEqual property="flwCode" compareValue="1">
+		 	<![CDATA[
+                           /* 절화의 경우 월,수,금 요일만 조회 */
+                         and to_char(to_date(substr(A.PM_DAY,3,2)||'-'||substr(A.PM_DAY,5,2)||'-'||substr(A.PM_DAY,7,2)),'DY') in ('월','수','금')
+		    ]]>
+		 </isEqual>
+		 <![CDATA[
+				   GROUP BY A.PM_DAY, A.PM_CODE, A.F_SONGE_CNT
+				   ORDER BY 1 asc, 2 asc, 3 desc
+		 ]]>
+	</select>
+	
+	<select id="InterestList.buryuList" resultMap="InterestList.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and TRIM(b.chul_code) = #id#  
+		 ]]>
+	</select>
+	
+	<select id="InterestList.selectCodeList" resultMap="InterestList.selectCodeListMap">
+		<![CDATA[
+				SELECT a.flower_code as flowerCode,
+				       d.cd_name as flowerName,
+				       a.flower_code||a.p_mok_code as pMokCode, 
+				       c.p_mok_name as pMokName, 
+				       a.p_jong_code as pJongCode,
+				       a.p_jong_name   as pJongName,
+				       a.flower_code||a.p_mok_code||a.p_jong_code as sMokCode                       
+				  FROM a_pum_jong_info@flower a, 
+				       e_concern@flower b, 
+				       a_pum_mok_info@flower c, 
+				       a_public_info@flower d 
+				 WHERE b.pumjong_code = a.pum_code    
+				   and a.p_mok_code = c.p_mok_code     
+				   and a.flower_code = c.flower_code     
+				   and d.cd1 = a.flower_code     
+				   and d.cd_gubun=2     
+				   and TRIM(b.chul_code) = #id#
+		 ]]>
+	</select>
+
+	<select id="InterestList.selectListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+				SELECT   COUNT(max(C.P_MOK_NAME)) as COUNT
+				    FROM A_LEVEL_PRICE@flower A,
+				         A_PUM_JONG_INFO@flower B,
+				         A_PUM_MOK_INFO@flower C
+				   WHERE ( A.PM_CODE = B.PUM_CODE ) and
+				         ( B.FLOWER_CODE = C.FLOWER_CODE ) and
+				         ( B.P_MOK_CODE = C.P_MOK_CODE ) and
+				         (
+				           (A.PM_DAY between #startDate# and #endDate#)  
+		]]>
+		<isNotEmpty property="pMokCode">
+		<![CDATA[
+				           and (A.PM_CODE in #pMokCode#)
+		]]>
+		</isNotEmpty>
+		<![CDATA[
+				           and (A.PM_CODE not in ('10010000','10020000','10030000','10050000','10030145','10010674', '10110000','10100000','10870000','10030261'))
+				         )
+ 		 ]]>
+ 		 <isEqual property="flwCode" compareValue="1">
+		 	<![CDATA[
+                         /* 절화의 경우 월,수,금 요일만 조회 */
+                         and to_char(to_date(substr(A.PM_DAY,3,2)||'-'||substr(A.PM_DAY,5,2)||'-'||substr(A.PM_DAY,7,2)),'DY') in ('월','수','금')
+		    ]]>
+		 </isEqual>
+		 <![CDATA[
+				   GROUP BY A.PM_DAY, A.PM_CODE, A.F_SONGE_CNT
+		]]>
+	</select>
+
+	<select id="InterestList.selectListForExcel" resultMap="InterestList.selectListForExcelMap">
+		<![CDATA[
+		/*InterestList.selectListForExcel*/
+				SELECT   max(C.P_MOK_NAME) as pMokName,
+				         max(nvl(B.P_JONG_NAME,0))||''||max(nvl(decode(a.f_songe_cnt,'0','','/'||a.f_songe_cnt),' ')) as pJongName,
+				         to_char(to_date(PM_DAY),'yyyy-mm-dd')||' ('||to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY')||')' as pmDay,
+				         to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY') as formattedDay,
+				         max(substr(A.PM_CODE,1,4)) as pmCode,
+				         sum(A.SOK_CNT) as sokCnt,
+				         max(A.TOP_AMOUNT) as topAmount,
+				         min(A.BOT_AMOUNT) as botAmount,
+				         round(sum(A.P_PRICE) / sum(A.SOK_CNT),0) as sum,
+				         MAX(B.P_JONG_NAME) as pJongName2,
+				         to_char(sysdate,'yyyy-mm-dd') as toDay
+				    FROM A_LEVEL_PRICE@flower A,
+				         A_PUM_JONG_INFO@flower B,
+				         A_PUM_MOK_INFO@flower C
+				   WHERE ( A.PM_CODE = B.PUM_CODE ) and
+				         ( B.FLOWER_CODE = C.FLOWER_CODE ) and
+				         ( B.P_MOK_CODE = C.P_MOK_CODE ) and
+				         (
+				           (A.PM_DAY between #startDate# and #endDate#)  
+		]]>
+		<isNotEmpty property="pMokCode">
+		<![CDATA[
+				           and (A.PM_CODE in #pMokCode#)
+		]]>
+		</isNotEmpty>
+		<![CDATA[
+				           and (A.PM_CODE not in ('10010000','10020000','10030000','10050000','10030145','10010674', '10110000','10100000','10870000','10030261'))
+				         )
+ 		 ]]>
+ 		 <isEqual property="flwCode" compareValue="1">
+		 	<![CDATA[
+                         /* 절화의 경우 월,수,금 요일만 조회 */
+                         and to_char(to_date(substr(A.PM_DAY,3,2)||'-'||substr(A.PM_DAY,5,2)||'-'||substr(A.PM_DAY,7,2)),'DY') in ('월','수','금')
+		    ]]>
+		 </isEqual>
+		 <![CDATA[
+				   GROUP BY A.PM_DAY, A.PM_CODE, A.F_SONGE_CNT
+				   ORDER BY 1 asc, 2 asc, 3 desc
+		 ]]>
+	</select>
+	
+	<select id="InterestList.selectListFlowerCode" resultMap="InterestList.buryuListMap">
+		 <![CDATA[
+		 	select 
+		 		cd1 as flowerCode
+		 		,cd_name as flowerName 
+		 	from a_public_info@flower
+		 	where cd_gubun=2  and cd1 <> '3'
+		  ]]>
+	</select>
+	
+	<select id="InterestList.selectListPmokCode" resultMap="InterestList.pmokListMap">
+		 <![CDATA[
+		 	select flower_code flowerCode
+		 		, p_mok_code pMokCode
+		 		, p_mok_name pMokName
+		 	from a_pum_mok_info@flower 
+         ]]>   
+            <isEqual property="flowerCode" compareValue="1">
+            	<![CDATA[
+            		where flower_code in ( #flowerCode# ,'3')
+            	]]>
+            </isEqual>
+         	<isNotEqual property="flowerCode" compareValue="1">
+            	<![CDATA[
+            		where flower_code = #flowerCode#
+            	]]>
+            </isNotEqual>
+            <isNotEmpty property="searchPmok">
+            	<![CDATA[
+           	 		and p_mok_name like '%'|| UPPER(#searchPmok#) ||'%'
+           	 	]]>
+            </isNotEmpty>
+         <![CDATA[
+            and ( flower_code||p_mok_code not in('1011','1010','1087','8129'))
+            order by p_mok_name
+		  ]]>
+	</select>
+	
+	<select id="InterestList.selectListPjongCode" resultMap="InterestList.pjongListMap">
+		 <![CDATA[
+		 	SELECT flower_code flowerCode
+				, p_mok_code pMokCode
+				, p_jong_code pJongCode
+				, p_jong_name pJongName
+			FROM a_pum_jong_info@flower
+         ]]>   
+            <isEqual property="flowerCode" compareValue="1">
+            	<![CDATA[
+            		WHERE flower_code in( #flowerCode#,'3' )
+            	]]>
+            </isEqual>
+         	<isNotEqual property="flowerCode" compareValue="1">
+            	<![CDATA[
+            		WHERE flower_code = #flowerCode#
+            	]]>
+            </isNotEqual>
+            <isNotEmpty property="searchPjong">
+            	<![CDATA[
+           	 		and p_jong_name like '%'|| UPPER(#searchPjong#) ||'%'
+           	 	]]>
+            </isNotEmpty>
+        	<![CDATA[
+				and p_mok_code = #pMokCode#
+				and ((flower_code||p_mok_code||p_jong_code not in ('10010000','10020000','10030000','10050000','10030145', '10010674', '10110000','10100000','10870000','10030261'))) 
+				order by p_jong_name 
+		 	]]>
+	</select>
+	
+	<select id="InterestList.MyListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+				SELECT 
+					COUNT(*) COUNT
+				FROM e_concern@flower
+				WHERE TRIM(chul_code) = #id#  
+		 ]]>
+	</select>
+	
+	<select id="InterestList.CountOverlab" resultClass="java.lang.Integer">
+		<![CDATA[
+				SELECT 
+					COUNT(*) COUNT
+				FROM e_concern@flower
+				WHERE TRIM(chul_code) = #id# AND PUMJONG_CODE = #code# 
+		 ]]>
+	</select>
+	
+	<insert id="InterestList.insert" parameterClass="InterestDTO" >
+		<![CDATA[
+			insert into e_concern@flower(chul_code, pumjong_code) values (#chulId#,#code#)
+		 ]]>
+		 <selectKey keyProperty="insertCount" resultClass="int">
+			SELECT COUNT(pumjong_code) insertCount
+				FROM e_concern@flower
+				WHERE TRIM(chul_code) = #chulId# AND PUMJONG_CODE = #code# 
+		</selectKey>
+	</insert>
+	
+	<delete id="InterestList.delete">
+		<![CDATA[
+			DELETE FROM e_concern@flower 
+			WHERE TRIM(chul_code) = #chulCode# 
+				and pumjong_code in
+		]]>
+		<iterate property="interestCodeArr" open="(" close=")" conjunction=",">#interestCodeArr[]#</iterate>
+	</delete>
+	
+</sqlMap>

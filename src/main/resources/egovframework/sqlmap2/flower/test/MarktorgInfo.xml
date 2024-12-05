@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :MarktorgInfo.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 출하단체 등록정보.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="MarktorgInfo">
+	<typeAlias alias="MarktorgInfoDTO" type="at.service.business.FLOMEJANG.marktorginfo.dto.MarktorgInfoDTO" />
+	
+	<resultMap id="MarktorgInfoMap" class="MarktorgInfoDTO">
+	    <result property="gCode"         column="gCode"         columnIndex="1" />   <!-- 단체코드    -->
+	    <result property="gName"         column="gName"         columnIndex="2" />   <!-- 단체명    -->
+	    <result property="cName"         column="cName"         columnIndex="3" />   <!-- 대표자명    -->
+	    <result property="zipPk"         column="zipPk"         columnIndex="4" />   <!-- 우편번호순번    -->
+	    <result property="zipNo"         column="zipNo"         columnIndex="5" />   <!-- 우편번호    -->
+	    <result property="addr1"         column="addr1"         columnIndex="6" />   <!-- 주소1    -->
+	    <result property="addr2"         column="addr2"         columnIndex="7" />   <!-- 주소2    -->
+	    <result property="telNo"         column="telNo"         columnIndex="8" />   <!-- 전화번호    -->
+	    <result property="faxNo"         column="faxNo"         columnIndex="9" />   <!-- 팩스번호    -->
+	    <result property="manCnt"        column="manCnt"        columnIndex="10" />  <!-- 인원수    -->
+	    <result property="pStartDay"     column="pStartDay"     columnIndex="11" />  <!-- 계약시작일    -->
+	    <result property="pEndDay"       column="pEndDay"       columnIndex="12" />  <!-- 계약종료일    -->
+	    <result property="bankCode"      column="bankCode"      columnIndex="13" />  <!-- 은행코드    -->
+	    <result property="bankName"      column="bankName"      columnIndex="14" />  <!-- 은행명    -->
+	    <result property="bankLineNo"    column="bankLineNo"    columnIndex="15" />  <!-- 입금계좌    -->
+	    <result property="bankMan"       column="bankMan"       columnIndex="16" />  <!-- 예금주    -->
+	    <result property="faxOut"        column="faxOut"        columnIndex="17" />  <!--    -->
+	    <result property="bankIn"        column="bankIn"        columnIndex="18" />  <!--    -->
+	    <result property="jsSend"        column="jsSend"        columnIndex="19" />  <!--    -->
+	    <result property="bunChk"        column="bunChk"        columnIndex="20" />  <!-- 화훼구분    -->
+	    <result property="juminNo"       column="juminNo"       columnIndex="21" />  <!-- 주민번호    -->
+	    <result property="copNo"         column="copNo"         columnIndex="22" />  <!-- 사업자등록번호    -->
+	    <result property="upte"          column="upte"          columnIndex="23" />  <!-- 업태    -->
+	    <result property="jongMok"       column="jongMok"       columnIndex="24" />  <!-- 종목    -->
+	    <result property="passwd"       column="passwd"        columnIndex="25" />  <!-- ARS/FAX 비밀번호    -->
+
+	</resultMap>
+	
+	<select id="MarktorgInfo.select" resultMap="MarktorgInfoMap">
+		<![CDATA[
+                SELECT nvl(a.G_CODE      ,'') as gCode       
+                      ,nvl(a.G_NAME      ,'') as gName       
+                      ,nvl(a.C_NAME      ,'') as cName       
+                      ,nvl(a.ZIP_PK      , 0) as zipPk       
+                      ,(select nvl(zip_no,'') from e_zip_no@flower where zip_pk = a.zip_pk) as zipNo    
+                      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from e_zip_no@flower where zip_pk = a.zip_pk) as addr1    
+                      ,nvl(a.ADDR        ,'') as addr2
+                      ,nvl(a.TEL_NO      ,'') as telNo       
+                      ,nvl(a.FAX_NO      ,'') as faxNo       
+                      ,nvl(a.MAN_CNT     , 0) as manCnt      
+                      ,to_date(nvl(a.P_START_DAY ,sysdate)) as pStartDay  
+                      ,to_date(nvl(a.P_END_DAY ,'29991231')) as pEndDay  
+                      ,nvl(a.BANK_CODE   ,'') as bankCode    
+                      ,(SELECT  nvl(cd_name,'') FROM a_public_info@flower WHERE cd_gubun=5 and cd1=a.bank_code) as bankName  
+                      ,nvl(a.BANK_LINE_NO,'') as bankLineNo 
+                      ,nvl(a.BANK_MAN    ,'') as bankMan     
+                      ,nvl(a.FAX_OUT     ,'') as faxOut      
+                      ,nvl(a.BANK_IN     ,'') as bankIn      
+                      ,nvl(a.JS_SEND     ,'') as jsSend      
+                      ,nvl(a.BUN_CHK     ,'') as bunChk      
+                      ,nvl(a.JUMIN_NO    ,'') as juminNo     
+                      ,nvl(a.COP_NO      ,'') as copNo       
+                      ,nvl(a.UPTE        ,'') as upte         
+                      ,nvl(a.JONGMOK     ,'') as jongMok      
+                      ,nvl(a.PASSWD      ,'') as passwd         
+                  FROM A_C_GROUP@flower  a
+                 WHERE a.G_CODE=#gCode#
+		 ]]>
+	</select>
+	
+</sqlMap>

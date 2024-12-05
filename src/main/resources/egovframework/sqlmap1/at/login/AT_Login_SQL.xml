@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.at.LoginTiberoMapper">
+	<select id="getAtMember" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT T1.로그인ID AS login_id
+				, T1.회원등록ID AS member_id
+				, T3.이름 AS name
+				, T3.이메일 AS email
+				, T2.휴대폰번호1 AS hp1
+				, T2.휴대폰번호2 AS hp2
+				, T2.휴대폰번호3 AS hp3
+				, T2.휴대폰번호1||'-'||T2.휴대폰번호2||'-'||T2.휴대폰번호3 AS phone
+			FROM   WB_CM_로그인ID T1
+				, WB_CM_연락처정보 T2
+				, WB_CM_회원마스터 T3
+			WHERE  T1.회원등록ID = T2.회원등록ID
+			AND    T2.회원등록ID = T3.회원등록ID
+            AND T1.로그인ID = #{id, jdbcType=VARCHAR}
+			]]>
+			<if test="pw != null and pw != ''">
+				AND T1.비밀번호_SHA2 = #{pw, jdbcType=VARCHAR}
+			</if>
+		
+			
+            
+        
+        
+        <!-- AND T1.비밀번호_SHA2 = #{pw, jdbcType=VARCHAR} -->
+    </select>
+    
+		<select id="getAtMembers" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT T1.로그인ID AS login_id
+				, T1.회원등록ID AS member_id
+				, T3.이름 AS name
+				, T3.이메일 AS email
+				, T2.휴대폰번호1 AS hp1
+				, T2.휴대폰번호2 AS hp2
+				, T2.휴대폰번호3 AS hp3
+				, T2.휴대폰번호1||'-'||T2.휴대폰번호2||'-'||T2.휴대폰번호3 AS phone
+			FROM   WB_CM_로그인ID T1
+				, WB_CM_연락처정보 T2
+				, WB_CM_회원마스터 T3
+			WHERE  T1.회원등록ID = T2.회원등록ID
+			AND    T2.회원등록ID = T3.회원등록ID
+			
+        
+            
+        ]]>
+		</select>
+
+    <select id="getFloMember" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT T1.로그인ID AS login_Id
+	           , T1.회원등록ID AS member_Id
+	           , T2.고객분류기준 AS member_Type
+	           , T2.경매관리구분코드 AS auc_Type
+	           , T2.회계단위코드 AS flo_Unit_Cd
+	           , T2.화훼부류코드 AS flo_Mok_Cd
+	           , T2.경매관리농가코드 AS chul_Cd
+	           , T2.경매관리코드번호 AS auc_Cd
+	           , T2.경매관리비밀번호 AS auc_Pw
+	           , T2.경매관리등록명 AS auc_Reg_Nm
+	           , T2.최종변경자 AS last_Upt_Id
+	           , T2.최종변경일자 AS last_Upt_Date
+			FROM WB_CM_로그인ID T1
+			   , WB_CM_화훼부가정보 T2
+			WHERE T1.회원등록ID = T2.회원등록ID
+            AND T1.로그인ID = #{id, jdbcType=VARCHAR}
+            AND T2.경매관리구분코드 != '08'
+            ORDER BY T2.경매관리구분코드 ASC
+        ]]>
+    </select>
+    
+    <select id="getFloMemberCheck" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT MAX(T1.회원등록ID) AS MEMBER_CHK
+			FROM WB_CM_로그인ID T1
+			   , WB_CM_화훼부가정보 T2
+			WHERE T1.회원등록ID = T2.회원등록ID
+			AND T1.회원등록ID = #{memberId, jdbcType=VARCHAR}
+            AND T1.로그인ID = #{id, jdbcType=VARCHAR}
+            AND T2.경매관리농가코드 = #{code, jdbcType=VARCHAR}
+            AND T2.경매관리구분코드 != '08'
+        ]]>
+    </select>
+    
+    <select id="getCodeToLoginId" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT MAX(T1.로그인ID) AS LOGIN_ID
+			FROM WB_CM_로그인ID T1
+			   , WB_CM_화훼부가정보 T2
+			WHERE T1.회원등록ID = T2.회원등록ID
+			AND T2.경매관리농가코드 = #{code, jdbcType=VARCHAR}
+            AND T2.경매관리구분코드 != '08'
+        ]]>
+    </select>
+    
+    <select id="getAtIdLogin" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT T1.로그인ID AS login_id
+				, T1.회원등록ID AS member_id
+				, T3.이름 AS name
+				, T3.이메일 AS email
+				, T2.휴대폰번호1 AS hp1
+				, T2.휴대폰번호2 AS hp2
+				, T2.휴대폰번호3 AS hp3
+				, T2.휴대폰번호1||'-'||T2.휴대폰번호2||'-'||T2.휴대폰번호3 AS phone
+			FROM   WB_CM_로그인ID T1
+				, WB_CM_연락처정보 T2
+				, WB_CM_회원마스터 T3
+			WHERE  T1.회원등록ID = T2.회원등록ID
+			AND    T2.회원등록ID = T3.회원등록ID
+            AND    T1.로그인ID = #{id, jdbcType=VARCHAR}
+			
+        ]]>
+    </select>
+    
+    <select id="getCodeToLoginInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        <![CDATA[
+        	SELECT 이름 AS NAME
+			FROM WB_CM_회원마스터
+			WHERE 1=1
+			AND 회원등록ID = #{memberId, jdbcType=VARCHAR}
+        ]]>
+    </select>
+    
+    
+    
+    
+
+</mapper>
+

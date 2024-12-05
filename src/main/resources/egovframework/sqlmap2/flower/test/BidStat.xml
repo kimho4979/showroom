@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :BidStat.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 관심품목유찰비율조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="BidStat">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="bunChk"       column="bunChk"        columnIndex="1" /> 
+	    <result property="panDay"       column="panDay"        columnIndex="2" /> 
+	    <result property="uSokSum"      column="uSokSum"       columnIndex="3" /> 
+	    <result property="totSokSum"    column="totSokSum"     columnIndex="4" /> 
+	    <result property="ratio"        column="ratio"         columnIndex="5" /> 
+	</resultMap>
+	
+	<select id="BidStat.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				select  bunChk,
+				        to_char(to_date(panDay),'yyyy-mm-dd') as panDay,
+				        uSokSum,
+				        totSokSum,
+				        round(uSokSum / totSokSum * 100, 2) as ratio
+				  from  
+				        (SELECT p_bun_chk         as bunChk,
+				                max(pan_day)      as panDay,
+				                SUM(p_sok_cnt)    AS totSokSum,        
+				                SUM( CASE WHEN km_list IN ('2','8','9')                   
+				                          THEN p_sok_cnt              
+				                          END   ) AS uSokSum  
+				           FROM v_sang_pan_list@flower  a
+				          WHERE pan_day = (SELECT MAX(magam_ilja)
+				                             FROM a_day_magam@flower      
+				                            WHERE magam_ilja <= #panDate#
+				                              and bun_chk = a.p_bun_chk)
+				          group by p_bun_chk) 
+		 ]]>
+	</select>
+	
+
+</sqlMap>

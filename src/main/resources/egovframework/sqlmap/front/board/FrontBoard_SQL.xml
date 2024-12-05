@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.board.service.impl.FrontBoardMapper">
+
+	<resultMap id="frontBoardInfo" type="egovframework.front.board.vo.FrontBoardInfoVO">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardNm" column="BOARD_NM"/>
+		<result property="boardSummary" column="BOARD_SUMMARY"/>
+		<result property="boardTy" column="BOARD_TY"/>
+		<result property="boardAdmin" column="BOARD_ADMIN"/>
+		<result property="boardAdminGroup" column="BOARD_ADMIN_GROUP"/>
+		<result property="useCategoryAt" column="USE_CATEGORY_AT"/>
+		<result property="permitLvlList" column="PERMIT_LVL_LIST"/>
+		<result property="limitGrpList" column="LIMIT_GRP_LIST"/>
+		<result property="permitLvlRead" column="PERMIT_LVL_READ"/>
+		<result property="limitGrpRead" column="LIMIT_GRP_READ"/>
+		<result property="permitLvlWrite" column="PERMIT_LVL_WRITE"/>
+		<result property="limitGrpWrite" column="LIMIT_GRP_WRITE"/>
+		<result property="permitLvlReply" column="PERMIT_LVL_REPLY"/>
+		<result property="limitGrpReply" column="LIMIT_GRP_REPLY"/>
+		<result property="permitLvlAnswer" column="PERMIT_LVL_ANSWER"/>
+		<result property="limitGrpAnswer" column="LIMIT_GRP_ANSWER"/>
+		<result property="permitLvlEditor" column="PERMIT_LVL_EDITOR"/>
+		<result property="limitGrpEditor" column="LIMIT_GRP_EDITOR"/>
+		<result property="permitLvlComment" column="PERMIT_LVL_COMMENT"/>
+		<result property="limitGrpComment" column="LIMIT_GRP_COMMENT"/>
+		<result property="useSecretAt" column="USE_SECRET_AT"/>
+		<result property="perPage" column="PER_PAGE"/>
+		<result property="newIconPeriod" column="NEW_ICON_PERIOD"/>
+		<result property="showDeletedAt" column="SHOW_DELETED_AT"/>
+		<result property="useRealnameAt" column="USE_REALNAME_AT"/>
+		<result property="showSelfAt" column="SHOW_SELF_AT"/>
+		<result property="useProgressAt" column="USE_PROGRESS_AT"/>
+		<result property="useEmailAt" column="USE_EMAIL_AT"/>
+		<result property="useTelNoAt" column="USE_TEL_NO_AT"/>
+		<result property="useHpNoAt" column="USE_HP_NO_AT"/>
+		<result property="useAdresAt" column="USE_ADRES_AT"/>
+		<result property="usePrivacyAt" column="USE_PRIVACY_AT"/>
+		<result property="useThumbAt" column="USE_THUMB_AT"/>
+		<result property="useRssAt" column="USE_RSS_AT"/>
+		<result property="mainAppointAt" column="MAIN_APPOINT_AT"/>
+		<result property="isMinwonAt" column="IS_MINWON_AT"/>
+		<result property="deptAppointAt" column="DEPT_APPOINT_AT"/>
+		<result property="uploadCount" column="UPLOAD_COUNT"/>
+		<result property="uploadSize" column="UPLOAD_SIZE"/>
+		<result property="uploadExt" column="UPLOAD_EXT"/>
+		<result property="headHtml" column="HEAD_HTML"/>
+		<result property="tailHtml" column="TAIL_HTML"/>
+		<result property="limitHtml" column="LIMIT_HTML"/>
+		<result property="limitWord" column="LIMIT_WORD"/>
+		<result property="writeDfltCn" column="WRITE_DFLT_CN"/>
+	</resultMap>
+	
+	 
+	<!-- <resultMap type="frontBoardMap" id="egovframework.front.board.service.FrontBoardArticleVO"> -->
+	<resultMap id="frontBoardArticle" type="egovframework.front.board.vo.FrontBoardArticleVO">
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="prevArticleId" column="PREV_ARTICLE_ID"/>
+		<result property="nextArticleId" column="NEXT_ARTICLE_ID"/>
+		<result property="prevSubject" column="PREV_SUBJECT"/>
+		<result property="nextSubject" column="NEXT_SUBJECT"/>
+		<result property="prevData01" column="PREV_DATA01"/>
+		<result property="nextData01" column="NEXT_DATA01"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="groupNo" column="GROUP_NO"/>
+		<result property="depthNo" column="DEPTH_NO"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="viewStartDt" column="VIEW_START_DT"/>
+		<result property="viewEndDt" column="VIEW_END_DT"/>
+		<result property="categoryId" column="CATEGORY_ID"/>
+		<result property="progressCd" column="PROGRESS_CD"/>
+		<result property="subject" column="SUBJECT"/>
+		<result property="email" column="EMAIL"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="hpNo" column="HP_NO"/>
+		<result property="adres" column="ADRES"/>
+		<result property="detailAdres" column="DETAIL_ADRES"/>
+		<result property="zip" column="ZIP"/>
+		<result property="homepage" column="HOMPAGE"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="password" column="PASSWORD"/>
+		<result property="content" column="CONTENT" jdbcType="VARCHAR"/> <!-- CLOB --> 
+		<result property="listThumbFile" column="LIST_THUMB_FILE"/>
+		<result property="uploadCnt" column="UPLOAD_CNT"/>
+		<result property="commentCnt" column="COMMENT_CNT"/>
+		<result property="rcvSmsAt" column="RCV_SMS_AT"/>
+		<result property="sendSmsAt" column="SEND_SMS_AT"/>
+		<result property="rcvEmailAt" column="RCV_EMAIL_AT"/>
+		<result property="noticeAt" column="NOTICE_AT"/>
+		<result property="htmlAt" column="HTML_AT"/>
+		<result property="mainAt" column="MAIN_AT"/>
+		<result property="secretAt" column="SECRET_AT"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="hits" column="HITS"/>
+		<result property="data01" column="DATA01"/>
+		<result property="data02" column="DATA02"/>
+		<result property="data03" column="DATA03"/>
+		<result property="data04" column="DATA04"/>
+		<result property="data05" column="DATA05"/>
+		<result property="data06" column="DATA06"/>
+		<result property="data07" column="DATA07"/>
+		<result property="data08" column="DATA08"/>
+		<result property="data09" column="DATA09"/>
+		<result property="data10" column="DATA10"/>
+		<result property="realnameId" column="REALNAME_ID"/>
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="state" column="STATE"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateIp" column="UPDATE_IP"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteId" column="DELETE_ID"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteMemo" column="DELETE_MEMO"/>
+	</resultMap>
+	
+		<resultMap id="frontBoardCategory" type="egovframework.front.board.vo.FrontBoardCategoryVO">
+		<result property="categoryId" column="CATEGORY_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="title" column="TITLE"/>
+	</resultMap>
+
+	<resultMap id="frontBoardFile" type="egovframework.front.board.vo.FrontBoardFileVO">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="fileSn" column="FILE_SN"/>
+		<result property="streFileNm" column="STRE_FILE_NM"/>
+		<result property="orignlFileNm" column="ORIGNL_FILE_NM" jdbcType="VARCHAR"/>
+		<result property="fileExtsn" column="FILE_EXTSN"/>
+		<result property="fileCn" column="FILE_CN"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+
+	<resultMap id="frontBoardComment" type="egovframework.front.board.vo.FrontBoardCommentVO">
+		<result property="commentId" column="COMMENT_ID"/>
+		<result property="parntsCommentId" column="PARNTS_COMMENT_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="reply" column="REPLY"/>
+		<result property="snsAt" column="SNS_AT"/>
+		<result property="snsGb" column="SNS_GB"/>
+		<result property="realnameAt" column="REALNAME_AT"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="content" column="CONTENT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+ 
+	<resultMap id="frontBoardAnswer" type="egovframework.front.board.vo.FrontBoardAnswerVO">
+		<result property="answerId" column="ANSWER_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="email" column="EMAIL"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="content" column="CONTENT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+
+	<sql id="where">
+		<if test="searchWord != null and searchWord != ''">
+			AND UPPER(TITLE) LIKE '%' || UPPER(#{searchWord}) || '%'
+		</if> 
+	</sql>
+
+
+
+	<select id="getFrontBoardArticleListCnt" parameterType="frontBoardArticleVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  1=1 
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='noticeAt != null and noticeAt != ""'>
+		   AND  A.NOTICE_AT	= #{noticeAt}
+		</if>
+		<if test='secretAt != null and secretAt != ""'>
+		   AND  A.SECRET_AT	= #{secretAt}
+		</if>
+		<if test='mainAt != null and mainAt != ""'>
+		   AND  A.MAIN_AT = #{mainAt}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	</select>
+	
+	<select id="getFrontBoardArticleList" parameterType="frontBoardArticleVO" resultMap="frontBoardArticle">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  A.PROGRESS_CD
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.LIST_THUMB_FILE
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 -- ,  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd')AS REGIST_DTTM
+			 ,  TO_CHAR(TO_DATE(SUBSTR( A.REGIST_DTTM, 0, 10),'YYYY-MM-DD'),'YYYY-MM-DD') AS REGIST_DTTM
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.ARTICLE_ID &gt; 0
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='noticeAt != null and noticeAt != ""'>
+		   AND  A.NOTICE_AT	= #{noticeAt}
+		</if>
+		<if test='secretAt != null and secretAt != ""'>
+		   AND  A.SECRET_AT	= #{secretAt}
+		</if>
+		<if test='mainAt != null and mainAt != ""'>
+		   AND  A.MAIN_AT = #{mainAt}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	<choose>
+	   	<when test='orderby == "rand"'>
+	  ORDER BY  DBMS_RANDOM.RANDOM
+	   	</when>
+	   	<otherwise>
+	  ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC
+	   	</otherwise>
+	</choose>
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+	
+    
+    <select id="getFrontBoardArticle" parameterType="frontBoardArticleVO" resultMap="frontBoardArticle">
+   
+    	SELECT *
+		 FROM (
+		  SELECT  A.BOARD_ID
+		         ,  A.SITE_ID
+				 ,  A.ARTICLE_ID
+	       		 ,  LEAD(A.ARTICLE_ID) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS PREV_ARTICLE_ID
+	       		 ,  LEAD(A.SUBJECT) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS PREV_SUBJECT
+	       		 ,  LEAD(A.DATA01) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS PREV_DATA01
+	       		 ,  LAG(A.ARTICLE_ID) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS NEXT_ARTICLE_ID
+	       		 ,  LAG(A.SUBJECT) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS NEXT_SUBJECT
+	       		 ,  LAG(A.DATA01) OVER(ORDER BY DECODE(A.NOTICE_AT,'Y',1), A.REGIST_DTTM DESC) AS NEXT_DATA01
+				 ,  A.GROUP_NO
+				 ,  A.DEPTH_NO
+				 ,  A.ORDER_NO
+				 ,  A.CATEGORY_ID
+				 ,  A.PROGRESS_CD
+				 ,  A.EMAIL
+				 ,  A.TEL_NO
+				 ,  A.HP_NO
+				 ,  A.ZIP
+				 ,  A.ADRES
+				 ,  A.DETAIL_ADRES
+				 ,  A.SUBJECT
+				 ,  A.WRITER_ID
+				 ,  A.WRITER_NM
+				 ,  A.PASSWORD
+				 ,  A.CONTENT
+				 ,  A.LIST_THUMB_FILE
+				 ,  A.MAIN_AT
+				 ,  A.NOTICE_AT
+				 ,  A.SECRET_AT
+				 ,  A.HTML_AT
+				 ,  A.RCV_SMS_AT
+				 ,  A.SEND_SMS_AT
+				 ,  A.RCV_EMAIL_AT
+				 ,  A.SEND_EMAIL_AT
+				 ,  A.DELETED_AT
+				 ,  A.UPLOAD_CNT
+				 ,  A.COMMENT_CNT
+				 ,  A.HITS
+				 ,  A.DEPT_ID
+				 ,  A.DATA01
+				 ,  A.DATA02
+				 ,  A.DATA03
+				 ,  A.DATA04
+				 ,  A.DATA05
+				 ,  A.DATA06
+				 ,  A.DATA07
+				 ,  A.DATA08
+				 ,  A.DATA09
+				 ,  A.DATA10
+				 ,  TO_CHAR(A.REGIST_DTTM,'YYYY.MM.DD') AS REGIST_DTTM
+				 ,  A.REGIST_IP
+				 ,  A.UPDATE_ID
+				 ,  A.UPDATE_DTTM
+				 ,  A.UPDATE_IP
+			     ,  A.DELETE_DTTM
+			     ,  A.DELETE_IP
+			     ,  A.DELETE_ID
+			     ,  A.DELETE_MEMO
+			  FROM  WMS_BOARD_ARTICLE A
+		      WHERE  A.BOARD_ID = #{boardId, jdbcType=VARCHAR}
+		      ORDER BY  REGIST_DTTM DESC
+		) AA
+		WHERE  AA.ARTICLE_ID = #{articleId}
+		
+	</select>
+
+	
+	<select id="getFrontBoardInfo" parameterType="frontBoardInfoVO" resultMap="frontBoardInfo">
+		SELECT  BOARD_ID
+			 ,  SITE_ID
+			 ,  BOARD_NM
+			 ,  BOARD_SUMMARY
+			 ,  BOARD_ADMIN
+			 ,  BOARD_ADMIN_GROUP
+			 ,  BOARD_TY
+			 ,  USE_CATEGORY_AT
+			 ,  PERMIT_LVL_LIST
+			 ,  LIMIT_GRP_LIST
+			 ,  PERMIT_LVL_READ
+			 ,  LIMIT_GRP_READ
+			 ,  PERMIT_LVL_WRITE
+			 ,  LIMIT_GRP_WRITE
+			 ,  PERMIT_LVL_REPLY
+			 ,  LIMIT_GRP_REPLY
+			 ,  PERMIT_LVL_ANSWER
+			 ,  LIMIT_GRP_ANSWER
+			 ,  PERMIT_LVL_EDITOR
+			 ,  LIMIT_GRP_EDITOR
+			 ,  PERMIT_LVL_COMMENT
+			 ,  LIMIT_GRP_COMMENT
+			 ,  USE_SECRET_AT
+			 ,  PER_PAGE
+			 ,  NEW_ICON_PERIOD
+			 ,  SHOW_DELETED_AT
+			 ,  USE_REALNAME_AT
+			 ,  SHOW_SELF_AT
+			 ,  USE_PROGRESS_AT
+			 ,  USE_EMAIL_AT
+			 ,  USE_TEL_NO_AT
+			 ,  USE_HP_NO_AT
+			 ,  USE_ADRES_AT
+			 ,  USE_PRIVACY_AT
+			 ,  USE_THUMB_AT
+			 ,  USE_RSS_AT
+			 ,  MAIN_APPOINT_AT
+			 ,  IS_MINWON_AT
+			 ,  DEPT_APPOINT_AT
+			 ,  USE_AT
+			 ,  UPLOAD_COUNT
+			 ,  UPLOAD_SIZE
+			 ,  UPLOAD_EXT
+			 ,  HEAD_HTML
+			 ,  TAIL_HTML
+			 ,  LIMIT_HTML
+			 ,  LIMIT_WORD
+			 ,  WRITE_DFLT_CN
+		  FROM  WMS_BOARD_INFO
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  USE_AT = 'Y'
+		<if test='siteId != null and siteId != ""'>
+		   AND  SITE_ID = #{siteId}
+		</if>
+	</select>
+	
+	<update id="updateFrontBoardArticleHits">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  HITS = HITS + 1
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+	
+	<select id="getFrontBoardFileList" parameterType="frontBoardFileVO" resultMap="frontBoardFile">
+		SELECT  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  FILE_SN
+			 ,  STRE_FILE_NM
+			 ,  ORIGNL_FILE_NM
+			 ,  FILE_EXTSN
+			 ,  FILE_SIZE
+		  FROM  WMS_BOARD_FILE
+		 WHERE  BOARD_ID = #{boardId, jdbcType=VARCHAR}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<select id="getFrontBoardFile" parameterType="frontBoardFileVO" resultMap="frontBoardFile">
+		SELECT  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  FILE_SN
+			 ,  STRE_FILE_NM
+			 ,  ORIGNL_FILE_NM
+			 ,  FILE_EXTSN
+			 ,  FILE_SIZE
+		  FROM  WMS_BOARD_FILE
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  FILE_SN = #{fileSn}
+		   AND  DELETED_AT = 'N'
+	</select>
+</mapper>

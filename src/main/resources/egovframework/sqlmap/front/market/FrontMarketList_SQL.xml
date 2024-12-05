@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.front.market.service.impl.FrontMarketListMapper">
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="CONTENT" column="CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+
+	<select id="getMarketTypeGroupInfo" resultType="egovMap">
+		  SELECT TY_CODE_ARR
+		  FROM TB_MARKET_TYPE_GROUP
+		  WHERE 1=1
+		  AND USE_YN = 'Y'
+		  AND TY_GROUP_CODE = #{tyGroupCode}
+	</select>
+	
+	<select id="getOraMarketInfo" resultMap="egovResultMap">
+		  SELECT MARKET_SEQ
+		       , MARKET_TYPE
+		       , TY_GROUP_CODE
+		       , MARKET_NO
+		       , MARKET_NAME
+		       , OWNER
+		       , TEL
+		       , ITEMS
+		       , SALE_TIME
+		       , CLO_DAY
+		       , DELI_TEXT
+		       , HASH_TEXT
+		       , CONTENT
+		       , J_CODE
+		       , AREA_COORDS
+		       , USE_YN
+		       , INSERT_ID
+		       , INSERT_DATE
+		       , UPDATE_ID
+		       , UPDATE_DATE
+		       , (SELECT MAX(THUMB_STRE_FILE_NM) KEEP(DENSE_RANK FIRST ORDER BY FILE_SEQ ASC) FROM TB_MARKET_FILE WHERE MARKET_SEQ = T1.MARKET_SEQ) AS THUMB_STRE_FILE_NM
+		FROM TB_MARKET_INFO T1
+		WHERE MARKET_TYPE = #{marketType}
+		AND MARKET_NO = #{marketNo}
+	</select>
+	
+	<select id="getOraMarketList" resultMap="egovResultMap">
+		  SELECT MARKET_SEQ
+		       , MARKET_TYPE
+		       , TY_GROUP_CODE
+		       , MARKET_NO
+		       , MARKET_NAME
+		       , OWNER
+		       , TEL
+		       , ITEMS
+		       , SALE_TIME
+		       , CLO_DAY
+		       , DELI_TEXT
+		       , HASH_TEXT
+		       , CONTENT
+		       , J_CODE
+		       , AREA_COORDS
+		       , USE_YN
+		       , INSERT_ID
+		       , INSERT_DATE
+		       , UPDATE_ID
+		       , UPDATE_DATE
+		       , (SELECT MAX(THUMB_STRE_FILE_NM) KEEP(DENSE_RANK FIRST ORDER BY FILE_SEQ ASC) FROM TB_MARKET_FILE WHERE MARKET_SEQ = T1.MARKET_SEQ) AS THUMB_STRE_FILE_NM
+		FROM TB_MARKET_INFO T1
+		WHERE MARKET_TYPE IN 
+		<foreach collection="searchTypeArr" item="item" index="index" open="(" close=")" separator=",">
+      		#{item}
+    	</foreach>
+	</select>
+	
+</mapper> 

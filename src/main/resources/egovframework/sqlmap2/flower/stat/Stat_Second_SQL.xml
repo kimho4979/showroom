@@ -1,0 +1,1175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.StatSecondMapper">
+
+
+	<!-- 출하단체 -->
+	
+	<select id="marktorgInfoSelect" resultType="egovMap">
+		<![CDATA[
+                SELECT nvl(a.G_CODE      ,'') as gCode       
+                      ,nvl(a.G_NAME      ,'') as gName       
+                      ,nvl(a.C_NAME      ,'') as cName       
+                      ,nvl(a.ZIP_PK      , 0) as zipPk       
+                      ,(select nvl(zip_no,'') from FLOMEJANG.e_zip_no where zip_pk = a.zip_pk) as zipNo    
+                      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from FLOMEJANG.e_zip_no where zip_pk = a.zip_pk) as addr1    
+                      ,nvl(a.ADDR        ,'') as addr2
+                      ,nvl(a.TEL_NO      ,'') as telNo       
+                      ,nvl(a.FAX_NO      ,'') as faxNo       
+                      ,nvl(a.MAN_CNT     , 0) as manCnt      
+                      ,TO_CHAR(nvl(to_date(a.P_START_DAY,'YYYYMMDD') ,sysdate),'YYYY-MM-DD') as pStartDay  
+                      ,TO_CHAR(to_date(nvl(a.P_END_DAY ,'29991231'),'YYYYMMDD'),'YYYY-MM-DD') as pEndDay  
+                      ,nvl(a.BANK_CODE   ,'') as bankCode    
+                      ,(SELECT  nvl(cd_name,'') FROM FLOMEJANG.a_public_info WHERE cd_gubun=5 and cd1=a.bank_code) as bankName  
+                      ,nvl(a.BANK_LINE_NO,'') as bankLineNo 
+                      ,nvl(a.BANK_MAN    ,'') as bankMan     
+                      ,nvl(a.FAX_OUT     ,'') as faxOut      
+                      ,nvl(a.BANK_IN     ,'') as bankIn      
+                      ,nvl(a.JS_SEND     ,'') as jsSend      
+                      ,nvl(a.BUN_CHK     ,'') as bunChk      
+                      ,nvl(a.JUMIN_NO    ,'') as juminNo     
+                      ,nvl(a.COP_NO      ,'') as copNo       
+                      ,nvl(a.UPTE        ,'') as upte         
+                      ,nvl(a.JONGMOK     ,'') as jongMok      
+                      ,nvl(a.PASSWD      ,'') as passwd         
+                  FROM FLOMEJANG.A_C_GROUP  a
+                 WHERE a.G_CODE=#{gCode, jdbcType = VARCHAR}
+		 ]]>
+	</select>
+	
+	 
+	<select id="markSaleCalcTotSelectGroupInfo" resultType="egovMap">
+		select max(g_name) AS G_NAME 
+		from FLOMEJANG.A_C_GROUP G 
+		WHERE  G.G_CODE = #{domeCode, jdbcType=VARCHAR}
+	</select>
+	<select id="markSaleCalcTotSelectList" resultType="egovMap">
+			<![CDATA[
+					SELECT  a.pan_day                 as panDay,       
+	                        max(a.group_code)         as gCode,
+	                        (select max(g_name) from FLOMEJANG.A_C_GROUP G WHERE  G.G_CODE = #{domeCode, jdbcType=VARCHAR}) as gName,
+					        to_char(to_date(a.pan_day),'yyyy-mm-dd')   as fPanDay,
+					        sum(pan_price)            as panMoney,     
+					        sum(pan_price)-sum(chain) as panDeduction, 
+					        sum(chain)                as panDifference
+				           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				           ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				           ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				           ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+					  FROM  FLOMEJANG.v_sang_pan_list a, 
+					        FLOMEJANG.a_day_magam b  
+					 WHERE  a.p_bun_chk  = b.bun_chk    
+					   AND  a.pan_day    = b.magam_ilja    
+					   AND  a.km_list in ('1','3','4')    
+					   AND  a.p_bun_chk = #{bunChk, jdbcType=VARCHAR}    
+					   AND  a.pan_day  between TO_NUMBER(replace(#{startDate, jdbcType=VARCHAR},'-','')) and TO_NUMBER(replace(#{endDate, jdbcType=VARCHAR},'-',''))
+					   AND  a.group_code = #{domeCode, jdbcType=VARCHAR}
+					 GROUP  BY a.pan_day, a.p_bun_chk  
+					 ORDER  BY pan_day desc
+			 ]]>
+		</select>
+		
+		<select id="markSaleCalcTotSumList" resultType="egovMap">
+			<![CDATA[
+					SELECT  sum(panMoney     )  as sumPanMoney     ,
+					        sum(panDeduction )  as sumPanDeduction ,
+					        sum(panDifference)  as sumPanDifference
+					  FROM (
+							SELECT  a.pan_day                 as panDay,       
+							        sum(pan_price)            as panMoney,     
+							        sum(pan_price)-sum(chain) as panDeduction, 
+							        sum(chain)                as panDifference
+						           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+						           ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						           ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+						           ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+							  FROM  FLOMEJANG.v_sang_pan_list a, 
+							        FLOMEJANG.a_day_magam b  
+							 WHERE  a.p_bun_chk  = b.bun_chk    
+							   AND  a.pan_day    = b.magam_ilja    
+							   AND  a.km_list in ('1','3','4')    
+							   AND  a.p_bun_chk = #{bunChk, jdbcType=VARCHAR}    
+							   AND  a.pan_day  between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+							   AND  a.group_code = #{domeCode, jdbcType=VARCHAR}
+							 GROUP  BY a.pan_day, a.p_bun_chk  
+	                )
+			 ]]>
+		</select>
+		
+		
+		<select id="markSaleCalcTotSelect" resultType="egovMap">
+			<![CDATA[
+	                SELECT  max(e.g_code)                                                    as  gCode,    
+					        max(e.g_Name)                                                    as  gName,    
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',b.chul_code),'') as chulCode, 
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','출하자계 '||count(a.name)||'건','3','',max(a.name)),'단체총계 '||count(a.name)||'건')        as chulName,
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',to_char(to_date(max(b.pan_day)),'yyyy-mm-dd')),'') as panDay,   
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(d.p_mok_name)),'') as pMokName, 
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(d.p_jong_name)||decode(max(b.f_songe_cnt),'0','',' /'||max(b.f_songe_cnt))),'') as pJongName,
+					        nvl(decode(grouping_id(b.chul_code, b.up_no),'1','','3','',max(c.name)),'') as levelName,
+							sum(b.rental_amt) as rentalAmt,
+					        sum(b.p_box_cnt)                                                 as  boxCnt,  
+					        sum(b.p_sok_cnt)                                                 as  sokCnt,  
+					        sum(b.km_p_new )                                                 as  kmPNew,  
+					        sum(b.pan_price)                                                 as  panPrice,
+					        sum(b.su_su_p  )                                                 as  suSuP,   
+					        case when max(b.p_bun_chk) = 'Y'                                      
+					             then max(b.down_re_pg)                                           
+					             else max(b.down_re_p )                                           
+					         end                                                             as  downReP,        
+					        sum(b.daegi_price)                                               as  daegiPrice,   
+					        sum(b.p_re_box_p )                                               as  reBoxP,       
+					        sum(b.trans_price)                                               as  transPrice,   
+					        sum(b.misu_nuge  )                                               as  misuNuge,     
+					        sum(b.sang_hwan  )                                               as  sangHwan,     
+					        sum(b.pan_price) - sum(b.chain)                                  as  gongjeAmt,    
+					        sum(b.chain     )                                                as  chainAmt,     
+					        max(e.fax_out   )                                                as  faxOut,       
+					        sum(b.return_amt)                                                as  returnAmt,    
+					        sum(b.self_amt  )                                                as  selfAmt,      
+					        sum(b.km_list   )                                                as  kmlist,       
+					        sum(b.fee_amt   )                                                as  feeAmt,       
+					        sum(b.trans_price_add)                                           as  transPriceAdd
+					        ,sum(b.baek_amt)	 as baekAmt
+					  FROM  FLOMEJANG.a_chul_info a, 
+					        FLOMEJANG.v_sang_pan_list b, 
+					        FLOMEJANG.a_level c, 
+					        FLOMEJANG.v_mok_jong_list d, 
+					        FLOMEJANG.a_c_group e, 
+					        FLOMEJANG.a_day_magam f 
+					 WHERE  b.chul_code  = a.code   
+					   AND  b.p_bun_chk  = c.bun_chk   
+					   AND  b.acc_level  = c.code   
+					   AND  b.pum_code   = d.pum_code   
+					   AND  a.g_code     = e.g_code   
+					   AND  b.p_bun_chk  = f.bun_chk   
+					   AND  b.pan_day    = f.magam_ilja   
+					   AND  b.p_bun_chk  = #{bunChk, jdbcType=VARCHAR}   
+					   AND  b.pan_day    = replace(#{panDate, jdbcType=VARCHAR},'-','')     
+					   AND  b.group_code = #{domeCode, jdbcType=VARCHAR} 
+	/*				 ORDER  BY b.chul_code, b.f_up_day, b.pan_no, b.serial_no  */
+					 group  by rollup( b.chul_code, b.up_no)
+			 ]]>
+		</select>
+	
+		<select id="markSaleCalcTotSelectInfoList" resultType="egovMap">
+			<![CDATA[
+					SELECT  g_code as gCode,
+					        g_name as gName,
+					        decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk,
+					        to_char(sysdate,'yyyy-mm-dd')             as toDay,
+					        to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate,
+					        to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+					  FROM  FLOMEJANG.A_C_GROUP G 
+					 WHERE  G.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+			 ]]>
+		</select>
+		
+		
+		
+		<select id="markActualResultSelectList" resultType="egovMap">
+		<![CDATA[
+				  SELECT  a.name  as name,    
+				          substr(a.jumin_no,0,6)  as juminNo1, 
+				          /*substr(a.jumin_no,7,13) as juminNo2,*/ 
+				          substr(a.code,0,4)  as code1, 
+				          substr(a.code,5,8)  as code2, 
+				          Max(case when #{bunChk, jdbcType=VARCHAR} = 'N' then f.addr||' '||a.h_addr else e.addr||' '||a.f_addr end) as addr, 
+				          c.p_mok_name as pMokName, 
+				          substr(b.pum_code, 1, 4) as pumCode, 
+				          sum(b.p_sok_cnt) as sokCnt, 
+				          sum(b.pan_price) as panPrice, 
+				          sum(b.p_box_cnt) as boxCnt
+				          ,decode(b.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				          ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				          ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				          ,to_char(sysdate,'yyyy') as sYear
+				          ,to_char(sysdate,'mm') as sMonth
+				          ,to_char(sysdate,'dd') as sDay
+				    FROM  FLOMEJANG.view_e_zip_no f, 
+				          FLOMEJANG.view_e_zip_no e, 
+				          FLOMEJANG.a_chul_info a, 
+				          FLOMEJANG.v_sang_pan_list b, 
+				          FLOMEJANG.v_mok_jong_list c, 
+				          FLOMEJANG.a_day_magam g 
+				   WHERE  b.chul_code = a.code 
+				     AND  b.pum_code  = c.pum_code 
+				     AND  a.h_zip_pk  = f.zip_pk 
+				     AND  a.f_zip_pk  = e.zip_pk 
+				     AND  b.p_bun_chk = g.bun_chk 
+				     AND  b.pan_day   = g.magam_ilja 
+				     AND  b.p_bun_chk = #{bunChk, jdbcType=VARCHAR} 
+				     AND  b.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+				     AND  b.km_list in ('1', '3', '4') 
+				     AND  b.chul_code = #{chulCode, jdbcType=VARCHAR}
+				   GROUP  BY a.name, 
+				             a.jumin_no, a.code,  b.p_bun_chk,  
+				             c.p_mok_name, 
+				             substr(b.pum_code, 1, 4) 
+				   ORDER BY 4 ASC 
+		 ]]>
+	</select>
+	
+	<select id="markActualResultSumList" resultType="egovMap">
+		<![CDATA[
+				select  sum(boxCnt) as sumBoxCnt,
+				        sum(sokCnt) as sumSokCnt,
+				        sum(panPrice) as sumPanPrice
+				   from (
+				          SELECT  a.name  as name,    
+				                  substr(a.jumin_no,0,6)  as juminNo1, 
+				                  substr(a.jumin_no,7,13) as juminNo2, 
+				                  Max(case when #{bunChk, jdbcType=VARCHAR} = 'N' then f.addr||' '||a.h_addr else e.addr||' '||a.f_addr end) as addr, 
+				                  c.p_mok_name as pMokName, 
+				                  substr(b.pum_code, 1, 4) as pumCode, 
+				                  sum(b.p_sok_cnt) as sokCnt, 
+				                  sum(b.pan_price) as panPrice, 
+				                  sum(b.p_box_cnt) as boxCnt
+				                  ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				                  ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				            FROM  FLOMEJANG.view_e_zip_no f, 
+				                  FLOMEJANG.view_e_zip_no e, 
+				                  FLOMEJANG.a_chul_info a, 
+				                  FLOMEJANG.v_sang_pan_list b, 
+				                  FLOMEJANG.v_mok_jong_list c, 
+				                  FLOMEJANG.a_day_magam g 
+				           WHERE  b.chul_code = a.code 
+				             AND  b.pum_code  = c.pum_code 
+				             AND  a.h_zip_pk  = f.zip_pk 
+				             AND  a.f_zip_pk  = e.zip_pk 
+				             AND  b.p_bun_chk = g.bun_chk 
+				             AND  b.pan_day   = g.magam_ilja 
+				             AND  b.p_bun_chk = #{bunChk, jdbcType=VARCHAR} 
+				             AND  b.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+				             AND  b.km_list in ('1', '3', '4') 
+				             AND  b.chul_code = #{chulCode, jdbcType=VARCHAR}
+				           GROUP  BY a.name, 
+				                     a.jumin_no,    
+				                     c.p_mok_name, 
+				                     substr(b.pum_code, 1, 4) 
+				        )
+		 ]]>
+	</select>
+	
+	<select id="markActualResultChulhajaList" resultType="egovMap">
+		<![CDATA[
+				SELECT  U.CODE  as code, 
+				        U.NAME  as name, 
+				        U.BUN_CHK  as bunChk
+				  FROM  FLOMEJANG.A_CHUL_INFO U, FLOMEJANG.A_C_GROUP G 
+				 WHERE  U.G_CODE = G.G_CODE  
+				   AND  U.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+				   AND  U.BUN_CHK = #{bunChk, jdbcType=VARCHAR} 
+				 ORDER  BY U.G_CODE ASC, U.NAME ASC
+		 ]]>
+	</select>
+	
+	<select id="getDomeCodeToChulCodeCheck" resultType="egovMap">
+		<![CDATA[
+				SELECT  U.CODE  as code, 
+				        U.NAME  as name, 
+				        U.BUN_CHK  as bunChk
+				  FROM  FLOMEJANG.A_CHUL_INFO U, FLOMEJANG.A_C_GROUP G 
+				 WHERE  U.G_CODE = G.G_CODE  
+				   AND  U.G_CODE = #{domeCode, jdbcType=VARCHAR}
+				   AND  U.CODE = #{chulCode, jdbcType=VARCHAR} 
+				   AND  U.BUN_CHK = #{bunChk, jdbcType=VARCHAR} 
+				 ORDER  BY U.G_CODE ASC, U.NAME ASC
+		 ]]>
+	</select>
+	 
+	<select id="getChulInfo" resultType="egovMap">
+		<![CDATA[
+				SELECT  U.CODE  as code, 
+				        U.NAME  as name, 
+				        U.BUN_CHK  as bunChk,
+				        TO_CHAR(SYSDATE,'YYYY-MM-DD') AS TODAY
+				        ,decode(U.BUN_CHK,'N','절화','Y','난','C','관엽') as bunChkNm
+				  FROM  FLOMEJANG.A_CHUL_INFO U 
+				 WHERE  U.CODE = #{chulCode, jdbcType=VARCHAR} 
+				   AND  U.BUN_CHK = #{bunChk, jdbcType=VARCHAR} 
+				 ORDER  BY U.G_CODE ASC, U.NAME ASC
+		 ]]>
+	</select>
+	
+	
+	<!-- 출하농가 -->
+	<select id="shprSaleCalcTotSelectList" resultType="egovMap">
+		<![CDATA[
+				SELECT  a.pan_day as upDay,
+				        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fUpDay,        
+				        sum(a.p_box_cnt) as totBox,        
+				        sum(a.p_sok_cnt) as totSok,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+				        nvl(sum(a.pan_price),0) as panPrice,        
+				        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+				        nvl(sum(a.chain),0) as chain,
+			            to_char(sysdate,'yyyy-mm-dd') as toDay
+                        ,(select name from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) as name
+				        ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				        ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				  FROM  FLOMEJANG.v_bon_pan_list a, 
+				        FLOMEJANG.a_day_magam b 
+				 WHERE  a.p_bun_chk  = b.bun_chk  
+				   AND  a.pan_day    = b.magam_ilja   
+				   AND  a.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+				   AND  a.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+				   AND  a.chul_code  = #{chulCode, jdbcType=VARCHAR}
+				 GROUP  BY a.pan_day
+				 ORDER  BY pan_day desc
+		 ]]>
+	</select>
+	
+	<select id="shprSaleCalcTotSumList" resultType="egovMap">
+		<![CDATA[
+				SELECT  sum(totBox  ) as  sumTotBox  ,
+				        sum(totSok  ) as  sumTotSok  ,
+				        sum(panBox  ) as  sumPanBox  ,
+				        sum(panSok  ) as  sumPanSok  ,
+				        sum(uchalBox) as  sumUchalBox,
+				        sum(uchalSok) as  sumUchalSok,
+				        sum(panPrice) as  sumPanPrice,
+				        sum(gongJe  ) as  sumGongJe  ,
+				        sum(chain   ) as  sumChain   
+				  FROM (
+						SELECT  a.pan_day as upDay,        
+						        sum(a.p_box_cnt) as totBox,        
+						        sum(a.p_sok_cnt) as totSok,        
+						        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+						        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+						        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+						        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+						        nvl(sum(a.pan_price),0) as panPrice,        
+						        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+						        nvl(sum(a.chain),0) as chain
+						  FROM  FLOMEJANG.v_bon_pan_list a, 
+						        FLOMEJANG.a_day_magam b 
+						 WHERE  a.p_bun_chk  = b.bun_chk  
+						   AND  a.pan_day    = b.magam_ilja   
+						   AND  a.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+						   AND  a.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+						   AND  a.chul_code  = #{chulCode, jdbcType=VARCHAR}
+						 GROUP  BY a.pan_day
+                )
+		 ]]>
+	</select>
+	
+	<select id="shprSaleCalcTotBuryuList" resultType="egovMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM FLOMEJANG.e_concern b, 
+				       FLOMEJANG.a_public_info d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #{chulCode, jdbcType=VARCHAR} 
+		 ]]>
+	</select>
+
+	<select id="shprSaleCalcTotSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				SELECT  a.pan_day as upDay,        
+				        sum(a.p_box_cnt) as totBox,        
+				        sum(a.p_sok_cnt) as totSok,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+				        nvl(sum(a.pan_price),0) as panPrice,        
+				        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+				        nvl(sum(a.chain),0) as chain
+				  FROM  FLOMEJANG.v_bon_pan_list a, 
+				        FLOMEJANG.a_day_magam b 
+				 WHERE  a.p_bun_chk  = b.bun_chk  
+				   AND  a.pan_day    = b.magam_ilja   
+				   AND  a.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+				   AND  a.pan_day between #{startDate, jdbcType=VARCHAR} and  #{endDate, jdbcType=VARCHAR}
+				   AND  a.chul_code  = #{chulCode, jdbcType=VARCHAR}
+				 GROUP  BY a.pan_day
+				 ORDER  BY pan_day desc
+		 ]]>
+	</select>
+	
+	<select id="shprSaleCalcTotSelect" resultType="egovMap">
+		<![CDATA[
+				SELECT b.chul_code   as chulCode,        
+				       a.name        as name,        
+				       d.p_mok_name  as pMokName,
+				       to_char(to_date(b.f_up_day),'yyyy-mm-dd') as fUpDay,        
+				       d.p_jong_name||decode(b.f_songe_cnt,'0','',' /'||b.f_songe_cnt) as pJongName,        
+				       b.pum_code    as pumCode,        
+				       b.p_box_cnt   as boxCnt,        
+				       b.p_sok_cnt   as sokCnt,        
+				       c.name        as levelName,          
+				       b.km_p_new    as kmPNew,        
+				       b.pan_price   as panPrice,        
+				       b.km_list     as kmList,        
+				       b.serial_no   as serialNo,        
+				       b.tot_price   as totPrice,        
+				       a.h_zip_pk    as hZipPk,        
+				       a.h_addr      as hAddr,        
+				       b.trans_price as transPrice,        
+				       case when b.p_bun_chk = 'Y' 
+				            then b.down_re_pg 
+				            else b.down_re_p 
+				        end          as downReP,        
+				       b.misu_nuge   as misuNuge,        
+				       b.p_re_box_p  as reBoxp,        
+				       b.sang_hwan   as sangHwan,        
+				       b.chain       as chain,        
+				       b.su_su_p     as suSup,        
+				       b.pan_no      as panNo,        
+				       b.bun_chk     as bunChk,        
+				       b.daegi_price as daegiPrice,        
+				       b.pan_day     as panDay,        
+				       b.misu        as misu,        
+				       b.p_misu      as pMisu,        
+				       b.t_misu_ret  as tMisuRet,        
+				       a.bank_code   as bankCode,        
+				       b.return_amt  as returnAmt,        
+				       b.self_amt    as selfAmt,        
+				       b.fee_amt     as feeAmt,        
+				       b.trans_price_add as transPriceAdd
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				FROM   FLOMEJANG.a_chul_info a, 
+				       FLOMEJANG.v_bon_pan_list b, 
+				       FLOMEJANG.a_level c, 
+				       FLOMEJANG.v_mok_jong_list d, 
+				       FLOMEJANG.a_day_magam f 
+				WHERE  b.chul_code  = a.code   
+				  AND  b.p_bun_chk  = c.bun_chk   
+				  AND  b.acc_level  = c.code   
+				  AND  b.pum_code   = d.pum_code   
+				  AND  b.p_bun_chk  = f.bun_chk   
+				  AND  b.pan_day    = f.magam_ilja   
+				  AND  b.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+				  AND  b.pan_day    = replace(#{panDay, jdbcType=VARCHAR},'-','')   
+				  AND  b.chul_code  = #{chulCode, jdbcType=VARCHAR}
+				ORDER  BY b.f_up_day, b.pan_no, b.serial_no
+		 ]]>
+	</select>
+	
+	<select id="shprSaleCalcDetailBuryuList" resultType="egovMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM FLOMEJANG.e_concern b, 
+				       FLOMEJANG.a_public_info d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #{chulCode, jdbcType=VARCHAR}  
+		 ]]>
+	</select>
+
+	<select id="shprSaleCalcDetailSelectLatestDate" resultType="egovMap">
+		<![CDATA[
+			SELECT 1 FROM DUAL
+		]]> 
+	</select>
+	
+	<select id="shprSaleCalcDetailSelect" resultType="egovMap">
+		<![CDATA[
+				SELECT b.chul_code   as chulCode,        
+				       a.name        as name,        
+				       d.p_mok_name  as pMokName,        
+				       to_char(to_date(b.f_up_day),'yyyy-mm-dd') as fUpDay,        
+				       d.p_jong_name||decode(b.f_songe_cnt,'0','',' /'||b.f_songe_cnt) as pJongName,        
+				       b.pum_code    as pumCode,        
+				       b.p_box_cnt   as boxCnt,        
+				       b.p_sok_cnt   as sokCnt,        
+				       c.name        as levelName,          
+				       b.km_p_new    as kmPNew,        
+				       b.pan_price   as panPrice,        
+					   decode(b.km_list,'1','낙찰','3','낙찰','2','유찰','8','유찰','9','폐기','4','선취') as kmList,        
+				       b.serial_no   as serialNo,        
+				       b.tot_price   as totPrice,        
+				       a.h_zip_pk    as hZipPk,        
+				       a.h_addr      as hAddr,        
+				       b.trans_price as transPrice,        
+				       case when b.p_bun_chk = 'Y' 
+				            then b.down_re_pg 
+				            else b.down_re_p 
+				        end          as downReP,        
+				       b.misu_nuge   as misuNuge,        
+				       b.p_re_box_p  as reBoxp,        
+				       b.sang_hwan   as sangHwan,        
+				       b.chain       as chain,        
+				       b.su_su_p     as suSup,        
+				       b.pan_no      as panNo,        
+				       b.bun_chk     as bunChk,        
+				       b.daegi_price as daegiPrice,        
+				       to_char(to_date(b.pan_day),'yyyy-mm-dd') as panDay,        
+				       b.misu        as misu,        
+				       b.p_misu      as pMisu,        
+				       b.t_misu_ret  as tMisuRet,        
+				       a.bank_code   as bankCode,        
+				       b.return_amt  as returnAmt,        
+				       b.self_amt    as selfAmt,        
+				       b.fee_amt     as feeAmt,        
+				       b.trans_price_add as transPriceAdd
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,b.rental_amt as rentalAmt
+			           ,b.baek_amt	 as baekAmt
+				FROM   FLOMEJANG.a_chul_info a, 
+				       FLOMEJANG.v_sang_pan_list b, 
+				       FLOMEJANG.a_level c, 
+				       FLOMEJANG.v_mok_jong_list d, 
+				       FLOMEJANG.a_day_magam f 
+				WHERE  b.chul_code  = a.code   
+				  AND  b.p_bun_chk  = c.bun_chk   
+				  AND  b.acc_level  = c.code   
+				  AND  b.pum_code   = d.pum_code   
+				  AND  b.p_bun_chk  = f.bun_chk   
+				  AND  b.pan_day    = f.magam_ilja   
+				  AND  b.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+				  AND  b.pan_day    = replace(#{panDate, jdbcType=VARCHAR},'-','')   
+				  AND  b.chul_code  = #{chulCode, jdbcType=VARCHAR} 
+				ORDER  BY b.f_up_day, b.pan_no, b.serial_no
+		 ]]>
+	</select>
+	
+	<select id="shprActualResultSelectList" resultType="egovMap">
+		<![CDATA[
+				  SELECT  a.name  as name,    
+				          substr(a.jumin_no,0,6)  as juminNo1, 
+				          /*substr(a.jumin_no,7,13) as juminNo2,*/ 
+				          substr(a.code,0,4)  as code1, 
+				          substr(a.code,5,8)  as code2, 
+				          Max(NVL(
+						        CASE
+						            WHEN a.bun_chk = 'N'
+						            THEN a.addr_ln
+						            ELSE a.f_addr_ln
+						        END, CASE
+						            WHEN a.bun_chk = 'N'
+						            THEN a.addr_en
+						            ELSE a.f_addr_en
+						        END)) as addr, 
+				          c.p_mok_name as pMokName, 
+				          substr(b.pum_code, 1, 4) as pumCode, 
+				          sum(b.p_sok_cnt) as sokCnt, 
+				          sum(b.pan_price) as panPrice, 
+				          sum(b.p_box_cnt) as boxCnt
+				          ,decode(b.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				          ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				          ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				          ,to_char(sysdate,'yyyy') as sYear
+				          ,to_char(sysdate,'mm') as sMonth
+				          ,to_char(sysdate,'dd') as sDay
+				    FROM  FLOMEJANG.view_e_zip_no f, 
+				          FLOMEJANG.view_e_zip_no e, 
+				          FLOMEJANG.a_chul_info a, 
+				          FLOMEJANG.v_sang_pan_list b, 
+				          FLOMEJANG.v_mok_jong_list c, 
+				          FLOMEJANG.a_day_magam g 
+				   WHERE  b.chul_code = a.code 
+				     AND  b.pum_code  = c.pum_code 
+				     AND  a.h_zip_pk  = f.zip_pk 
+				     AND  a.f_zip_pk  = e.zip_pk 
+				     AND  b.p_bun_chk = g.bun_chk 
+				     AND  b.pan_day   = g.magam_ilja 
+				     AND  b.p_bun_chk = #{bunChk, jdbcType=VARCHAR} 
+				     AND  b.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+				     AND  b.km_list in ('1', '3', '4') 
+				     AND  b.chul_code = #{chulCode, jdbcType=VARCHAR}
+				   GROUP  BY a.name, 
+				             a.jumin_no, a.code,  b.p_bun_chk,  
+				             c.p_mok_name, 
+				             substr(b.pum_code, 1, 4) 
+				   ORDER BY 4 ASC 
+		 ]]>
+	</select>
+	
+	<select id="shprActualResultSumList" resultType="egovMap">
+		<![CDATA[
+				select  sum(boxCnt) as sumBoxCnt,
+				        sum(sokCnt) as sumSokCnt,
+				        sum(panPrice) as sumPanPrice
+				   from (
+				          SELECT  a.name  as name,    
+				                  substr(a.jumin_no,0,6)  as juminNo1, 
+				                  substr(a.jumin_no,7,13) as juminNo2, 
+				                  Max(case when #{bunChk, jdbcType=VARCHAR} = 'N' then f.addr||' '||a.h_addr else e.addr||' '||a.f_addr end) as addr, 
+				                  c.p_mok_name as pMokName, 
+				                  substr(b.pum_code, 1, 4) as pumCode, 
+				                  sum(b.p_sok_cnt) as sokCnt, 
+				                  sum(b.pan_price) as panPrice, 
+				                  sum(b.p_box_cnt) as boxCnt
+				                  ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				                  ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				            FROM  FLOMEJANG.view_e_zip_no f, 
+				                  FLOMEJANG.view_e_zip_no e, 
+				                  FLOMEJANG.a_chul_info a, 
+				                  FLOMEJANG.v_sang_pan_list b, 
+				                  FLOMEJANG.v_mok_jong_list c, 
+				                  FLOMEJANG.a_day_magam g 
+				           WHERE  b.chul_code = a.code 
+				             AND  b.pum_code  = c.pum_code 
+				             AND  a.h_zip_pk  = f.zip_pk 
+				             AND  a.f_zip_pk  = e.zip_pk 
+				             AND  b.p_bun_chk = g.bun_chk 
+				             AND  b.pan_day   = g.magam_ilja 
+				             AND  b.p_bun_chk = #{bunChk, jdbcType=VARCHAR} 
+				             AND  b.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')
+				             AND  b.km_list in ('1', '3', '4') 
+				             AND  b.chul_code = #{chulCode, jdbcType=VARCHAR}
+				           GROUP  BY a.name, 
+				                     a.jumin_no,    
+				                     c.p_mok_name, 
+				                     substr(b.pum_code, 1, 4) 
+				        )
+		 ]]>
+	</select>
+	
+	
+	<!--  출하단체 추가  -->
+	<select id="markShprBountySelectList" resultType="egovMap">
+		<![CDATA[
+				select  decode(grouping_id(a.chul_code),'1','합계',substr(a.chul_code,0,4)||'-'||substr(a.chul_code,5,4)) as chulCode, 
+				        nvl(decode(grouping_id(a.chul_code),'1','',max(a.chul_name)),count(a.chul_name)||'명') as chulName,
+				        sum(a.p_box_cnt) as pBoxCnt,                         
+				        sum(a.p_sok_cnt) as pSokCnt,                         
+				        sum(a.pan_price) as panPrice,                         
+				        sum(b.jang_p)/count(a.chul_name)    as jangP  
+				  from  (                                
+				         select a.group_code as group_code,   
+				                a.chul_code as chul_code,        
+				                max(b.name) as chul_name,        
+				                sum(a.p_box_cnt) as p_box_cnt,   
+				                sum(a.p_sok_cnt) as p_sok_cnt,   
+				                sum(a.pan_price) as pan_price    
+				           from FLOMEJANG.v_sang_pan_list a,           
+				                FLOMEJANG.a_chul_info b                    
+				          where a.chul_code = b.code         
+				            and a.p_bun_chk = #{bunChk, jdbcType=VARCHAR}                  
+				            and a.pan_day like #{stYear, jdbcType=VARCHAR}||#{selMonth, jdbcType=VARCHAR}||'%'            
+				            and a.group_code = #{domeCode, jdbcType=VARCHAR}                
+				            and a.km_list in ('1','3','4')       
+				          group by a.group_code,a.chul_code ) a,  
+				        (select g_code,jang_p                 
+				           from FLOMEJANG.a_group_month                
+				          where year_month = #{stYear, jdbcType=VARCHAR}||#{selMonth, jdbcType=VARCHAR}               
+				            and g_code = #{domeCode, jdbcType=VARCHAR}             ) b   
+				 where  a.group_code = b.g_code
+				 group  by rollup(a.chul_code)
+		 ]]>
+	</select>
+	
+	<select id="markShprBountySelectTermList" resultType="egovMap">
+		<![CDATA[
+				select  decode(grouping_id(year_month),'1','합계',substr(year_month,0,4)||'.'||substr(year_month,5,2)) as yearMonth,
+				        substr(year_month,0,4) as stYear,
+				        substr(year_month,5,2) as selMonth,  
+				        sum(nong_ga)  as nongGa,                            
+				        sum(sok)      as sok   ,                                
+				        sum(mechul)   as mechul,                             
+				        sum(jang_p)   as jangP                      
+				  from  FLOMEJANG.a_group_month                 
+				 where  year_month between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','')   
+				   and  g_code =  #{domeCode, jdbcType=VARCHAR}
+				 group  by rollup(year_month)
+		 ]]>
+	</select>
+	 
+	<select id="markShprBountySelectInfoList" resultType="egovMap">
+		<![CDATA[
+				SELECT  g_code as gCode
+				        , g_name as gName
+				        , decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk
+				        , to_char(sysdate,'yyyy-mm-dd')             as toDay
+				  FROM  FLOMEJANG.A_C_GROUP G 
+				 WHERE  G.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+		 ]]>
+	</select>
+	
+	<select id="marktorgBelongShprSelectList" resultType="egovMap">
+		<![CDATA[
+				SELECT nvl(substr(a.code,0,4)||'-'||substr(a.code,5,4),'') as code         
+				      ,nvl(a.name           ,'') as name         
+				      /*,nvl(a.jumin_no       ,'') as juminNo*/      
+				      ,nvl(a.h_zip_pk       , 0) as hZipPk    
+				      ,(select nvl(zip_no,'') from FLOMEJANG.e_zip_no where zip_pk = a.h_zip_pk) as hZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from FLOMEJANG.e_zip_no where zip_pk = a.h_zip_pk) as hAddr1    
+				      ,nvl(a.h_addr         ,'') as hAddr2        
+				      ,nvl(a.h_tel_no       ,'') as hTelNo      
+				      ,nvl(a.f_zip_pk       ,'') as fZipPk    
+				      ,(select nvl(zip_no,'') from FLOMEJANG.e_zip_no where zip_pk = a.f_zip_pk) as fZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from FLOMEJANG.e_zip_no where zip_pk = a.f_zip_pk) as fAddr1    
+				      ,nvl(a.f_addr         ,'') as fAddr2        
+				      ,nvl(a.f_tel_no       ,'') as fTelNo
+				  FROM FLOMEJANG.A_CHUL_INFO a
+				 WHERE a.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+		 ]]>
+	</select>
+	
+	<select id="marktorgBelongShprSelectListCount" resultType="egovMap">
+		<![CDATA[
+				SELECT COUNT(a.code) AS COUNT
+				  FROM FLOMEJANG.A_CHUL_INFO a
+				 WHERE a.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+		]]>
+	</select>
+	
+	<select id="marktorgBelongShprSelectInfoList" resultType="egovMap">
+		<![CDATA[
+				SELECT  g_code as gCode,
+				        g_name as gName,
+				        decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk,
+				        to_char(sysdate,'yyyy-mm-dd')             as toDay
+				  FROM  FLOMEJANG.A_C_GROUP G 
+				 WHERE  G.G_CODE = #{domeCode, jdbcType=VARCHAR} 
+		 ]]>
+	</select>
+	
+	<!-- 출하농가 등록정보 -->
+	<select id="shprInfoSelect" resultType="egovMap">
+		<![CDATA[
+				SELECT nvl(a.code           ,'') as code         
+				      ,nvl(a.name           ,'') as name         
+				      /*,nvl(a.jumin_no       ,'') as juminNo*/      
+				      ,nvl(a.h_zip_pk       , 0) as hZipPk    
+				      ,(select nvl(zip_no,'') from FLOMEJANG.e_zip_no where zip_pk = a.h_zip_pk) as hZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from FLOMEJANG.e_zip_no where zip_pk = a.h_zip_pk) as hAddr1    
+				      ,nvl(a.h_addr         ,'') as hAddr2        
+				      ,nvl(a.h_tel_no       ,'') as hTelNo      
+				      ,nvl(a.f_zip_pk       ,'') as fZipPk    
+				      ,(select nvl(zip_no,'') from FLOMEJANG.e_zip_no where zip_pk = a.f_zip_pk) as fZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from FLOMEJANG.e_zip_no where zip_pk = a.f_zip_pk) as fAddr1    
+				      ,nvl(a.f_addr         ,'') as fAddr2        
+				      ,nvl(a.f_tel_no       ,'') as fTelNo      
+				      ,nvl(a.fax_no         ,'') as faxNo        
+				      ,nvl(a.handy_phone_no ,'') as handyPhoneNo
+				      ,nvl(a.bank_code      ,'') as bankCode     
+                      ,(SELECT  nvl(cd_name,'') FROM FLOMEJANG.a_public_info WHERE cd_gubun=5 and cd1=a.bank_code) as bankName   
+				      ,nvl(a.kye_no         ,'') as kyeNo        
+				      ,nvl(a.in_name        ,'') as inName       
+				      ,nvl(to_char(to_date(a.y_day),'yyyy-mm-dd'),'') as yDay         
+				      ,nvl(a.email_id       ,'') as emailId      
+				      ,nvl(a.g_code         ,'') as gCode        
+				      ,(SELECT nvl(g_name,'') FROM FLOMEJANG.a_c_group WHERE g_code = a.g_code) as gName         
+                      ,(SELECT nvl(passwd,'') FROM FLOMEJANG.a_c_group WHERE g_code = a.g_code) as gPasswd       
+				      ,nvl(to_char(to_date(a.g_in_day),'yyyy-mm-dd'),'') as gInDay      
+				      ,nvl(to_char(to_date(a.g_out_day),'yyyy-mm-dd'),'') as gOutDay      
+				      ,nvl(a.pro_code1      ,'') as proCode1
+                      ,(SELECT nvl(P_MOK_NAME,'') FROM FLOMEJANG.a_pum_mok_info WHERE flower_code||p_mok_code = a.pro_code1) as proName1     
+				      ,nvl(a.pro_area1      , 0) as proArea1     
+				      ,nvl(a.pro_code2      ,'') as proCode2     
+                      ,(SELECT nvl(P_MOK_NAME,'') FROM FLOMEJANG.a_pum_mok_info WHERE flower_code||p_mok_code = a.pro_code2) as proName2     
+				      ,nvl(a.pro_area2      , 0) as proArea2     
+				      ,nvl(a.pro_code3      ,'') as proCode3     
+                      ,(SELECT nvl(P_MOK_NAME,'') FROM FLOMEJANG.a_pum_mok_info WHERE flower_code||p_mok_code = a.pro_code3) as proName3     
+				      ,nvl(a.pro_area3      , 0) as proArea3     
+				      ,nvl(a.bun_chk        ,'') as bunChk       
+				      ,nvl(a.cop_no         ,'') as copNo        
+				      ,nvl(a.upte           ,'') as upte          
+				      ,nvl(a.jongmok        ,'') as jongmok       
+				      ,nvl(a.grade          ,'') as grade         
+				      ,nvl(a.dm_send        ,'') as dmSend       
+				      ,nvl(a.gwanri_zone    ,'') as gwanriZone    
+				      ,nvl(b.bank_code      ,'') as gBankCode
+				      ,nvl(b.bank_name      ,'') as gBankName
+				      ,nvl(b.bank_gyejwa    ,'') as gGyejwa
+				      ,nvl(b.bank_man       ,'') as gBankMan
+				      ,NVL(NULLIF(TRIM(a.ADDR_LN),''),a.ADDR_EN) AS ADDR_NEW
+				      ,NVL(NULLIF(TRIM(a.F_ADDR_LN),''),a.F_ADDR_EN) AS F_ADDR_NEW
+				  FROM FLOMEJANG.A_CHUL_INFO a,
+                       (SELECT SA.CODE,
+                               SB.BANK_CODE    AS BANK_CODE, 
+                               SC.BANK_NAME    AS BANK_NAME,
+                               SB.BANK_LINE_NO AS BANK_GYEJWA,
+                               SB.BANK_MAN     AS BANK_MAN 
+                          FROM FLOMEJANG.A_CHUL_INFO SA, 
+                               FLOMEJANG.A_C_GROUP SB, 
+                               (SELECT CD1,CD_NAME AS BANK_NAME FROM FLOMEJANG.A_PUBLIC_INFO WHERE CD_GUBUN='5') SC 
+                         WHERE SA.G_CODE = SB.G_CODE 
+                           AND BANK_IN   = 'Y' 
+                           AND SC.CD1    = SB.BANK_CODE) b 
+				 WHERE a.code = #{code, jdbcType=VARCHAR} 
+                   AND a.code = b.code(+)				 
+		 ]]>
+	</select>
+	
+	<!-- 운송업체 -->
+	
+	<select id="transDateParticularsSelectList" resultType="egovMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				       ,(SELECT nvl(c_name,'')  FROM FLOMEJANG.e_member_info WHERE id = #{id, jdbcType = VARCHAR}) as transName
+				  from  FLOMEJANG.v_sang_pan_list a
+				 where  a.p_bun_chk = #{bunChk}
+				   and  a.pan_day   between replace(#{startDate, jdbcType = VARCHAR},'-','') and replace(#{endDate, jdbcType = VARCHAR},'-','')
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 group  by a.pan_day, a.p_bun_chk
+				 order by panDay desc
+		 ]]>
+	</select>
+	
+	<select id="transDateParticularsSumList" resultType="egovMap">
+		<![CDATA[
+				select  sum(chulCount)  as  chulCountSum,
+				        sum(sBoxCnt  )  as  sBoxCntSum  ,
+				        sum(uBoxCnt  )  as  uBoxCntSum  ,
+				        sum(tBoxCnt  )  as  tBoxCntSum  ,
+				        sum(trPri    )  as  trPriSum    ,
+				        sum(pumkg    )  as  pumKgSum     
+				  from  (
+						select  a.pan_day as panDay, 
+						        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+						        count(distinct a.chul_code)                                                             as chulCount, 
+						        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+						        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+						        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+						        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+						        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+						       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+						       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+						       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+						  from  FLOMEJANG.v_sang_pan_list a
+						 where  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+						   and  a.pan_day   between replace(#{startDate, jdbcType = VARCHAR},'-','') and replace(#{endDate, jdbcType = VARCHAR},'-','')
+						   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+						 group  by a.pan_day, a.p_bun_chk
+		                )
+		 ]]>
+	</select>
+	 
+	<select id="transDateParticularsSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#{startDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType = VARCHAR}),'yyyy-mm-dd') as endDate
+				  from  FLOMEJANG.v_sang_pan_list a
+				 where  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				   and  a.pan_day   between replace(#{startDate, jdbcType = VARCHAR},'-','') and replace(#{endDate, jdbcType = VARCHAR},'-','')
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 group  by a.pan_day, a.p_bun_chk
+		 ]]>
+	</select>
+	 
+	<select id="transShprPartiTotSelectMaxPanDate" resultType="egovMap">
+		<![CDATA[
+				select NVL(to_char(max(to_date(a.pan_day)),'yyyy-mm-dd'),TO_CHAR(SYSDATE,'YYYY-MM-DD'))    as maxPanDay
+				 from  FLOMEJANG.v_sang_pan_list a, 
+				       FLOMEJANG.a_chul_info b 
+				where  a.chul_code = b.code 
+				  and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				  and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				  AND a.PAN_DAY BETWEEN TO_NUMBER(TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD')) AND TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiTotSelectList" resultType="egovMap">
+		<![CDATA[
+				select a.pan_day    as panDay,
+				       to_char(to_date(a.pan_day),'yyyy-mm-dd')    as fpanDay, 
+				       to_char(to_date(a.f_up_day),'yyyy-mm-dd')   as fUpDay, 
+				       a.chul_code  as chulCode, 
+				       max(b.name)  as chulName, 
+				       nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				       nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				       nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				       nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				       nvl(sum(a.pum_kg), 0)                                                                   as pumKg  
+				      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+				      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			          ,(SELECT nvl(c_name,'')  FROM FLOMEJANG.e_member_info WHERE id = #{id, jdbcType = VARCHAR}) as transName
+				 from  FLOMEJANG.v_sang_pan_list a, 
+				       FLOMEJANG.a_chul_info b 
+				where  a.chul_code = b.code 
+				  and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				  and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+				  and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				group  by a.pan_day, a.chul_code, a.f_up_day, a.p_bun_chk
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiTotSumList" resultType="egovMap">
+		<![CDATA[
+			    select  count(chulCode) as  chulCountSum ,
+			            sum(sBoxCnt  )  as  sBoxCntSum,
+			            sum(uBoxCnt  )  as  uBoxCntSum,
+			            sum(tBoxCnt  )  as  tBoxCntSum,
+			            sum(trPri    )  as  trPriSum  ,
+			            sum(pumkg    )  as  pumKgSum  
+			      from  (
+						select to_char(to_date(a.pan_day),'yyyy-mm-dd')    as panDay, 
+						       to_char(to_date(a.f_up_day),'yyyy-mm-dd')   as fUpDay, 
+						       a.chul_code  as chulCode, 
+						       max(b.name)  as chulName, 
+						       nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+						       nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+						       nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+						       nvl(sum(a.trans_price), 0)                                                              as trPri, 
+						       nvl(sum(a.pum_kg), 0)                                                                   as pumKg  
+						      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+						      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						 from  FLOMEJANG.v_sang_pan_list a, 
+						       FLOMEJANG.a_chul_info b 
+						where  a.chul_code = b.code 
+						  and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+						  and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+						  and  a.trans     = #{transCode, jdbcType = VARCHAR}
+						group  by a.pan_day, a.chul_code, a.f_up_day, a.p_bun_chk
+		                )
+		 ]]>
+	</select>
+	 
+	<select id="transShprPartiTotSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				select to_char(to_date(a.pan_day),'yyyy-mm-dd')    as panDay, 
+				       to_char(to_date(a.f_up_day),'yyyy-mm-dd')   as fUpDay, 
+				       a.chul_code  as chulCode, 
+				       max(b.name)  as chulName, 
+				       nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				       nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				       nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				       nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				       nvl(sum(a.pum_kg), 0)                                                                   as pumKg  
+				      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+				      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				 from  FLOMEJANG.v_sang_pan_list a, 
+				       FLOMEJANG.a_chul_info b 
+				where  a.chul_code = b.code 
+				  and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				  and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+				  and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				group  by a.pan_day, a.chul_code, a.f_up_day, a.p_bun_chk
+		 ]]>
+	</select>
+	 
+	<select id="transShprPartiDetailSelectList" resultType="egovMap">
+		<![CDATA[
+			select to_char(to_date(a.pan_day),'yyyy-mm-dd')    as panDay, 
+			       to_char(to_date(a.f_up_day),'yyyy-mm-dd')   as fUpDay, 
+			       a.chul_code  as chulCode, 
+			       b.name       as chulName, 
+			       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+			       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+			       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+			       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+			       nvl(a.trans_price, 0)                                                              as trPri, 
+			       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+			       case when a.km_list in ('1','3','4') 
+			            then '1' when a.km_list = '2' 
+			                     then '2' when a.km_list = '8' 
+			                              then '3' 
+			                              else '4' 
+			        end                                              as kmList 
+			      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+			      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+		          ,(SELECT nvl(c_name,'')  FROM FLOMEJANG.e_member_info WHERE id = #{id, jdbcType = VARCHAR}) as transName
+			  from  FLOMEJANG.v_sang_pan_list a, 
+			        FLOMEJANG.a_chul_info b 
+			 where  a.chul_code = b.code 
+			   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+			   and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+			   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+			 order  by a.chul_code, a.f_up_day, pan_no
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiDetailSumList" resultType="egovMap">
+		<![CDATA[
+			    select  count(chulCode) as  chulCountSum ,
+			            sum(sBoxCnt  )  as  sBoxCntSum,
+			            sum(uBoxCnt  )  as  uBoxCntSum,
+			            sum(tBoxCnt  )  as  tBoxCntSum,
+			            sum(trPri    )  as  trPriSum  ,
+			            sum(pumkg    )  as  pumKgSum  
+			      from  (
+						select a.pan_day    as panDay, 
+						       a.f_up_day   as fUpDay, 
+						       a.chul_code  as chulCode, 
+						       b.name       as chulName, 
+						       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+						       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+						       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+						       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+						       nvl(a.trans_price, 0)                                                              as trPri, 
+						       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+						       case when a.km_list in ('1','3','4') 
+						            then '1' when a.km_list = '2' 
+						                     then '2' when a.km_list = '8' 
+						                              then '3' 
+						                              else '4' 
+						        end                                              as kmList 
+						      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+						      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						  from  FLOMEJANG.v_sang_pan_list a, 
+						        FLOMEJANG.a_chul_info b 
+						 where  a.chul_code = b.code 
+						   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+						   and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+						   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+						 order  by a.chul_code, a.f_up_day, pan_no
+		                )
+		 ]]>
+	</select>
+	
+	<select id="transShprPartiDetailSelectListForExcel" resultType="egovMap">
+		<![CDATA[
+				select a.pan_day    as panDay, 
+				       a.f_up_day   as fUpDay, 
+				       a.chul_code  as chulCode, 
+				       b.name       as chulName, 
+				       a.pan_no||'-'||a.serial_no                                                         as panNo, 
+				       nvl(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end, 0)     as sBoxCnt, 
+				       nvl(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end, 0) as uBoxCnt, 
+				       nvl(a.p_box_cnt, 0)                                                                as tBoxCnt, 
+				       nvl(a.trans_price, 0)                                                              as trPri, 
+				       nvl(a.pum_kg, 0)                                                                   as pumKg,  
+				       case when a.km_list in ('1','3','4') 
+				            then '1' when a.km_list = '2' 
+				                     then '2' when a.km_list = '8' 
+				                              then '3' 
+				                              else '4' 
+				        end                                              as kmList 
+				      ,to_char(sysdate,'yyyy-mm-dd')                     as toDay
+				      ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				  from  FLOMEJANG.v_sang_pan_list a, 
+				        FLOMEJANG.a_chul_info b 
+				 where  a.chul_code = b.code 
+				   and  a.p_bun_chk = #{bunChk, jdbcType = VARCHAR}
+				   and  a.pan_day   = replace(#{panDate, jdbcType = VARCHAR},'-','')
+				   and  a.trans     = #{transCode, jdbcType = VARCHAR}
+				 order  by a.chul_code, a.f_up_day, pan_no
+		 ]]>
+	</select>
+	
+	<select id="wholeSalerShippingSelectList" resultType="egovMap">
+		<![CDATA[
+			SELECT J_DOME_CODE
+			     , NAME
+			     , CNT30
+			     , AMT30
+			     , CNT50
+			     , AMT50
+			     , CNT50UP
+			     , AMT50UP
+			     , CNT0
+			     , AMT0
+			     , CNTW
+			     , AMTW
+			     , (CNT30+CNT50+CNT50UP+CNT0+CNTW) AS TOTCNT
+			     , (AMT30+AMT50+AMT50UP+AMT0+AMTW) AS TOTAMT
+			FROM (
+				SELECT
+					NVL(B.J_DOME_CODE, '합계') AS J_DOME_CODE
+				    ,(SELECT NAME FROM FLOMEJANG.A_DOME_INFO WHERE CODE = B.J_DOME_CODE) AS NAME
+				    ,'' AS SUMT
+				    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT30
+				    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT30
+				    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50
+				    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT50
+				    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50UP
+				    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1500 Else 0 End), 0) AS AMT50UP
+				    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 1 Else 0 End), 0) AS CNT0
+				    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 500 Else 0 End), 0) AS AMT0
+				    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNTW
+				    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT * 500 Else 0 End), 0) AS AMTW
+				FROM (
+				    SELECT J_DOME_CODE
+					    ,TRADE_TYPE,Round(P_SOK_CNT / Decode(P_BOX_CNT,0,1,P_BOX_CNT), 0) SOK_CNT
+					    ,P_BOX_CNT BOX_CNT 
+					FROM FLOMEJANG.V_SANG_PAN_LIST
+				    WHERE 1 = 1
+			]]>
+			<![CDATA[
+						AND P_BUN_CHK = #{bunChk, jdbcType = VARCHAR}
+			]]>
+			<![CDATA[
+				        AND PAN_DAY BETWEEN REPLACE(#{startDate, jdbcType = VARCHAR},'-','') AND REPLACE(#{endDate, jdbcType = VARCHAR},'-','')
+			]]>
+			<![CDATA[
+				        AND KM_LIST IN ('1','3','4')
+				        AND PAN_TYPE <> '01'
+				        AND BOX_TYPE <> '900'
+				) B
+				GROUP BY ROLLUP(B.J_DOME_CODE)
+			)
+			ORDER BY J_DOME_CODE ASC
+		]]>
+	</select>
+	
+	<select id="boxLoadingSelectList" resultType="egovMap">
+		<![CDATA[
+			SELECT
+			    NVL(A_PAN_MAE.PAN_DAY, '합계') AS PAN_DAY
+			    ,NVL(TO_CHAR(TO_DATE(A_PAN_MAE.PAN_DAY),'YYYY-MM-DD'), '합계') AS FPAN_DAY
+			    ,A_BOX.BOX_CODE
+			    ,A_BOX.BOX_NAME
+			    ,NVL(SUM(A_PAN_MAE.BOX_CNT),0) BOX_CNT
+			    ,NVL(SUM(A_PAN_MAE.SOK_CNT),0) SOK_CNT
+			    ,NVL(MAX(A_SANG_JANG.DOWN_P),0) DOWN_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) DOWN_RE_P 
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) DOWN_RE_PG
+			    ,NVL(SUM(A_PAN_MAE.RE_BOX_P),0) RE_BOX_P
+			    ,NVL(SUM(A_PAN_MAE.DOWN_RE_P),0) + NVL(SUM(A_PAN_MAE.DOWN_RE_PG),0) + NVL(SUM(A_PAN_MAE.RE_BOX_P),0) SUM_P
+			FROM FLOMEJANG.A_BOX, FLOMEJANG.A_SANG_JANG, FLOMEJANG.A_PAN_MAE
+			WHERE A_SANG_JANG.BUN_CHK = A_PAN_MAE.BUN_CHK
+			    AND A_SANG_JANG.UP_DAY = A_PAN_MAE.PAN_DAY
+			    AND A_SANG_JANG.UP_NO = A_PAN_MAE.PAN_NO
+			    AND A_SANG_JANG.BUN_CHK = A_BOX.BUN_CHK
+			    AND A_SANG_JANG.BOX_TYPE = A_BOX.BOX_CODE
+			    AND A_PAN_MAE.BUN_CHK = #{bunChk, jdbcType = VARCHAR}
+			    AND A_PAN_MAE.PAN_DAY BETWEEN REPLACE(#{startDate, jdbcType = VARCHAR},'-','') AND REPLACE(#{endDate, jdbcType = VARCHAR},'-','')
+		]]>
+		<if test='bunChk == "N"'>
+			<if test='kmList == "1"'>
+				<![CDATA[
+						AND A_PAN_MAE.KM_LIST IN ('1', '3', '4')
+				]]>
+			</if>
+			<if test='kmList == "2"'>
+				<![CDATA[
+						AND A_PAN_MAE.KM_LIST IN ('9')
+				]]>
+			</if>
+			<if test='kmList == "3"'>
+				<![CDATA[
+						AND A_PAN_MAE.KM_LIST IN ('1', '3', '4', '9')
+				]]>
+			</if>
+		</if>
+		<if test='bunChk != "N"'>
+			<![CDATA[
+				AND (A_PAN_MAE.KM_LIST IN ('1','3','4')
+				OR (A_PAN_MAE.KM_LIST = '2' AND A_SANG_JANG.UP_DAY = A_SANG_JANG.F_UP_DAY))
+			]]>
+		</if>
+		<![CDATA[
+			GROUP BY ROLLUP((A_PAN_MAE.PAN_DAY, A_BOX.BOX_CODE, A_BOX.BOX_NAME))
+			ORDER BY A_PAN_MAE.PAN_DAY ASC, A_BOX.BOX_CODE ASC	
+		]]>
+	</select>
+		
+		
+
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WhslDealBlotter.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 거래원장 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="WhslDealBlotter">	
+	<resultMap id="WhslDealBlotter.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="flowerName"    column="flowerName"    columnIndex="2" /><!--플라워 명-->
+	</resultMap>
+	
+	<!-- 거래원장  resutlMap -->
+	<resultMap id="WhslDealBlotter.selectListMap" class="java.util.HashMap">
+	    <result property="jDay"             column="jDay"             columnIndex="1" /> 
+	    <result property="boAddTot"         column="boAddTot"         columnIndex="2" /> 
+	    <result property="limitAddTot"      column="limitAddTot"      columnIndex="3" /> 
+	    <result property="summary"          column="summary"          columnIndex="4" /> 
+	    <result property="meip"             column="meip"             columnIndex="5" /> 
+	    <result property="ipgum"            column="ipgum"            columnIndex="6" /> 
+	    <result property="orgMeip"          column="orgMeip"          columnIndex="7" /> 
+	    <result property="todayRet"         column="todayRet"         columnIndex="8" /> 
+	    <result property="misuTotal"        column="misuTotal"        columnIndex="9" /> 
+	    <result property="unPTot"           column="unPTot"           columnIndex="10" /> 
+	    <result property="dlyTot"           column="dlyTot"           columnIndex="11" /> 
+	    <result property="todayDly"         column="todayDly"         columnIndex="12" /> 
+	    <result property="dlyPTot"          column="dlyPTot"          columnIndex="13" /> 
+	    <result property="todayBo"          column="todayBo"          columnIndex="14" /> 
+	    <result property="name"             column="name"             columnIndex="15" /> 
+	    <result property="domeCode"         column="domeCode"         columnIndex="16" /> 
+	    <result property="toDay"            column="toDay"            columnIndex="17" /> <!-- sysdate --> 
+	    <result property="startDate"        column="startDate"        columnIndex="18" /> 
+	    <result property="endDate"          column="endDate"          columnIndex="19" /> 
+	    <result property="bunChkNm"         column="bunChkNm"         columnIndex="20" /> 
+	</resultMap>
+	
+	<resultMap id="WhslDealBlotter.SumListMap" class="java.util.HashMap">
+	    <result property="meipSum"          column="meipSum"          columnIndex="1" /> 
+	    <result property="ipgumSum"         column="ipgumSum"         columnIndex="2" /> 
+	    <result property="orgMeipSum"       column="orgMeipSum"       columnIndex="3" /> 
+	    <result property="todayRetSum"      column="todayRetSum"      columnIndex="4" /> 
+	    <result property="misuTotalSum"     column="misuTotalSum"     columnIndex="5" /> 
+	    <result property="unPTotSum"        column="unPTotSum"        columnIndex="6" /> 
+	    <result property="dlyTotSum"        column="dlyTotSum"        columnIndex="7" /> 
+	    <result property="todayDlySum"      column="todayDlySum"      columnIndex="8" /> 
+	</resultMap>
+	
+	<select id="WhslDealBlotter.buryuList" resultMap="WhslDealBlotter.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #domeCode#  
+		 ]]>
+	</select>
+
+	<select id="WhslDealBlotter.SelectList" resultMap="WhslDealBlotter.selectListMap">
+		<![CDATA[
+				select  to_char(to_date(a.j_day),'yyyy-mm-dd') as jDay, 
+				        nvl(b.db_money, 0) + nvl(d.bo_add_amt, 0) as boAddTot, 
+				        nvl(b.db_money, 0) + nvl(d.add_amt, 0) as limitAddTot, 
+				        case when (a.meip > 0 and a.ipgum > 0) 
+				             then '1' when a.meip > 0 
+				             then '2' when a.ipgum > 0 
+				             then '3' 
+				             else '4' 
+				         end as summary, 
+				        a.meip as meip, 
+				        a.ipgum as ipgum, 
+				        a.org_meip as orgMeip, 
+				        a.today_ret as todayRet, 
+				        a.un_p_tot + a.dly_tot as misuTotal, 
+				        a.un_p_tot as unPTot,
+				        a.dly_tot  as dlyTot,
+				        a.today_dly as todayDly,
+				        a.dly_p_tot as dlyPTot,
+				        a.today_bo as  todayBo,
+				        c.name,
+				        a.j_code as domeCode
+				        ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			            ,decode(c.bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			            ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+			            ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				   from a_j_dome_cnt@flower a, 
+				        ( select dome_code, sum(CASE WHEN #endDate# between s_day and e_day THEN db_money ELSE 0 END) as db_money 
+				            from a_dome_dambo@flower where dome_code = #domeCode# group by dome_code ) b, 
+				        a_dome_info@flower c, 
+				        ( select x.j_code, x.add_amt, x.bo_add_amt 
+				            from a_j_dome_cnt@flower x, 
+				                 ( select /*+ INDEX_DESC( a XIE1A_J_DOME_CNT) */  j_day 
+				                     from a_j_dome_cnt@flower a 
+				                    where j_code = #domeCode# and j_day <= #endDate# and rownum = 1 ) y 
+				           where  x.j_day = y.j_day ) d 
+				  where a.j_code = b.dome_code(+) 
+				    and a.j_code = d.j_code(+) 
+				    and a.j_code = c.code 
+				    and a.j_code = #domeCode#
+				    and a.j_day  between #startDate# and #endDate# 
+				    and c.bun_chk = #bunChk#
+		 ]]>
+	</select>
+	
+	<select id="WhslDealBlotter.sumList" resultMap="WhslDealBlotter.SumListMap">
+		<![CDATA[
+			WITH 
+			dome_dambo AS (
+				select
+					dome_code
+					, sum(CASE WHEN #endDate# between s_day and e_day THEN db_money ELSE 0 END) as db_money 
+				from a_dome_dambo@flower 
+				where dome_code = #domeCode# 
+				group by dome_code
+			),
+			dome_cnt AS (
+				select
+					x.j_code
+					, x.add_amt
+					, x.bo_add_amt 
+	            from a_j_dome_cnt@flower x, 
+	            	(select /*+ INDEX_DESC( a XIE1A_J_DOME_CNT) */  j_day 
+	            		from a_j_dome_cnt@flower a 
+	           		 where j_code = #domeCode# 
+	           		 and j_day <= #endDate# 
+	           		 and rownum = 1 ) y 
+	           	where  x.j_day = y.j_day
+			)
+			 select   sum(meip)      as meipSum,
+					  sum(ipgum)     as ipgumSum,
+					  sum(orgMeip)   as orgMeipSum,
+					  sum(todayRet)  as todayRetSum,
+					  sum(misuTotal) as misuTotalSum,
+					  sum(unPTot)    as unPTotSum,
+					  sum(dlyTot)    as dlyTotSum,
+					  sum(todayDly)  as todayDlySum
+			  from (
+					select  a.j_day  as jDay, 
+					        nvl(b.db_money, 0) + nvl(d.bo_add_amt, 0) as boAddTot, 
+					        nvl(b.db_money, 0) + nvl(d.add_amt, 0) as limitAddTot, 
+					        case when (a.meip > 0 and a.ipgum > 0) 
+					             then '1' when a.meip > 0 
+					             then '2' when a.ipgum > 0 
+					             then '3' 
+					             else '4' 
+					         end as summary, 
+					        a.meip as meip, 
+					        a.ipgum as ipgum, 
+					        a.org_meip as orgMeip, 
+					        a.today_ret as todayRet, 
+					        a.un_p_tot + a.dly_tot as misuTotal, 
+					        a.un_p_tot as unPTot,
+					        a.dly_tot  as dlyTot,
+					        a.today_dly as todayDly,
+					        a.dly_p_tot as dlyPTot,
+					        a.today_bo as  todayBo,
+					        c.name
+					        ,to_char(sysdate,'yyyy-mm-dd') as toDay
+					   from a_j_dome_cnt@flower a,
+					   		dome_dambo b,
+					        a_dome_info@flower c, 
+					        dome_cnt d 
+					  where a.j_code = b.dome_code(+) 
+					    and a.j_code = d.j_code(+) 
+					    and a.j_code = c.code 
+					    and a.j_code = #domeCode#
+					    and a.j_day  between #startDate# and #endDate# 
+					    and c.bun_chk = #bunChk#
+			)
+		]]>
+	</select>	
+</sqlMap>

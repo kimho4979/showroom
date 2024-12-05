@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.fixAuc.service.impl.FrontFixAucRecordMapper">
+
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="AUC_BAN_TEXT" column="AUC_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="ITEM_TEXT" column="ITEM_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="CHUL_BAN_TEXT" column="CHUL_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="REQ_TEXT" column="REQ_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<insert id="fixAucRegRecord">
+		INSERT INTO TB_RECORD (
+			   RECORD_SEQ
+			 , DEAL_SEQ
+			 , FIX_TYPE
+			 , BUN_CHK
+			 , PRE_FIX_STATE
+			 , FIX_STATE
+			 , INSERT_ID
+			 , INSERT_DATE
+		)VALUES (
+			  RECORD_SEQ.NEXTVAL
+			, #{dealSeq, jdbcType=VARCHAR}
+			, #{fixType, jdbcType=VARCHAR}
+			, #{bunChk, jdbcType=VARCHAR}
+			, #{preFixState, jdbcType=VARCHAR}
+			, #{fixState, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+	   	  	, SYSDATE
+		)
+	</insert>
+	
+	<select id="getFixRecordList" resultMap="egovResultMap">
+		SELECT
+		   RECORD_SEQ  
+		 , DEAL_SEQ
+		 , FIX_TYPE
+		 , BUN_CHK
+		 , PRE_FIX_STATE
+		 , FIX_STATE
+		 , INSERT_ID
+		 , TO_CHAR(INSERT_DATE,'YYYY-MM-DD HH24:MI:SS') as INSERT_DATE
+		FROM TB_RECORD
+		WHERE DEAL_SEQ = #{dealSeq}
+		  AND FIX_TYPE = #{fixType}
+		  AND BUN_CHK = #{bunChk}
+		ORDER BY RECORD_SEQ ASC, INSERT_DATE ASC
+	</select>
+	
+	<select id="getPreFixState" resultType="java.lang.String">
+		SELECT
+		   FIX_STATE
+		FROM TB_FIX_DEAL
+		WHERE FIX_DEAL_SEQ = #{dealSeq}
+	</select>
+	
+	<select id="getPreFixSmallState" resultType="java.lang.String">
+		SELECT
+		   FIX_STATE
+		FROM TB_FIX_SMALL_DEAL
+		WHERE FIX_DEAL_SEQ = #{dealSeq}
+	</select>
+	
+	<select id="getPreReqState" resultType="java.lang.String">
+		SELECT
+			FIX_STATE
+		FROM TB_REQ_DEAL
+		WHERE REQ_DEAL_SEQ = #{dealSeq}
+	</select>
+	
+</mapper>

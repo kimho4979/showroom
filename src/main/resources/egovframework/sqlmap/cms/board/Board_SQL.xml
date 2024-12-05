@@ -1,0 +1,1415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.board.service.impl.BoardMapper">
+
+	<resultMap id="boardInfo" type="egovframework.cms.board.vo.BoardInfoVO">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardNm" column="BOARD_NM"/>
+		<result property="boardSummary" column="BOARD_SUMMARY"/>
+		<result property="boardTy" column="BOARD_TY"/>
+		<result property="boardAdmin" column="BOARD_ADMIN"/>
+		<result property="boardAdminGroup" column="BOARD_ADMIN_GROUP"/>
+		<result property="useCategoryAt" column="USE_CATEGORY_AT"/>
+		<result property="permitLvlList" column="PERMIT_LVL_LIST"/>
+		<result property="limitGrpList" column="LIMIT_GRP_LIST"/>
+		<result property="permitLvlRead" column="PERMIT_LVL_READ"/>
+		<result property="limitGrpRead" column="LIMIT_GRP_READ"/>
+		<result property="permitLvlWrite" column="PERMIT_LVL_WRITE"/>
+		<result property="limitGrpWrite" column="LIMIT_GRP_WRITE"/>
+		<result property="permitLvlReply" column="PERMIT_LVL_REPLY"/>
+		<result property="limitGrpReply" column="LIMIT_GRP_REPLY"/>
+		<result property="permitLvlAnswer" column="PERMIT_LVL_ANSWER"/>
+		<result property="limitGrpAnswer" column="LIMIT_GRP_ANSWER"/>
+		<result property="permitLvlEditor" column="PERMIT_LVL_EDITOR"/>
+		<result property="limitGrpEditor" column="LIMIT_GRP_EDITOR"/>
+		<result property="permitLvlComment" column="PERMIT_LVL_COMMENT"/>
+		<result property="limitGrpComment" column="LIMIT_GRP_COMMENT"/>
+		<result property="useSecretAt" column="USE_SECRET_AT"/>
+		<result property="perPage" column="PER_PAGE"/>
+		<result property="newIconPeriod" column="NEW_ICON_PERIOD"/>
+		<result property="showDeletedAt" column="SHOW_DELETED_AT"/>
+		<result property="useRealnameAt" column="USE_REALNAME_AT"/>
+		<result property="showSelfAt" column="SHOW_SELF_AT"/>
+		<result property="useProgressAt" column="USE_PROGRESS_AT"/>
+		<result property="useEmailAt" column="USE_EMAIL_AT"/>
+		<result property="useTelNoAt" column="USE_TEL_NO_AT"/>
+		<result property="useHpNoAt" column="USE_HP_NO_AT"/>
+		<result property="useAdresAt" column="USE_ADRES_AT"/>
+		<result property="usePrivacyAt" column="USE_PRIVACY_AT"/>
+		<result property="useThumbAt" column="USE_THUMB_AT"/>
+		<result property="useRssAt" column="USE_RSS_AT"/>
+		<result property="mainAppointAt" column="MAIN_APPOINT_AT"/>
+		<result property="isMinwonAt" column="IS_MINWON_AT"/>
+		<result property="deptAppointAt" column="DEPT_APPOINT_AT"/>
+		<result property="uploadCount" column="UPLOAD_COUNT"/>
+		<result property="uploadSize" column="UPLOAD_SIZE"/>
+		<result property="uploadExt" column="UPLOAD_EXT"/>
+		<result property="headHtml" column="HEAD_HTML"/>
+		<result property="tailHtml" column="TAIL_HTML"/>
+		<result property="limitHtml" column="LIMIT_HTML"/>
+		<result property="limitWord" column="LIMIT_WORD"/>
+		<result property="writeDfltCn" column="WRITE_DFLT_CN"/>
+	</resultMap>
+
+	<resultMap id="boardArticle" type="egovframework.cms.board.vo.BoardArticleVO">
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="groupNo" column="GROUP_NO"/>
+		<result property="depthNo" column="DEPTH_NO"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="viewStartDt" column="VIEW_START_DT"/>
+		<result property="viewEndDt" column="VIEW_END_DT"/>
+		<result property="categoryId" column="CATEGORY_ID"/>
+		<result property="progressCd" column="PROGRESS_CD"/>
+		<result property="subject" column="SUBJECT"/>
+		<result property="email" column="EMAIL"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="hpNo" column="HP_NO"/>
+		<result property="adres" column="ADRES"/>
+		<result property="detailAdres" column="DETAIL_ADRES"/>
+		<result property="zip" column="ZIP"/>
+		<result property="homepage" column="HOMEPAGE"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="password" column="PASSWORD"/>
+		<result property="content" column="CONTENT"/>
+		<result property="listThumbFile" column="LIST_THUMB_FILE"/>
+		<result property="uploadCnt" column="UPLOAD_CNT"/>
+		<result property="rcvSmsAt" column="RCV_SMS_AT"/>
+		<result property="sendSmsAt" column="SEND_SMS_AT"/>
+		<result property="rcvEmailAt" column="RCV_EMAIL_AT"/>
+		<result property="sendEmailAt" column="SEND_EMAIL_AT"/>
+		<result property="mainAt" column="MAIN_AT"/>
+		<result property="noticeAt" column="NOTICE_AT"/>
+		<result property="htmlAt" column="HTML_AT"/>
+		<result property="secretAt" column="SECRET_AT"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="commentCnt" column="COMMENT_CNT"/>
+		<result property="hits" column="HITS"/>
+		<result property="data01" column="DATA01"/>
+		<result property="data02" column="DATA02"/>
+		<result property="data03" column="DATA03"/>
+		<result property="data04" column="DATA04"/>
+		<result property="data05" column="DATA05"/>
+		<result property="data06" column="DATA06"/>
+		<result property="data07" column="DATA07"/>
+		<result property="data08" column="DATA08"/>
+		<result property="data09" column="DATA09"/>
+		<result property="data10" column="DATA10"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateIp" column="UPDATE_IP"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+		<result property="deleteMemo" column="DELETE_MEMO"/>
+		<result property="realnameId" column="REALNAME_ID"/>
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="state" column="STATE"/>
+	</resultMap>
+
+	<resultMap id="boardCategory" type="egovframework.cms.board.vo.BoardCategoryVO">
+		<result property="categoryId" column="CATEGORY_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="title" column="TITLE"/>
+	</resultMap>
+
+	<resultMap id="boardFile" type="egovframework.cms.board.vo.BoardFileVO">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="fileSn" column="FILE_SN"/>
+		<result property="streFileNm" column="STRE_FILE_NM"/>
+		<result property="orignlFileNm" column="ORIGNL_FILE_NM"/>
+		<result property="fileExtsn" column="FILE_EXTSN"/>
+		<result property="fileCn" column="FILE_CN"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+
+	<resultMap id="boardComment" type="egovframework.cms.board.vo.BoardCommentVO">
+		<result property="commentId" column="COMMENT_ID"/>
+		<result property="parntsCommentId" column="PARNTS_COMMENT_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="reply" column="REPLY"/>
+		<result property="snsAt" column="SNS_AT"/>
+		<result property="snsGb" column="SNS_GB"/>
+		<result property="realnameAt" column="REALNAME_AT"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="content" column="CONTENT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+ 
+	<resultMap id="boardAnswer" type="egovframework.cms.board.vo.BoardAnswerVO">
+		<result property="answerId" column="ANSWER_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="email" column="EMAIL"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="content" column="CONTENT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteId" column="DELETE_ID"/>
+	</resultMap>
+
+	<select id="selectBoardInfoListAll" parameterType="boardInfoVO" resultMap="boardInfo">
+		SELECT  BOARD_ID
+			 ,  SITE_ID
+			 ,  BOARD_NM
+		  FROM  WMS_BOARD_INFO
+		 WHERE	SITE_ID = 'flower'
+		   AND  USE_AT = 'Y'
+	  ORDER BY  BOARD_ID DESC 
+	</select>
+
+	<select id="selectBoardInfo" parameterType="boardInfoVO" resultMap="boardInfo">
+		SELECT  BOARD_ID
+			 ,  SITE_ID
+			 ,  BOARD_NM
+			 ,  BOARD_SUMMARY
+			 ,  BOARD_ADMIN
+			 ,  BOARD_ADMIN_GROUP
+			 ,  BOARD_TY
+			 ,  USE_CATEGORY_AT
+			 ,  PERMIT_LVL_LIST
+			 ,  LIMIT_GRP_LIST
+			 ,  PERMIT_LVL_READ
+			 ,  LIMIT_GRP_READ
+			 ,  PERMIT_LVL_WRITE
+			 ,  LIMIT_GRP_WRITE
+			 ,  PERMIT_LVL_REPLY
+			 ,  LIMIT_GRP_REPLY
+			 ,  PERMIT_LVL_ANSWER
+			 ,  LIMIT_GRP_ANSWER
+			 ,  PERMIT_LVL_EDITOR
+			 ,  LIMIT_GRP_EDITOR
+			 ,  PERMIT_LVL_COMMENT
+			 ,  LIMIT_GRP_COMMENT
+			 ,  USE_SECRET_AT
+			 ,  PER_PAGE
+			 ,  NEW_ICON_PERIOD
+			 ,  SHOW_DELETED_AT
+			 ,  USE_REALNAME_AT
+			 ,  SHOW_SELF_AT
+			 ,  USE_PROGRESS_AT
+			 ,  USE_EMAIL_AT
+			 ,  USE_TEL_NO_AT
+			 ,  USE_HP_NO_AT
+			 ,  USE_ADRES_AT
+			 ,  USE_PRIVACY_AT
+			 ,  USE_THUMB_AT
+			 ,  USE_RSS_AT
+			 ,  MAIN_APPOINT_AT
+			 ,  IS_MINWON_AT
+			 ,  DEPT_APPOINT_AT
+			 ,  USE_AT
+			 ,  UPLOAD_COUNT
+			 ,  UPLOAD_SIZE
+			 ,  UPLOAD_EXT
+			 ,  HEAD_HTML
+			 ,  TAIL_HTML
+			 ,  LIMIT_HTML
+			 ,  LIMIT_WORD
+			 ,  WRITE_DFLT_CN
+		  FROM  WMS_BOARD_INFO
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  USE_AT = 'Y'
+		<if test='siteId != null and siteId != ""'>
+		   AND  SITE_ID = 'flower'
+		</if>
+	</select>
+
+	<select id="selectBoardCategoryList" parameterType="boardCategoryVO" resultMap="boardCategory">
+		SELECT  A.BOARD_ID
+			 ,  A.CATEGORY_ID
+			 ,  A.TITLE
+		  FROM  WMS_BOARD_CATEGORY A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.DELETED_AT = 'N'
+	  ORDER BY  A.POSITION ASC
+	</select>
+
+	<select id="selectBoardCategory" parameterType="boardCategoryVO" resultMap="boardCategory">
+		SELECT  A.BOARD_ID
+			 ,  A.CATEGORY_ID
+			 ,  A.TITLE
+		  FROM  WMS_BOARD_CATEGORY A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.CATEGORY_ID = #{categoryId}
+		   AND  A.DELETED_AT = 'N'
+		   AND  ROWNUM = 1
+	</select>
+
+	<select id="selectBoardArticleListCnt" parameterType="boardArticleVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  1=1
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='noticeAt != null and noticeAt != ""'>
+		   AND  A.NOTICE_AT	= #{noticeAt}
+		</if>
+		<if test='secretAt != null and secretAt != ""'>
+		   AND  A.SECRET_AT	= #{secretAt}
+		</if>
+		<if test='mainAt != null and mainAt != ""'>
+		   AND  A.MAIN_AT = #{mainAt}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	</select>
+
+	<select id="selectBoardArticleListTodayCnt" parameterType="boardArticleVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') = TO_CHAR(SYSDATE, 'yyyy-mm-dd')
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	</select>
+
+	<select id="selectBoardArticleList" parameterType="boardArticleVO" resultMap="boardArticle">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  A.PROGRESS_CD
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.LIST_THUMB_FILE
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 ,  A.REGIST_DTTM
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.ARTICLE_ID &gt; 0
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='noticeAt != null and noticeAt != ""'>
+		   AND  A.NOTICE_AT	= #{noticeAt}
+		</if>
+		<if test='secretAt != null and secretAt != ""'>
+		   AND  A.SECRET_AT	= #{secretAt}
+		</if>
+		<if test='mainAt != null and mainAt != ""'>
+		   AND  A.MAIN_AT = #{mainAt}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	<choose>
+	   	<when test='orderby == "rand"'>
+	  ORDER BY  DBMS_RANDOM.RANDOM
+	   	</when>
+	   	<otherwise>
+	  ORDER BY  A.GROUP_NO ASC, A.ORDER_NO ASC
+	   	</otherwise>
+	</choose>
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+
+	<select id="selectBoardArticle" parameterType="boardArticleVO" resultMap="boardArticle">
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  A.PROGRESS_CD
+			 ,  A.EMAIL
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.ZIP
+			 ,  A.ADRES
+			 ,  A.DETAIL_ADRES
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.LIST_THUMB_FILE
+			 ,  A.MAIN_AT
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.HTML_AT
+			 ,  A.RCV_SMS_AT
+			 ,  A.SEND_SMS_AT
+			 ,  A.RCV_EMAIL_AT
+			 ,  A.SEND_EMAIL_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DEPT_ID
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 ,  TO_CHAR(A.REGIST_DTTM,'YYYY.MM.DD') AS REGIST_DTTM
+			 ,  A.REGIST_IP
+			 ,  A.UPDATE_ID
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_IP
+		     ,  A.DELETE_DTTM
+		     ,  A.DELETE_IP
+		     ,  A.DELETE_ID
+		     ,  A.DELETE_MEMO
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.ARTICLE_ID = #{articleId}
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+	</select>
+
+	<select id="selectPrevBoardArticle" parameterType="boardArticleVO" resultMap="boardArticle">
+	SELECT T.* FROM (
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  DECODE(CATEGORY_ID, 0, '', (SELECT TITLE FROM WMS_BOARD_CATEGORY WHERE BOARD_ID = A.BOARD_ID AND CATEGORY_ID = A.CATEGORY_ID AND DELETED_AT = 'N')) AS categoryNm
+			 ,  A.PROGRESS_CD
+			 ,  DECODE(LENGTH(A.PROGRESS_CD), 0, '', (SELECT CODE_NM FROM WMS_CMMN_DETAILCODE WHERE CODE_ID = 'CMS005' AND CODE = A.PROGRESS_CD)) AS progressNm
+			 ,  A.EMAIL
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.ZIP
+			 ,  A.ADRES
+			 ,  A.DETAIL_ADRES
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.HTML_AT
+			 ,  A.RCV_SMS_AT
+			 ,  A.SEND_SMS_AT
+			 ,  A.RCV_EMAIL_AT
+			 ,  A.SEND_EMAIL_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 ,  A.REGIST_DTTM
+			 ,  A.REGIST_IP
+			 ,  A.UPDATE_ID
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_IP
+		     ,  A.DELETE_DTTM
+		     ,  A.DELETE_IP
+		     ,  A.DELETE_ID
+		     ,  A.DELETE_MEMO
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  (( A.GROUP_NO = #{groupNo} AND A.ORDER_NO &lt; #{orderNo}) OR ( A.GROUP_NO &gt; #{groupNo} ))
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	  ORDER BY  A.GROUP_NO ASC, A.ORDER_NO ASC
+	) T WHERE ROWNUM = 1
+	</select>
+
+	<select id="selectNextBoardArticle" parameterType="boardArticleVO" resultMap="boardArticle">
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  DECODE(CATEGORY_ID, 0, '', (SELECT TITLE FROM WMS_BOARD_CATEGORY WHERE BOARD_ID = A.BOARD_ID AND CATEGORY_ID = A.CATEGORY_ID AND DELETED_AT = 'N')) AS categoryNm
+			 ,  A.PROGRESS_CD
+			 ,  DECODE(LENGTH(A.PROGRESS_CD), 0, '', (SELECT CODE_NM FROM WMS_CMMN_DETAILCODE WHERE CODE_ID = 'CMS005' AND CODE = A.PROGRESS_CD)) AS progressNm
+			 ,  A.EMAIL
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.ZIP
+			 ,  A.ADRES
+			 ,  A.DETAIL_ADRES
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.HTML_AT
+			 ,  A.RCV_SMS_AT
+			 ,  A.SEND_SMS_AT
+			 ,  A.RCV_EMAIL_AT
+			 ,  A.SEND_EMAIL_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 ,  A.REGIST_DTTM
+			 ,  A.REGIST_IP
+			 ,  A.UPDATE_ID
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_IP
+		     ,  A.DELETE_DTTM
+		     ,  A.DELETE_IP
+		     ,  A.DELETE_ID
+		     ,  A.DELETE_MEMO
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  (( A.GROUP_NO = #{groupNo} AND A.ORDER_NO &gt; #{orderNo}) OR ( A.GROUP_NO &lt; #{groupNo} ))
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+		   AND  ROWNUM = 1
+	  ORDER BY  A.GROUP_NO DESC, A.ORDER_NO ASC
+	</select>
+
+	<select id="selectBoardArticleMinGroupNo" resultType="int">
+		SELECT  NVL(MIN(GROUP_NO), 0)
+		  FROM  WMS_BOARD_ARTICLE A
+	</select>
+
+	<select id="selectBoardArticleChildCnt" parameterType="boardInfoVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  GROUP_NO = #{groupNo}
+		   AND  DEPTH_NO &gt; #{depthNo}
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardArticleReplyCnt" parameterType="boardInfoVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  GROUP_NO = #{groupNo}
+		   AND  DEPTH_NO = #{depthNo} + 1
+		   AND  ORDER_NO &gt; #{orderNo}
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardArticleDeptAppointAt" parameterType="boardInfoVO" resultType="int">
+	SELECT  COUNT(*)
+	  FROM  (
+		SELECT  NODE.DEPT_ID AS DEPT_ID
+		  FROM  WMS_ORGNZT_DEPT NODE
+		     ,  WMS_ORGNZT_DEPT PARENT
+		 WHERE  NODE.LFT BETWEEN PARENT.LFT
+		   AND  PARENT.RGT
+		   AND  PARENT.DEPT_ID = #{dept1}
+				AND PARENT.USE_AT = 'Y'
+				AND NODE.USE_AT = 'Y'
+	  ORDER BY  NODE.LFT ASC
+	  		 )  T
+	     WHERE  T.DEPT_ID = #{dept2}
+	</select>
+
+	<insert id="insertBoardArticle">
+		INSERT
+		  INTO  WMS_BOARD_ARTICLE
+		     (  ARTICLE_ID
+		     ,  SITE_ID
+			 ,  BOARD_ID
+			 ,  GROUP_NO
+			 ,  DEPTH_NO
+			 ,  ORDER_NO
+			 ,  CATEGORY_ID
+			 ,  PROGRESS_CD
+			 ,  EMAIL
+			 ,  TEL_NO
+			 ,  HP_NO
+			 ,  ZIP
+			 ,  ADRES
+			 ,  DETAIL_ADRES
+			 ,  SUBJECT
+			 ,  WRITER_ID
+			 ,  WRITER_NM
+			 ,  PASSWORD
+			 ,  CONTENT
+			 ,  LIST_THUMB_FILE
+			 ,  MAIN_AT
+			 ,  NOTICE_AT
+			 ,  SECRET_AT
+			 ,  RCV_SMS_AT
+			 ,  SEND_SMS_AT
+			 ,  RCV_EMAIL_AT
+			 ,  SEND_EMAIL_AT
+			 ,  HTML_AT
+			 ,  DATA01
+			 ,  DATA02
+			 ,  DATA03
+			 ,  DATA04
+			 ,  DATA05
+			 ,  DATA06
+			 ,  DATA07
+			 ,  DATA08
+			 ,  DATA09
+			 ,  DATA10
+			 ,  REGIST_DTTM
+			 ,  REGIST_IP
+			 ,  REALNAME_ID
+			 <if test='deletedAt != null and !deletedAt == ""'>
+			 ,  DELETED_AT
+			 </if>
+		     )
+		VALUES
+		     (  #{articleId, jdbcType=VARCHAR}
+		     ,  #{siteId, jdbcType=VARCHAR}
+			 ,  #{boardId, jdbcType=VARCHAR}
+			 ,  #{groupNo, jdbcType=VARCHAR}
+			 ,  #{depthNo, jdbcType=VARCHAR}
+			 ,  #{orderNo, jdbcType=VARCHAR}
+			 ,  #{categoryId, jdbcType=VARCHAR}
+			 ,  #{progressCd, jdbcType=VARCHAR}
+			 ,  #{email, jdbcType=VARCHAR}
+			 ,  #{telNo, jdbcType=VARCHAR}
+			 ,  #{hpNo, jdbcType=VARCHAR}
+			 ,  #{zip, jdbcType=VARCHAR}
+			 ,  #{adres, jdbcType=VARCHAR}
+			 ,  #{detailAdres, jdbcType=VARCHAR}
+			 ,  #{subject, jdbcType=VARCHAR}
+			 ,  #{writerId, jdbcType=VARCHAR}
+			 ,  #{writerNm, jdbcType=VARCHAR}
+			 ,  #{password, jdbcType=VARCHAR}
+			 ,  #{content, jdbcType=VARCHAR}
+			 ,  #{listThumbFile, jdbcType=VARCHAR}
+			 ,  #{mainAt, jdbcType=VARCHAR}
+			 ,  #{noticeAt, jdbcType=VARCHAR}
+			 ,  #{secretAt, jdbcType=VARCHAR}
+			 ,  #{rcvSmsAt, jdbcType=VARCHAR}
+			 ,  'N'
+			 ,  #{rcvEmailAt, jdbcType=VARCHAR}
+			 ,  'N'
+			 ,  #{htmlAt, jdbcType=VARCHAR}
+			 ,  #{data01, jdbcType=VARCHAR}
+			 ,  #{data02, jdbcType=VARCHAR}
+			 ,  #{data03, jdbcType=VARCHAR}
+			 ,  #{data04, jdbcType=VARCHAR}
+			 ,  #{data05, jdbcType=VARCHAR}
+			 ,  #{data06, jdbcType=VARCHAR}
+			 ,  #{data07, jdbcType=VARCHAR}
+			 ,  #{data08, jdbcType=VARCHAR}
+			 ,  #{data09, jdbcType=VARCHAR}
+			 ,  #{data10, jdbcType=VARCHAR}
+			 ,  SYSDATE
+			 ,  #{registIp, jdbcType=VARCHAR}
+			 ,  #{realnameId, jdbcType=VARCHAR}
+			 <if test='deletedAt != null and !deletedAt == ""'>
+			 , #{deletedAt, jdbcType=VARCHAR}
+			 </if>
+		     )
+	</insert>
+
+	<update id="updateBoardArticle">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  CATEGORY_ID = #{categoryId, jdbcType=VARCHAR}
+			 ,  SUBJECT = #{subject, jdbcType=VARCHAR}
+			 ,  EMAIL = #{email, jdbcType=VARCHAR}
+			 ,  TEL_NO = #{telNo, jdbcType=VARCHAR}
+			 ,  HP_NO = #{hpNo, jdbcType=VARCHAR}
+			 ,  ADRES = #{adres, jdbcType=VARCHAR}
+			 ,  DETAIL_ADRES = #{detailAdres, jdbcType=VARCHAR}
+			 ,  ZIP = #{zip, jdbcType=VARCHAR}
+			 ,  HOMEPAGE = #{homepage, jdbcType=VARCHAR}
+			 ,  WRITER_NM = #{writerNm, jdbcType=VARCHAR}
+			<if test='password != null and password != ""'>
+			 ,  PASSWORD = #{password, jdbcType=VARCHAR}
+			</if>
+			 ,  CONTENT = #{content, jdbcType=VARCHAR}
+			<if test='listThumbFile != null'>
+			 ,  LIST_THUMB_FILE = #{listThumbFile, jdbcType=VARCHAR}
+			</if>
+			<if test='deletedAt != null and !deletedAt == ""'>
+			 , DELETED_AT = #{deletedAt, jdbcType=VARCHAR}
+			</if>
+			 ,  MAIN_AT = #{mainAt, jdbcType=VARCHAR}
+			 ,  NOTICE_AT = #{noticeAt, jdbcType=VARCHAR}
+			 ,  HTML_AT = #{htmlAt, jdbcType=VARCHAR}
+			 ,  SECRET_AT = #{secretAt, jdbcType=VARCHAR}
+			<if test='hits != null and !hits == ""'>
+			 ,  HITS = #{hits, jdbcType=VARCHAR}
+			</if>
+			 ,  DATA01 = #{data01, jdbcType=VARCHAR}
+			 ,  DATA02 = #{data02, jdbcType=VARCHAR}
+			 ,  DATA03 = #{data03, jdbcType=VARCHAR}
+			 ,  DATA04 = #{data04, jdbcType=VARCHAR}
+			 ,  DATA05 = #{data05, jdbcType=VARCHAR}
+			 ,  DATA06 = #{data06, jdbcType=VARCHAR}
+			 ,  DATA07 = #{data07, jdbcType=VARCHAR}
+			 ,  DATA08 = #{data08, jdbcType=VARCHAR}
+			 ,  DATA09 = #{data09, jdbcType=VARCHAR}
+			 ,  DATA10 = #{data10, jdbcType=VARCHAR}
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_IP = #{updateIp, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId, jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateBoardArticleHits">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  HITS = HITS + 1
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+
+	<update id="updateBoardArticleProgressCd">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  PROGRESS_CD = #{progressCd, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+
+	<update id="updateBoardArticleDeptId">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  DEPT_ID = #{deptId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+
+	<update id="updateBoardArticleChildOrderNo">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  ORDER_NO = ORDER_NO + 1
+		 WHERE  GROUP_NO = #{groupNo}
+		   AND  ORDER_NO &gt;= #{orderNo}
+	</update>
+
+	<update id="updateMoveBoardArticle">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  BOARD_ID = #{targetBoardId}
+		 WHERE  BOARD_ID = #{origBoardId}
+		   AND  ARTICLE_ID IN
+		<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		</foreach>
+	</update>
+
+	<update id="updateMoveBoardFile">
+		UPDATE  WMS_BOARD_FILE
+		   SET  BOARD_ID = #{targetBoardId}
+		 WHERE  BOARD_ID = #{origBoardId}
+		   AND  ARTICLE_ID IN
+		<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		</foreach>
+	</update>
+
+	<update id="updateMoveBoardComment">
+		UPDATE  WMS_BOARD_COMMENT
+		   SET  BOARD_ID = #{targetBoardId}
+		 WHERE  BOARD_ID = #{origBoardId}
+		   AND  ARTICLE_ID IN
+		<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		</foreach>
+	</update>
+
+	<update id="updateMoveBoardAnswer">
+		UPDATE  WMS_BOARD_ANSWER
+		   SET  BOARD_ID = #{targetBoardId}
+		 WHERE  BOARD_ID = #{origBoardId}
+		   AND  ARTICLE_ID IN
+		<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		</foreach>
+	</update>
+
+	<update id="updateCheckedBoardArticleDeletedAt">
+		<if test='deletedAt != null and deletedAt == "Y"'>
+			UPDATE  WMS_BOARD_ARTICLE
+			   SET  DELETED_AT = 'Y'
+			     ,  DELETE_DTTM = SYSDATE
+			     ,  DELETE_IP = #{deleteIp}
+			     ,  DELETE_ID = #{deleteId, jdbcType=VARCHAR}
+			     ,  DELETE_MEMO = #{deleteMemo}
+			 WHERE  BOARD_ID = #{boardId}
+			   AND  ARTICLE_ID IN
+			<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+            		#{item}
+    		</foreach>
+		</if>
+		<if test='deletedAt != null and deletedAt == "N"'>
+			UPDATE  WMS_BOARD_ARTICLE
+			   SET  DELETED_AT = 'N'
+			     ,  DELETE_DTTM = NULL
+			     ,  DELETE_IP = NULL
+			     ,  DELETE_ID = NULL
+			     ,  DELETE_MEMO = NULL
+			 WHERE  BOARD_ID = #{boardId}
+			   AND  ARTICLE_ID IN
+			<foreach collection="articleIdArr" item="item" index="index" open="(" close=")" separator=",">
+            		#{item}
+    		</foreach>
+		</if>
+	</update>
+
+	<update id="updateBoardArticleDeletedAt">
+		<if test='deletedAt != null and deletedAt == "Y"'>
+			UPDATE  WMS_BOARD_ARTICLE
+			   SET  DELETED_AT = 'Y'
+			     ,  DELETE_DTTM = SYSDATE
+			     ,  DELETE_IP = #{deleteIp}
+			     ,  DELETE_ID = #{deleteId, jdbcType=VARCHAR}
+			     ,  DELETE_MEMO = #{deleteMemo}
+			 WHERE  BOARD_ID = #{boardId}
+			   AND  ARTICLE_ID = #{articleId}
+		</if>
+		<if test='deletedAt != null and deletedAt == "N"'>
+			UPDATE  WMS_BOARD_ARTICLE
+			   SET  DELETED_AT = 'N'
+			     ,  DELETE_DTTM = NULL
+			     ,  DELETE_IP = NULL
+			     ,  DELETE_ID = NULL
+			     ,  DELETE_MEMO = NULL
+			 WHERE  BOARD_ID = #{boardId}
+			   AND  ARTICLE_ID = #{articleId}
+		</if>
+	</update>
+
+    <delete id="deleteBoardArticle">
+		DELETE
+		  FROM  WMS_BOARD_ARTICLE
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+    </delete>
+
+	<select id="selectBoardFileList" parameterType="boardFileVO" resultMap="boardFile">
+		SELECT  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  FILE_SN
+			 ,  STRE_FILE_NM
+			 ,  ORIGNL_FILE_NM
+			 ,  FILE_EXTSN
+			 ,  FILE_SIZE
+		  FROM  WMS_BOARD_FILE
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardFile" parameterType="boardFileVO" resultMap="boardFile">
+		SELECT  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  FILE_SN
+			 ,  STRE_FILE_NM
+			 ,  ORIGNL_FILE_NM
+			 ,  FILE_EXTSN
+			 ,  FILE_SIZE
+		  FROM  WMS_BOARD_FILE
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  FILE_SN = #{fileSn}
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<insert id="insertBoardFile">
+		INSERT
+		  INTO  WMS_BOARD_FILE
+		     (  BOARD_ID
+		     ,  ARTICLE_ID
+			 ,  FILE_SN
+			 ,  STRE_FILE_NM
+			 ,  ORIGNL_FILE_NM
+			 ,  FILE_EXTSN
+			 ,  FILE_CN
+			 ,  FILE_SIZE
+			 ,  REGIST_DTTM
+			 ,  REGIST_IP
+			 ,  REGIST_ID
+			 ,  DELETED_AT
+		     )
+		VALUES
+		     (  #{boardId}
+		     ,  #{articleId}
+			 ,  #{fileSn}
+			 ,  #{streFileNm}
+			 ,  #{orignlFileNm}
+			 ,  #{fileExtsn}
+			 ,  #{fileCn}
+			 ,  #{fileSize}
+			 ,  SYSDATE
+			 ,  #{registIp, jdbcType=VARCHAR}
+			 ,  #{registId, jdbcType=VARCHAR}
+			 ,  'N'
+		     )
+	</insert>
+
+	<update id="updateBoardFile">
+		UPDATE  WMS_BOARD_FILE
+		   SET  STRE_FILE_NM = #{streFileNm}
+		     ,  ORIGNL_FILE_NM = #{orignlFileNm}
+		     ,  FILE_EXTSN = #{fileExtsn}
+		     ,  FILE_CN = #{fileCn}
+		     ,  FILE_SIZE = #{fileSize}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  FILE_SN = #{fileSn}
+		   AND  DELETED_AT = 'N'
+	</update>
+
+	<update id="updateBoardFileHits">
+		UPDATE  WMS_BOARD_FILE
+		   SET  HITS = HITS + 1
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  FILE_SN = #{fileSn}
+		   AND  DELETED_AT = 'N'
+	</update>
+
+	<update id="updateBoardFileDeletedAt">
+		UPDATE  WMS_BOARD_FILE
+		   SET  DELETED_AT = 'Y'
+		     ,  DELETE_DTTM = SYSDATE
+		     ,  DELETE_IP = #{deleteIp, jdbcType=VARCHAR}
+		     ,  DELETE_ID = #{deleteId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  FILE_SN = #{fileSn}
+	</update>
+
+    <delete id="deleteBoardFile">
+		DELETE
+		  FROM  WMS_BOARD_FILE
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+    </delete>
+
+	<select id="selectBoardCommentListCnt" parameterType="boardCommentVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_COMMENT A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardCommentList" parameterType="boardCommentVO" resultMap="boardComment">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.COMMENT_ID
+			 ,  A.PARNTS_COMMENT_ID
+			 ,  A.BOARD_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.REPLY
+			 ,  A.SNS_AT
+			 ,  A.SNS_GB
+			 ,  A.REALNAME_AT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.CONTENT
+			 ,  A.REGIST_DTTM
+			 ,  A.REGIST_IP
+		  FROM  WMS_BOARD_COMMENT A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.DELETED_AT = 'N'
+	  ORDER BY  A.PARNTS_COMMENT_ID DESC, REPLY ASC NULLS FIRST
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+
+	<select id="selectBoardComment" parameterType="boardCommentVO" resultMap="boardComment">
+		SELECT  A.COMMENT_ID
+			 ,  A.PARNTS_COMMENT_ID
+			 ,  A.BOARD_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.REPLY
+			 ,  A.SNS_AT
+			 ,  A.SNS_GB
+			 ,  A.REALNAME_AT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.CONTENT
+			 ,  A.REGIST_DTTM
+			 ,  A.REGIST_IP
+		  FROM  WMS_BOARD_COMMENT A
+		 WHERE  A.COMMENT_ID = #{commentId}
+		   AND  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardCommentMaxReply" parameterType="boardCommentVO" resultType="java.lang.String">
+		SELECT  MAX(SUBSTR(A.REPLY, #{replyLen}, 1)) AS reply
+		  FROM  WMS_BOARD_COMMENT A
+		 WHERE  A.ARTICLE_ID = #{articleId}
+		   AND  A.PARNTS_COMMENT_ID = #{parntsCommentId}
+		   AND  SUBSTR(A.REPLY, #{replyLen}, 1) &lt;&gt; ''
+		<if test='reply != null and reply != ""'>
+		   AND  REPLY LIKE '' || #{reply} || '%'
+		</if>
+	</select>
+
+	<select id="selectBoardCommentChildCnt" parameterType="boardCommentVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_COMMENT
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  REPLY LIKE '' || #{reply} || '%'
+		   AND  LENGTH(#{reply}) &lt; LENGTH(REPLY)
+		   AND  DELETED_AT = 'N'
+	</select>
+
+	<update id="updateBoardCommentDeletedAt">
+		UPDATE  WMS_BOARD_COMMENT
+		   SET  DELETED_AT = 'Y'
+		     ,  DELETE_DTTM = SYSDATE
+		     ,  DELETE_IP = #{deleteIp, jdbcType=VARCHAR}
+		     ,  DELETE_ID = #{deleteId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  COMMENT_ID = #{commentId}
+	</update>
+
+	<update id="updateBoardArticleUploadCnt">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  UPLOAD_CNT = (SELECT COUNT(*) FROM WMS_BOARD_FILE WHERE BOARD_ID = #{boardId} AND ARTICLE_ID = #{articleId} AND DELETED_AT = 'N')
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+
+	<update id="updateBoardArticleCommentCnt">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  COMMENT_CNT = (SELECT COUNT(*) FROM WMS_BOARD_COMMENT WHERE BOARD_ID = #{boardId} AND ARTICLE_ID = #{articleId} AND DELETED_AT = 'N')
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+	</update>
+
+    <delete id="deleteBoardComment">
+		DELETE
+		  FROM  WMS_BOARD_COMMENT
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+    </delete>
+
+	<insert id="insertBoardComment">
+		INSERT
+		  INTO  WMS_BOARD_COMMENT
+		     (  COMMENT_ID
+			 ,  PARNTS_COMMENT_ID
+			 ,  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  REPLY
+			 ,  SNS_AT
+			 ,  SNS_GB
+			 ,  REALNAME_AT
+			 ,  WRITER_ID
+			 ,  WRITER_NM
+			 ,  CONTENT
+			 ,  REGIST_DTTM
+			 ,  REGIST_IP
+			 ,  DELETED_AT
+		     )
+		VALUES
+		     (  #{commentId}
+			 ,  #{parntsCommentId}
+			 ,  #{boardId}
+			 ,  #{articleId}
+			 ,  #{reply, jdbcType=VARCHAR}
+			 ,  #{snsAt, jdbcType=VARCHAR}
+			 ,  #{snsGb, jdbcType=VARCHAR}
+			 ,  #{realnameAt, jdbcType=VARCHAR}
+			 ,  #{writerId, jdbcType=VARCHAR}
+			 ,  #{writerNm, jdbcType=VARCHAR}
+			 ,  #{content, jdbcType=VARCHAR}
+			 ,  SYSDATE
+			 ,  #{registIp, jdbcType=VARCHAR}
+			 ,  'N'
+		     )
+	</insert>
+
+	<select id="selectBoardAnswerListCnt" parameterType="boardAnswerVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_ANSWER A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.DELETED_AT = 'N'
+	</select>
+
+	<select id="selectBoardAnswerList" parameterType="boardAnswerVO" resultMap="boardAnswer">
+		SELECT  A.ANSWER_ID
+			 ,  A.BOARD_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.DEPT_ID
+			 ,  DECODE(LENGTH(A.DEPT_ID), 0, '', (SELECT DEPT_NM FROM WMS_ORGNZT_DEPT WHERE DEPT_ID = A.DEPT_ID)) AS deptNm
+			 ,  A.TEL_NO
+			 ,  A.EMAIL
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.CONTENT
+			 ,  A.REGIST_DTTM
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_ID
+		  FROM  WMS_BOARD_ANSWER A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.DELETED_AT = 'N'
+	  ORDER BY  A.ANSWER_ID ASC
+	</select>
+
+	<select id="selectBoardAnswer" parameterType="boardAnswerVO" resultMap="boardAnswer">
+		SELECT  A.ANSWER_ID
+			 ,  A.BOARD_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.DEPT_ID
+			 ,  DECODE(LENGTH(A.DEPT_ID), 0, '', (SELECT DEPT_NM FROM WMS_ORGNZT_DEPT WHERE DEPT_ID = A.DEPT_ID)) AS deptNm
+			 ,  A.TEL_NO
+			 ,  A.EMAIL
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.CONTENT
+			 ,  A.REGIST_DTTM
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_ID
+		  FROM  WMS_BOARD_ANSWER A
+		 WHERE  A.BOARD_ID = #{boardId}
+		   AND  A.ARTICLE_ID = #{articleId}
+		   AND  A.ANSWER_ID = #{answerId}
+		   AND  A.DELETED_AT = 'N'
+	</select>
+
+	<insert id="insertBoardAnswer">
+		INSERT
+		  INTO  WMS_BOARD_ANSWER
+		     (  ANSWER_ID
+			 ,  BOARD_ID
+			 ,  ARTICLE_ID
+			 ,  DEPT_ID
+			 ,  TEL_NO
+			 ,  EMAIL
+			 ,  WRITER_ID
+			 ,  WRITER_NM
+			 ,  CONTENT
+			 ,  REGIST_DTTM
+			 ,  DELETED_AT
+		     )
+		VALUES
+		     (  #{answerId}
+			 ,  #{boardId}
+			 ,  #{articleId}
+			 ,  #{deptId, jdbcType=VARCHAR}
+			 ,  #{telNo, jdbcType=VARCHAR}
+			 ,  #{email, jdbcType=VARCHAR}
+			 ,  #{writerId, jdbcType=VARCHAR}
+			 ,  #{writerNm, jdbcType=VARCHAR}
+			 ,  #{content, jdbcType=VARCHAR}
+			 ,  SYSDATE
+			 ,  'N'
+		     )
+	</insert>
+
+	<update id="updateBoardAnswer">
+		UPDATE  WMS_BOARD_ANSWER
+		   SET  DEPT_ID = #{deptId, jdbcType=VARCHAR}
+		     ,  TEL_NO = #{telNo, jdbcType=VARCHAR}
+		     ,  EMAIL = #{email, jdbcType=VARCHAR}
+		     ,  CONTENT = #{content, jdbcType=VARCHAR}
+		     ,  UPDATE_DTTM = SYSDATE
+		     ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  ANSWER_ID = #{answerId}
+	</update>
+
+	<update id="updateBoardAnswerDeletedAt">
+		UPDATE  WMS_BOARD_ANSWER
+		   SET  DELETED_AT = 'Y'
+		     ,  DELETE_DTTM = SYSDATE
+		     ,  DELETE_ID = #{deleteId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId}
+		   AND  ANSWER_ID = #{answerId}
+	</update>
+    
+    
+    
+    
+    
+
+</mapper>
+

@@ -1,0 +1,27 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<script type="text/javascript">
+function ViewSearch(){
+        document.getElementById("SearchLayer").style.display='inline'
+    }
+function CloseSearch(){
+        document.getElementById("SearchLayer").style.display='none'
+    }
+</script>
+
+<div id="SearchLayer" style="position:absolute;z-index:999;display:none; width:100%; height:90%;
+background: none rgba(0, 0, 0, 0.9);
+filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#80000000', endColorstr='#80000000');
+" align='center'>
+<table valign="middle" height=100%><tr><td >
+<input type='text'><input type='submit'><br>\
+<br><br>
+<font size='3' color='white' onclick='CloseSearch()'>Close</font>
+</td></tr></table>
+</div>
+<a href="javascript:ViewSearch();">HAHWUL_TEST</a>
+</body>
+</html>

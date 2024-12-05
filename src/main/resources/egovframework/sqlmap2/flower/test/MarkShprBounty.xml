@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :MarkShprBounty.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 공동출하장려금조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="MarkShprBounty">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="chulCode"      column="chulCode"      columnIndex="1" /> 
+	    <result property="chulName"      column="chulName"      columnIndex="2" /> 
+	    <result property="pBoxCnt"       column="pBoxCnt"       columnIndex="3" /> 
+	    <result property="pSokCnt"       column="pSokCnt"       columnIndex="4" /> 
+	    <result property="panPrice"      column="panPrice"      columnIndex="5" /> 
+	    <result property="jangP"         column="jangP"         columnIndex="6" /> 
+	</resultMap>
+	
+	<resultMap id="SelectTermListMap" class="java.util.HashMap">
+	    <result property="yearMonth"     column="yearMonth"     columnIndex="1" /> 
+	    <result property="stYear"        column="stYear"        columnIndex="2" /> 
+	    <result property="selMonth"      column="selMonth"      columnIndex="3" /> 
+	    <result property="nongGa"        column="nongGa"        columnIndex="4" /> 
+	    <result property="sok"           column="sok"           columnIndex="5" /> 
+	    <result property="mechul"        column="mechul"        columnIndex="6" /> 
+	    <result property="jangP"         column="jangP"         columnIndex="7" /> 
+	</resultMap>
+	
+	<resultMap id="SelectInfoListMap" class="java.util.HashMap">
+	    <result property="gCode"         column="gCode"         columnIndex="1" /> 
+	    <result property="gName"         column="gName"         columnIndex="2" /> 
+	    <result property="bunChk"        column="bunChk"        columnIndex="3" /> 
+	    <result property="toDay"         column="toDay"         columnIndex="4" />
+	</resultMap>
+	
+	<select id="MarkShprBounty.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				select  decode(grouping_id(a.chul_code),'1','합계',substr(a.chul_code,0,4)||'-'||substr(a.chul_code,5,4)) as chulCode, 
+				        nvl(decode(grouping_id(a.chul_code),'1','',max(a.chul_name)),count(a.chul_name)||'명') as chulName,
+				        sum(a.p_box_cnt) as pBoxCnt,                         
+				        sum(a.p_sok_cnt) as pSokCnt,                         
+				        sum(a.pan_price) as panPrice,                         
+				        sum(b.jang_p)/count(a.chul_name)    as jangP  
+				  from  (                                
+				         select a.group_code as group_code,   
+				                a.chul_code as chul_code,        
+				                max(b.name) as chul_name,        
+				                sum(a.p_box_cnt) as p_box_cnt,   
+				                sum(a.p_sok_cnt) as p_sok_cnt,   
+				                sum(a.pan_price) as pan_price    
+				           from v_sang_pan_list@flower a,           
+				                a_chul_info@flower b                    
+				          where a.chul_code = b.code         
+				            and a.p_bun_chk = #bunChk#                  
+				            and a.pan_day like #stYear#||#selMonth#||'%'            
+				            and a.group_code = #groupCode#                 
+				            and a.km_list in ('1','3','4')       
+				          group by a.group_code,a.chul_code ) a,  
+				        (select g_code,jang_p                 
+				           from a_group_month@flower                
+				          where year_month = #stYear#||#selMonth#               
+				            and g_code = #groupCode#             ) b   
+				 where  a.group_code = b.g_code
+				 group  by rollup(a.chul_code)
+		 ]]>
+	</select>
+	
+	<select id="MarkShprBounty.selectTermList" resultMap="SelectTermListMap">
+		<![CDATA[
+				select  decode(grouping_id(year_month),'1','합계',substr(year_month,0,4)||'.'||substr(year_month,5,2)) as yearMonth,
+				        substr(year_month,0,4) as stYear,
+				        substr(year_month,5,2) as selMonth,  
+				        sum(nong_ga)  as nongGa,                            
+				        sum(sok)      as sok   ,                                
+				        sum(mechul)   as mechul,                             
+				        sum(jang_p)   as jangP                      
+				  from  a_group_month@flower                 
+				 where  year_month between #startDate# and #endDate#    
+				   and  g_code =  #groupCode# 
+				 group  by rollup(year_month)
+		 ]]>
+	</select>
+	
+	<select id="MarkShprBounty.selectInfoList" resultMap="SelectInfoListMap">
+		<![CDATA[
+				SELECT  g_code as gCode
+				        , g_name as gName
+				        , decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk
+				        , to_char(sysdate,'yyyy-mm-dd')             as toDay
+				  FROM  A_C_GROUP@flower G 
+				 WHERE  G.G_CODE = #groupCode# 
+		 ]]>
+	</select>
+	
+
+</sqlMap>

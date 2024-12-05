@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :ShprSaleCalcTot.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 판매내역정산(집계)조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="ShprSaleCalcTot">
+
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="upDay"     column="upDay"        columnIndex="1" />  <!-- 경매일자    -->
+	    <result property="totBox"    column="totBox"       columnIndex="2" />  <!-- 총 경매량 상자수 -->
+	    <result property="totSok"    column="totSok"       columnIndex="3" />  <!-- 총 경매량 속수 -->
+	    <result property="panBox"    column="panBox"       columnIndex="4" />  <!-- 판매량 상자수 -->
+	    <result property="panSok"    column="panSok"       columnIndex="5" />  <!-- 판매량 속수 -->
+	    <result property="uchalBox"  column="uchalBox"     columnIndex="6" />  <!-- 유찰량 상자수 -->
+	    <result property="uchalSok"  column="uchalSok"     columnIndex="7" />  <!-- 유찰량 속수 -->
+	    <result property="panPrice"  column="panPrice"     columnIndex="8" />  <!-- 판매금액 -->
+	    <result property="gongJe"    column="gongJe"       columnIndex="9" /> <!-- 공제금액 -->
+	    <result property="chain"     column="chain"        columnIndex="10" /> <!-- 지급금액 --> 
+	    <result property="toDay"     column="toDay"        columnIndex="11" /> <!-- sysdate --> 
+	    <result property="name"      column="name"         columnIndex="12" />   <!-- 출하자명 -->
+	    <result property="fUpDay"    column="fUpDay"       columnIndex="13" />  <!-- 경매일자    -->
+	    <result property="startDate" column="startDate"    columnIndex="14" /> 
+	    <result property="endDate"   column="endDate"      columnIndex="15" /> 
+	</resultMap>
+	
+	<resultMap id="ShprSaleCalcTot.SumListMap" class="java.util.HashMap">
+	    <result property="sumTotBox"    column="sumTotBox"       columnIndex="1" />  <!-- 총 경매량 상자수 -->
+	    <result property="sumTotSok"    column="sumTotSok"       columnIndex="2" />  <!-- 총 경매량 속수 -->
+	    <result property="sumPanBox"    column="sumPanBox"       columnIndex="3" />  <!-- 판매량 상자수 -->
+	    <result property="sumPanSok"    column="sumPanSok"       columnIndex="4" />  <!-- 판매량 속수 -->
+	    <result property="sumUchalBox"  column="sumUchalBox"     columnIndex="5" />  <!-- 유찰량 상자수 -->
+	    <result property="sumUchalSok"  column="sumUchalSok"     columnIndex="6" />  <!-- 유찰량 속수 -->
+	    <result property="sumPanPrice"  column="sumPanPrice"     columnIndex="7" />  <!-- 판매금액 -->
+	    <result property="sumGongJe"    column="sumGongJe"       columnIndex="8" />  <!-- 공제금액 -->
+	    <result property="sumChain"     column="sumChain"        columnIndex="9" />  <!-- 지급금액 --> 
+	</resultMap>
+	
+	<resultMap id="ShprSaleCalcTot.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="flowerName"    column="flowerName"    columnIndex="2" /><!--플라워 명-->
+	</resultMap>
+	
+	<!-- 엑셀 출력을 위한 업체 목록 resutlMap -->
+	<resultMap id="ShprSaleCalcTot.selectListForExcelMap" class="java.util.HashMap">
+	    <result property="upDay"     column="upDay"        columnIndex="1" />  <!-- 경매일자    -->
+	    <result property="totBox"    column="totBox"       columnIndex="2" />  <!-- 총 경매량 상자수 -->
+	    <result property="totSok"    column="totSok"       columnIndex="3" />  <!-- 총 경매량 속수 -->
+	    <result property="panBox"    column="panBox"       columnIndex="4" />  <!-- 판매량 상자수 -->
+	    <result property="panSok"    column="panSok"       columnIndex="5" />  <!-- 판매량 속수 -->
+	    <result property="uchalBox"  column="uchalBox"     columnIndex="6" />  <!-- 유찰량 상자수 -->
+	    <result property="uchalSok"  column="uchalSok"     columnIndex="7" />  <!-- 유찰량 속수 -->
+	    <result property="panPrice"  column="panPrice"     columnIndex="8" />  <!-- 판매금액 -->
+	    <result property="gongJe"    column="gongJe"       columnIndex="9" /> <!-- 공제금액 -->
+	    <result property="chain"     column="chain"        columnIndex="10" /> <!-- 지급금액 --> 
+	</resultMap>
+	
+	<!-- 판매정산내역[집계] 상세보기  resutlMap -->
+	<resultMap id="ShprSaleCalcTot.selectMap" class="java.util.HashMap">
+	    <result property="chulCode"          column="chulCode"        columnIndex="1" />   <!--  -->
+	    <result property="name"              column="name"            columnIndex="2" />   <!--  -->
+	    <result property="pMokName"          column="pMokName"        columnIndex="3" />   <!--  -->
+	    <result property="fUpDay"            column="fUpDay"          columnIndex="4" />   <!--  -->
+	    <result property="pJongName"         column="pJongName"       columnIndex="5" />   <!--  -->
+	    <result property="pumCode"           column="pumCode"         columnIndex="6" />   <!--  -->
+	    <result property="boxCnt"            column="boxCnt"          columnIndex="7" />   <!--  -->
+	    <result property="sokCnt"            column="sokCnt"          columnIndex="8" />   <!--  -->
+	    <result property="levelName"         column="levelName"       columnIndex="9" />   <!--  -->
+	    <result property="kmpNew"            column="kmpNew"          columnIndex="10" />  <!--  -->
+	    <result property="panPrice"          column="panPrice"        columnIndex="11" />  <!--  -->
+	    <result property="kmList"            column="kmList"          columnIndex="12" />  <!--  -->
+	    <result property="serialNo"          column="serialNo"        columnIndex="13" />  <!--  -->
+	    <result property="totPrice"          column="totPrice"        columnIndex="14" />  <!--  -->
+	    <result property="hZipPk"            column="hZipPk"          columnIndex="15" />  <!--  -->
+	    <result property="hAddr"             column="hAddr"           columnIndex="16" />  <!--  -->
+	    <result property="transPrice"        column="transPrice"      columnIndex="17" />  <!--  -->
+	    <result property="downRep"           column="downRep"         columnIndex="18" />  <!--  -->
+	    <result property="misuNuge"          column="misuNuge"        columnIndex="19" />  <!--  -->
+	    <result property="reBoxp"            column="reBoxp"          columnIndex="20" />  <!--  -->
+	    <result property="sangHwan"          column="sangHwan"        columnIndex="21" />  <!--  -->
+	    <result property="chain"             column="chain"           columnIndex="22" />  <!--  -->
+	    <result property="suSup"             column="suSup"           columnIndex="23" />  <!--  -->
+	    <result property="panNo"             column="panNo"           columnIndex="24" />  <!--  -->
+	    <result property="bunChk"            column="bunChk"          columnIndex="25" />  <!--  -->
+	    <result property="daegiPrice"        column="daegiPrice"      columnIndex="26" />  <!--  -->
+	    <result property="panDay"            column="panDay"          columnIndex="27" />  <!--  -->
+	    <result property="misu"              column="misu"            columnIndex="28" />  <!--  -->
+	    <result property="pMisu"             column="pMisu"           columnIndex="29" />  <!--  -->
+	    <result property="tMisuRet"          column="tMisuRet"        columnIndex="30" />  <!--  -->
+	    <result property="bankCode"          column="bankCode"        columnIndex="31" />  <!--  -->
+	    <result property="returnAmt"         column="returnAmt"       columnIndex="32" />  <!--  -->
+	    <result property="selfAmt"           column="selfAmt"         columnIndex="33" />  <!--  -->
+	    <result property="feeAmt"            column="feeAmt"          columnIndex="34" />  <!--  -->
+	    <result property="transPriceAdd"     column="transPriceAdd"   columnIndex="35" />  <!--  -->
+	    <result property="toDay"             column="toDay"           columnIndex="36" /> <!-- sysdate --> 
+	    <result property="startDate"         column="startDate"       columnIndex="37" /> 
+	    <result property="endDate"           column="endDate"         columnIndex="38" /> 
+	</resultMap>
+	
+	<select id="ShprSaleCalcTot.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				SELECT  a.pan_day as upDay,
+				        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fUpDay,        
+				        sum(a.p_box_cnt) as totBox,        
+				        sum(a.p_sok_cnt) as totSok,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+				        nvl(sum(a.pan_price),0) as panPrice,        
+				        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+				        nvl(sum(a.chain),0) as chain,
+			            to_char(sysdate,'yyyy-mm-dd') as toDay
+                        ,(select name from a_chul_info@flower where code = #chulCode# ) as name
+				        ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				        ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				  FROM  v_bon_pan_list@flower a, 
+				        a_day_magam@flower b 
+				 WHERE  a.p_bun_chk  = b.bun_chk  
+				   AND  a.pan_day    = b.magam_ilja   
+				   AND  a.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+				   AND  a.pan_day between #startDate# and  #endDate#
+				   AND  a.chul_code  = #chulCode#
+				 GROUP  BY a.pan_day
+				 ORDER  BY pan_day desc
+		 ]]>
+	</select>
+	
+	<select id="ShprSaleCalcTot.sumList" resultMap="ShprSaleCalcTot.SumListMap">
+		<![CDATA[
+				SELECT  sum(totBox  ) as  sumTotBox  ,
+				        sum(totSok  ) as  sumTotSok  ,
+				        sum(panBox  ) as  sumPanBox  ,
+				        sum(panSok  ) as  sumPanSok  ,
+				        sum(uchalBox) as  sumUchalBox,
+				        sum(uchalSok) as  sumUchalSok,
+				        sum(panPrice) as  sumPanPrice,
+				        sum(gongJe  ) as  sumGongJe  ,
+				        sum(chain   ) as  sumChain   
+				  FROM (
+						SELECT  a.pan_day as upDay,        
+						        sum(a.p_box_cnt) as totBox,        
+						        sum(a.p_sok_cnt) as totSok,        
+						        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+						        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+						        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+						        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+						        nvl(sum(a.pan_price),0) as panPrice,        
+						        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+						        nvl(sum(a.chain),0) as chain
+						  FROM  v_bon_pan_list@flower a, 
+						        a_day_magam@flower b 
+						 WHERE  a.p_bun_chk  = b.bun_chk  
+						   AND  a.pan_day    = b.magam_ilja   
+						   AND  a.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+						   AND  a.pan_day between #startDate# and  #endDate#
+						   AND  a.chul_code  = #chulCode#
+						 GROUP  BY a.pan_day
+                )
+		 ]]>
+	</select>
+	
+	<select id="ShprSaleCalcTot.buryuList" resultMap="ShprSaleCalcTot.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #chulCode#  
+		 ]]>
+	</select>
+
+	<select id="ShprSaleCalcTot.selectListForExcel" resultMap="ShprSaleCalcTot.selectListForExcelMap">
+		<![CDATA[
+				SELECT  a.pan_day as upDay,        
+				        sum(a.p_box_cnt) as totBox,        
+				        sum(a.p_sok_cnt) as totSok,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+				        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+				        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+				        nvl(sum(a.pan_price),0) as panPrice,        
+				        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+				        nvl(sum(a.chain),0) as chain
+				  FROM  v_bon_pan_list@flower a, 
+				        a_day_magam@flower b 
+				 WHERE  a.p_bun_chk  = b.bun_chk  
+				   AND  a.pan_day    = b.magam_ilja   
+				   AND  a.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+				   AND  a.pan_day between #startDate# and  #endDate#
+				   AND  a.chul_code  = #chulCode#
+				 GROUP  BY a.pan_day
+				 ORDER  BY pan_day desc
+		 ]]>
+	</select>
+	
+	<select id="ShprSaleCalcTot.Select" resultMap="ShprSaleCalcTot.selectMap">
+		<![CDATA[
+				SELECT b.chul_code   as chulCode,        
+				       a.name        as name,        
+				       d.p_mok_name  as pMokName,
+				       to_char(to_date(b.f_up_day),'yyyy-mm-dd') as fUpDay,        
+				       d.p_jong_name||decode(b.f_songe_cnt,'0','',' /'||b.f_songe_cnt) as pJongName,        
+				       b.pum_code    as pumCode,        
+				       b.p_box_cnt   as boxCnt,        
+				       b.p_sok_cnt   as sokCnt,        
+				       c.name        as levelName,          
+				       b.km_p_new    as kmPNew,        
+				       b.pan_price   as panPrice,        
+				       b.km_list     as kmList,        
+				       b.serial_no   as serialNo,        
+				       b.tot_price   as totPrice,        
+				       a.h_zip_pk    as hZipPk,        
+				       a.h_addr      as hAddr,        
+				       b.trans_price as transPrice,        
+				       case when b.p_bun_chk = 'Y' 
+				            then b.down_re_pg 
+				            else b.down_re_p 
+				        end          as downReP,        
+				       b.misu_nuge   as misuNuge,        
+				       b.p_re_box_p  as reBoxp,        
+				       b.sang_hwan   as sangHwan,        
+				       b.chain       as chain,        
+				       b.su_su_p     as suSup,        
+				       b.pan_no      as panNo,        
+				       b.bun_chk     as bunChk,        
+				       b.daegi_price as daegiPrice,        
+				       b.pan_day     as panDay,        
+				       b.misu        as misu,        
+				       b.p_misu      as pMisu,        
+				       b.t_misu_ret  as tMisuRet,        
+				       a.bank_code   as bankCode,        
+				       b.return_amt  as returnAmt,        
+				       b.self_amt    as selfAmt,        
+				       b.fee_amt     as feeAmt,        
+				       b.trans_price_add as transPriceAdd
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				FROM   a_chul_info@flower a, 
+				       v_bon_pan_list@flower b, 
+				       a_level@flower c, 
+				       v_mok_jong_list@flower d, 
+				       a_day_magam@flower f 
+				WHERE  b.chul_code  = a.code   
+				  AND  b.p_bun_chk  = c.bun_chk   
+				  AND  b.acc_level  = c.code   
+				  AND  b.pum_code   = d.pum_code   
+				  AND  b.p_bun_chk  = f.bun_chk   
+				  AND  b.pan_day    = f.magam_ilja   
+				  AND  b.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+				  AND  b.pan_day    = #panDay#   
+				  AND  b.chul_code  = #chulCode# 
+				ORDER  BY b.f_up_day, b.pan_no, b.serial_no
+		 ]]>
+	</select>
+	
+	
+</sqlMap>

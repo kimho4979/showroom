@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WhslDealPric.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 거래정산내역 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="WhslDealPric">
+<typeAlias alias="WhslDealPricDTO" type="at.service.business.FLOMEJANG.whsldealpric.dto.WhslDealPricDTO" />
+    <!-- 거래정산내역  resutlMap -->
+    <resultMap id="WhslDealPric.selectListMap" class="java.util.HashMap">
+        <result property="bunchk"           column="bunchk"           columnIndex="1" /> 
+        <result property="upday"            column="upday"            columnIndex="2" /> 
+        <result property="endday"           column="endday"           columnIndex="3" />
+        <result property="upno"             column="upno"             columnIndex="4" /> 
+        <result property="name"             column="name"             columnIndex="5" /> 
+        <result property="pMokName"         column="pMokName"         columnIndex="6" /> 
+        <result property="pJongName"        column="pJongName"        columnIndex="7" />
+        <result property="price"            column="price"            columnIndex="8" /> 
+        <result property="grade"            column="grade"            columnIndex="9" /> 
+        <result property="box"              column="box"              columnIndex="10" />
+        <result property="sok"              column="sok"              columnIndex="11" />
+        <result property="state"            column="state"            columnIndex="12" />
+    </resultMap>
+    
+    <resultMap id="WhslDealPric.selectPopupListMap" class="java.util.HashMap">
+        <result property="endday"           column="endday"           columnIndex="1" />
+        <result property="name"             column="name"             columnIndex="2" /> 
+        <result property="pMokName"         column="pMokName"         columnIndex="3" /> 
+        <result property="pJongName"        column="pJongName"        columnIndex="4" />
+        <result property="price"            column="price"            columnIndex="5" /> 
+        <result property="grade"            column="grade"            columnIndex="6" /> 
+        <result property="state"            column="state"            columnIndex="7" />
+        <result property="box"              column="box"              columnIndex="8" />
+        <result property="sok"              column="sok"              columnIndex="9" />
+        <result property="kmmancode"        column="kmmancode"        columnIndex="10" />
+        <result property="kmmanname"        column="kmmanname"        columnIndex="11" />
+    </resultMap>
+    
+    <resultMap id="WhslDealPric.loginMap" class="java.util.HashMap">
+        <result property="cd_gubun"         column="cd_gubun"       columnIndex="1" /> 
+        <result property="kmmancode"        column="cd1"            columnIndex="2" /> 
+        <result property="bunchk"           column="cd2"            columnIndex="3" />
+        <result property="kmmanname"        column="cd_name"        columnIndex="4" />
+        <result property="loginID"          column="cd_explain"     columnIndex="5" />
+    </resultMap>
+    
+    <resultMap id="WhslDealPric.serial" class="java.util.HashMap">
+        <result property="serial"           column="serial"         columnIndex="1" /> 
+    </resultMap>
+    
+    <!-- 엑셀 출력 목록 resutlMap -->
+    <resultMap id="WhslDealPric.selectListForExcelMap" class="java.util.HashMap">
+        <result property="panDay"           column="panDay"           columnIndex="1" /> 
+        <result property="formattedDay"     column="formattedDay"     columnIndex="2" /> 
+        <result property="jDomeCode"        column="jDomeCode"        columnIndex="3" /> 
+        <result property="domeName"         column="domeName"         columnIndex="4" /> 
+        <result property="pMokName"         column="pMokName"         columnIndex="5" /> 
+        <result property="pJongName"        column="pJongName"        columnIndex="6" /> 
+        <result property="pumCode"          column="pumCode"          columnIndex="7" /> 
+        <result property="levelName"        column="levelName"        columnIndex="8" /> 
+        <result property="pBoxCnt"          column="pBoxCnt"          columnIndex="9" /> 
+        <result property="pSokCnt"          column="pSokCnt"          columnIndex="10" />
+        <result property="kmPNew"           column="kmPNew"           columnIndex="11" />
+        <result property="panPrice"         column="panPrice"         columnIndex="12" />
+        <result property="panNo"            column="panNo"            columnIndex="13" />
+        <result property="chulName"         column="chulName"         columnIndex="14" />
+        <result property="toDay"            column="toDay"            columnIndex="15" /> <!-- sysdate --> 
+    </resultMap>
+    
+    <select id="WhslDealPric.SelectList" resultMap="WhslDealPric.selectListMap">
+        <![CDATA[
+            SELECT a.bun_chk as bunchk,
+                   a.UP_DAY as upday,
+                   a.end_day as endday,
+                   a.UP_NO as upno,
+                   b.NAME as name,
+                   c.p_mok_name as pMokName,   
+                   c.P_JONG_NAME as pJongName,
+                   d.name as grade,
+                   A.PRICE as price,
+                   a.BOX_CNT as box,
+                   a.SOK_CNT as sok,
+                   a.state as state
+                   FROM a_jungga@flower a,
+                   A_CHUL_INFO@flower b,
+                   v_mok_jong_list@flower c,
+                   a_level@flower d
+                   WHERE a.PUM_CODE = c.PUM_CODE 
+                    AND a.CHUL_CODE = b.CODE 
+                    AND a.ACC_LEVEL = d.code
+                    AND a.bun_chk = d.bun_chk
+         ]]>
+         <isEmpty property="startDate">
+           <![CDATA[
+                 AND a.up_day = '20120611'
+           ]]>
+         </isEmpty>
+         <isNotEmpty property="startDate">
+           <![CDATA[
+                 AND a.up_day between #startDate# and #endDate#
+           ]]>
+         </isNotEmpty>
+         <isNotEmpty property="bunchk">
+            <![CDATA[
+                    AND A.BUN_CHK like #bunchk#
+            ]]>
+        </isNotEmpty>
+                    ORDER BY a.up_day DESC, a.UP_NO ASC
+    </select>
+    
+    <select id="WhslDealPric.SelectPopupList" resultMap="WhslDealPric.selectPopupListMap">
+    <![CDATA[
+            SELECT a.end_day as endday,
+                   b.NAME as name,
+                   c.p_mok_name as pMokName,   
+                   c.P_JONG_NAME as pJongName,
+                   d.name as grade,
+                   A.PRICE as price,
+                   a.BOX_CNT as box,
+                   a.SOK_CNT as sok,
+                   a.state as state,
+                   a.km_man_code as kmmancode,
+                   (select cd_name from a_public_info@flower where cd_gubun = '7' and cd1 = a.km_man_code) as kmmanname
+                   FROM a_jungga@flower a,
+                   A_CHUL_INFO@flower b,
+                   v_mok_jong_list@flower c,
+                   a_level@flower d
+                   WHERE a.PUM_CODE = c.PUM_CODE 
+                    AND a.CHUL_CODE = b.CODE 
+                    AND a.ACC_LEVEL = d.code
+                    AND a.bun_chk = d.bun_chk
+                    AND a.up_no = #upno#
+                    AND a.up_day = #upday#
+                    AND A.BUN_CHK = #bunchk#
+            ]]>
+    </select>
+    
+    <update id="WhslDealPric.update">
+        <![CDATA[
+            update A_jungga@flower set end_day = #endday#, price=#price#, state=1, km_man_code= #kmmancode#,km_man_date = sysdate where bun_chk = #bunchk# and up_day = #upday# and 
+up_no = #upno#
+         ]]>
+    </update>
+    
+    <insert id="WhslDealPric.buy" parameterClass="WhslDealPricDTO">
+        <selectKey keyProperty="insertCount" resultClass="int">
+            SELECT COUNT(serial_no)
+            FROM a_pan_mae@flower
+            WHERE bun_chk = #bunchk#
+            and pan_no = #upno#
+            and pan_day = #upday#
+        </selectKey>
+    <![CDATA[
+            insert into a_pan_mae@flower (
+                        bun_chk,
+                        pan_no,   
+                        serial_no,   
+                        box_cnt,   
+                        sok_cnt,   
+                        km_p_org,   
+                        km_p_new,   
+                        pan_price,   
+                        j_dome_code,   
+                        km_man_code,   
+                        km_list,   
+                        pan_day,   
+                        pan_type,
+                        f_i_id,     
+                        f_i_dt,     
+                        l_u_id,     
+                        l_u_dt
+                        )
+             values ( 
+                        #bunchk#,
+                        #upno#,
+                        LPAD(NVL((SELECT COUNT(serial_no) FROM a_pan_mae@flower WHERE bun_chk = #bunchk# and pan_no = #upno# and pan_day = #upday#), '00')+1, 2, '0'),
+                        #jbox#,
+                        (#jbox#/#box#*#sok#),
+                        #price#,
+                        #price#,
+                        (#jbox#/#box#*#sok# * #price#),
+                        #auctionFarmCode#,
+                        #kmmancode#,
+                        4,
+                        #upday#,
+                        01,
+                        9,
+                        sysdate,
+                        9,
+                        sysdate
+                        )
+    ]]>
+    </insert>
+    
+    <select id="WhslDealPric.login" resultMap="WhslDealPric.loginMap">
+    <![CDATA[
+			select cd_gubun,cd1,cd2,cd_name,cd_explain from 
+			wb_cm_로그인ID a,
+			a_public_info@flower b
+			where
+			a.로그인ID=#loginID# and
+			b.cd_explain = a.로그인ID
+            ]]>
+    </select>
+    
+    <select id="WhslDealPric.serial" resultMap="WhslDealPric.serial">
+    <![CDATA[
+            select count(serial_no)+1 as serial from a_pan_mae@flower
+            where
+            bun_chk = #bunchk# and
+			pan_no = #upno# and
+			pan_day = #upday#
+    ]]>
+    </select>
+</sqlMap>

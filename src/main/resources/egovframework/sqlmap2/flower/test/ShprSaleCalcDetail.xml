@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :ShprSaleCalcDetail.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 판매내역정산(상세)조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="ShprSaleCalcDetail">	
+	<resultMap id="ShprSaleCalcDetail.latestDateMap" class="java.util.HashMap">
+		<result property="panDay" column="PAN_DAY" columnIndex="1" />
+	</resultMap>
+	
+	<resultMap id="ShprSaleCalcDetail.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="flowerName"    column="flowerName"    columnIndex="2" /><!--플라워 명-->
+	</resultMap>
+	
+	<!-- 판매정산내역[상세] 상세보기  resutlMap -->
+	<resultMap id="ShprSaleCalcDetail.selectMap" class="java.util.HashMap">
+	    <result property="chulCode"          column="chulCode"        columnIndex="1" />
+	    <result property="name"              column="name"            columnIndex="2" />
+	    <result property="pMokName"          column="pMokName"        columnIndex="3" />
+	    <result property="fUpDay"            column="fUpDay"          columnIndex="4" />
+	    <result property="pJongName"         column="pJongName"       columnIndex="5" />
+	    <result property="pumCode"           column="pumCode"         columnIndex="6" />
+	    <result property="boxCnt"            column="boxCnt"          columnIndex="7" />
+	    <result property="sokCnt"            column="sokCnt"          columnIndex="8" />
+	    <result property="levelName"         column="levelName"       columnIndex="9" />
+	    <result property="kmpNew"            column="kmpNew"          columnIndex="10" />
+	    <result property="panPrice"          column="panPrice"        columnIndex="11" />
+	    <result property="kmList"            column="kmList"          columnIndex="12" />
+	    <result property="serialNo"          column="serialNo"        columnIndex="13" />
+	    <result property="totPrice"          column="totPrice"        columnIndex="14" />
+	    <result property="hZipPk"            column="hZipPk"          columnIndex="15" />
+	    <result property="hAddr"             column="hAddr"           columnIndex="16" />
+	    <result property="transPrice"        column="transPrice"      columnIndex="17" />
+	    <result property="downRep"           column="downRep"         columnIndex="18" />
+	    <result property="misuNuge"          column="misuNuge"        columnIndex="19" />
+	    <result property="reBoxp"            column="reBoxp"          columnIndex="20" />
+	    <result property="sangHwan"          column="sangHwan"        columnIndex="21" />
+	    <result property="chain"             column="chain"           columnIndex="22" />
+	    <result property="suSup"             column="suSup"           columnIndex="23" />
+	    <result property="panNo"             column="panNo"           columnIndex="24" />
+	    <result property="bunChk"            column="bunChk"          columnIndex="25" />
+	    <result property="daegiPrice"        column="daegiPrice"      columnIndex="26" />
+	    <result property="panDay"            column="panDay"          columnIndex="27" />
+	    <result property="misu"              column="misu"            columnIndex="28" />
+	    <result property="pMisu"             column="pMisu"           columnIndex="29" />
+	    <result property="tMisuRet"          column="tMisuRet"        columnIndex="30" />
+	    <result property="bankCode"          column="bankCode"        columnIndex="31" />
+	    <result property="returnAmt"         column="returnAmt"       columnIndex="32" />
+	    <result property="selfAmt"           column="selfAmt"         columnIndex="33" />
+	    <result property="feeAmt"            column="feeAmt"          columnIndex="34" />
+	    <result property="transPriceAdd"     column="transPriceAdd"   columnIndex="35" />
+	    <result property="toDay"             column="toDay"           columnIndex="36" />
+	    <result property="rentalAmt"      	 column="rentalAmt"       columnIndex="37" />
+	    <result property="baekAmt"        	 column="baekAmt"      	  columnIndex="38" />
+	</resultMap>
+	
+	<select id="ShprSaleCalcDetail.buryuList" resultMap="ShprSaleCalcDetail.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #chulCode#  
+		 ]]>
+	</select>
+
+	<select id="ShprSaleCalcDetail.selectLatestDate" resultMap="ShprSaleCalcDetail.latestDateMap">
+		<![CDATA[
+			SELECT MAX(PAN_DAY) PAN_DAY
+			FROM V_SANG_PAN_LIST@FLOWER
+			WHERE CHUL_CODE = #chulCode#
+		]]>
+	</select>
+	
+	<select id="ShprSaleCalcDetail.Select" resultMap="ShprSaleCalcDetail.selectMap">
+		<![CDATA[
+				SELECT b.chul_code   as chulCode,        
+				       a.name        as name,        
+				       d.p_mok_name  as pMokName,        
+				       to_char(to_date(b.f_up_day),'yyyy-mm-dd') as fUpDay,        
+				       d.p_jong_name||decode(b.f_songe_cnt,'0','',' /'||b.f_songe_cnt) as pJongName,        
+				       b.pum_code    as pumCode,        
+				       b.p_box_cnt   as boxCnt,        
+				       b.p_sok_cnt   as sokCnt,        
+				       c.name        as levelName,          
+				       b.km_p_new    as kmPNew,        
+				       b.pan_price   as panPrice,        
+					   decode(b.km_list,'1','낙찰','3','낙찰','2','유찰','8','유찰','9','폐기','4','선취') as kmList,        
+				       b.serial_no   as serialNo,        
+				       b.tot_price   as totPrice,        
+				       a.h_zip_pk    as hZipPk,        
+				       a.h_addr      as hAddr,        
+				       b.trans_price as transPrice,        
+				       case when b.p_bun_chk = 'Y' 
+				            then b.down_re_pg 
+				            else b.down_re_p 
+				        end          as downReP,        
+				       b.misu_nuge   as misuNuge,        
+				       b.p_re_box_p  as reBoxp,        
+				       b.sang_hwan   as sangHwan,        
+				       b.chain       as chain,        
+				       b.su_su_p     as suSup,        
+				       b.pan_no      as panNo,        
+				       b.bun_chk     as bunChk,        
+				       b.daegi_price as daegiPrice,        
+				       to_char(to_date(b.pan_day),'yyyy-mm-dd') as panDay,        
+				       b.misu        as misu,        
+				       b.p_misu      as pMisu,        
+				       b.t_misu_ret  as tMisuRet,        
+				       a.bank_code   as bankCode,        
+				       b.return_amt  as returnAmt,        
+				       b.self_amt    as selfAmt,        
+				       b.fee_amt     as feeAmt,        
+				       b.trans_price_add as transPriceAdd
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,b.rental_amt as rentalAmt
+			           ,b.baek_amt	 as baekAmt
+				FROM   a_chul_info@flower a, 
+				       v_sang_pan_list@flower b, 
+				       a_level@flower c, 
+				       v_mok_jong_list@flower d, 
+				       a_day_magam@flower f 
+				WHERE  b.chul_code  = a.code   
+				  AND  b.p_bun_chk  = c.bun_chk   
+				  AND  b.acc_level  = c.code   
+				  AND  b.pum_code   = d.pum_code   
+				  AND  b.p_bun_chk  = f.bun_chk   
+				  AND  b.pan_day    = f.magam_ilja   
+				  AND  b.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+				  AND  b.pan_day    = #panDate#   
+				  AND  b.chul_code  = #chulCode# 
+				ORDER  BY b.f_up_day, b.pan_no, b.serial_no
+		 ]]>
+	</select>
+	
+	
+</sqlMap>

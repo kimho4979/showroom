@@ -1,0 +1,3481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.fixCAuc.service.impl.FrontFixCAucMapper">
+	
+	<sql id="stateWhere">
+		<if test='searchFixState != null and searchFixState != ""'>
+			<choose>
+				<when test='searchFixState == "7"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					AND SYSDATE &gt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>
+				<when test='searchFixState == "8"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>
+				<when test='searchFixState == "9"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>				
+				<otherwise>
+					AND FIX_STATE = #{searchFixState}
+				</otherwise>
+			</choose>
+			
+		</if>
+	</sql>
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="AUC_BAN_TEXT" column="AUC_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="ITEM_TEXT" column="ITEM_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="CHUL_BAN_TEXT" column="CHUL_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="REQ_TEXT" column="REQ_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<!-- 출하자 판매 -->
+	<select id="getFixList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT FIX_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , GROUP_CODE
+			     , DEAL_TYPE
+			     , UNIT_PRICE
+			     , CHUL_DATE
+			     , NVL(AUC_DATE, '-') AS AUC_DATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     	, CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+		       	   ELSE FIX_STATE END AS FIX_STATE_TWO			       
+			     , AUC_BAN_TEXT
+			     , ITEM_TEXT
+			     , THUMB_IMG
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE 
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			FROM TB_FIX_DEAL
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			AND LOGIN_ID = #{id}
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY INSERT_DATE_SORT DESC
+		) TB ) <!-- WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage} -->
+	</select>
+	 
+	<select id="getFixListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(FIX_DEAL_SEQ) AS CNT
+			FROM TB_FIX_DEAL
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			AND LOGIN_ID = #{id}
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+	<select id="getFixArticle" resultMap="egovResultMap">
+		SELECT FIX_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+		     , TWIN_CNT
+		     , BOX_CNT
+		     , SOK_CNT
+		     , GROUP_CODE
+		     , DEAL_TYPE
+		     , UNIT_PRICE
+		     , CHUL_DATE
+		     , AUC_DATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO			       
+		     , AUC_BAN_TEXT
+		     , ITEM_TEXT
+		     , THUMB_IMG
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , (SELECT NVL(SUM(BID_SOK_CNT),0) FROM TB_FIX_BID WHERE BUN_CHK = 'C' AND FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ AND BID_STATE != '5') AS BID_SOK_CNT
+		FROM TB_FIX_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		AND LOGIN_ID = #{id}
+		
+	</select>
+	
+	<select id="getFixFileList" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , FIX_DEAL_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_FIX_FILE
+		WHERE 1=1
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	</select>
+	
+
+	<select id="getRecentList" resultMap="egovResultMap">
+		SELECT FIX_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+		     , TWIN_CNT
+		     , BOX_CNT
+		     , SOK_CNT
+		     , GROUP_CODE
+		     , DEAL_TYPE
+		     , UNIT_PRICE
+		     , CHUL_DATE
+		     , AUC_DATE
+		     , FIX_STATE
+		     , AUC_BAN_TEXT
+		     , ITEM_TEXT
+		     , THUMB_IMG
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		FROM TB_FIX_DEAL
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND LOGIN_ID = #{id}
+		AND INSERT_DATE BETWEEN ADD_MONTHS(SYSDATE, -1) AND SYSDATE
+		ORDER BY INSERT_DATE_SORT DESC
+		
+	</select>
+	
+	<insert id="fixSellRegProc">
+		INSERT INTO TB_FIX_DEAL (
+			   FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , GROUP_CODE
+			 , DEAL_TYPE
+			 , UNIT_PRICE
+			 , CHUL_DATE
+			 , AUC_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , ITEM_TEXT
+			 , THUMB_IMG
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , CHUL_LEVEL_CUSTOM
+			 , UNIT_SOK
+		)VALUES ( 
+			  #{fixDealSeq, jdbcType=VARCHAR}
+			, #{bunCheck, jdbcType=VARCHAR}
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			, #{boxCnt, jdbcType=VARCHAR}
+			, #{sokCnt, jdbcType=VARCHAR}
+			, #{groupCode, jdbcType=VARCHAR}
+			, #{dealType, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{chulDate, jdbcType=VARCHAR}
+			, #{aucDate, jdbcType=VARCHAR}
+			, '1'
+			, #{aucBanText, jdbcType=VARCHAR}
+			, #{itemText, jdbcType=VARCHAR}
+			, #{thumbImg, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{chulLevelCustom, jdbcType=VARCHAR}
+			, #{unitSok, jdbcType=VARCHAR} 
+		)
+	</insert>
+	
+	<update id="fixSellUptProc">
+		UPDATE TB_FIX_DEAL
+		   SET CHUL_CODE    = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE     = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME     = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE     = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME     = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL   = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME   = #{chulLevelName, jdbcType=VARCHAR}
+			 , TWIN_CNT     = NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			 , BOX_CNT      = #{boxCnt, jdbcType=VARCHAR}
+			 , SOK_CNT      = #{sokCnt, jdbcType=VARCHAR}
+			 , GROUP_CODE   = #{groupCode, jdbcType=VARCHAR}
+			 , DEAL_TYPE    = #{dealType, jdbcType=VARCHAR}
+			 , UNIT_PRICE   = #{unitPrice, jdbcType=VARCHAR}
+			 , CHUL_DATE    = #{chulDate, jdbcType=VARCHAR}
+			 , AUC_DATE     = #{aucDate, jdbcType=VARCHAR}
+			 , FIX_STATE    = '1'
+			 , AUC_BAN_TEXT = #{aucBanText, jdbcType=VARCHAR}
+			 , ITEM_TEXT    = #{itemText, jdbcType=VARCHAR}
+			 , THUMB_IMG    = #{thumbImg, jdbcType=VARCHAR}
+			 , UPDATE_ID    = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE  = SYSDATE
+			 , CHUL_LEVEL_CUSTOM = #{chulLevelCustom, jdbcType=VARCHAR}
+			 , UNIT_SOK = #{unitSok, jdbcType=VARCHAR}
+		WHERE  FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND LOGIN_ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<delete id="fixSellDelProc">
+		DELETE FROM TB_FIX_DEAL
+		WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND LOGIN_ID = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="fixSellFileProc">
+		INSERT INTO TB_FIX_FILE (
+		     FILE_SEQ
+		   , FIX_DEAL_SEQ
+		   , STRE_FILE_PATH
+		   , STRE_FILE_NM
+		   , ORIGNL_FILE_NM
+		   , THUMB_STRE_FILE_NM
+		   , FILE_EXTSN
+		   , FILE_CN
+		   , FILE_SIZE
+		   , INSERT_ID
+		   , INSERT_DATE
+		   , UPDATE_ID
+		   , UPDATE_DATE
+		)VALUES ( 
+			   #{fileSeq, jdbcType=VARCHAR}
+			 , #{fixDealSeq, jdbcType=VARCHAR}
+			 , #{streFilePath, jdbcType=VARCHAR}
+			 , #{streFileNm, jdbcType=VARCHAR}
+			 , #{orignlFileNm, jdbcType=VARCHAR}
+			 , #{thumbStreFileNm, jdbcType=VARCHAR}
+			 , #{fileExtsn, jdbcType=VARCHAR}
+			 , #{fileCn, jdbcType=VARCHAR}
+			 , #{fileSize, jdbcType=VARCHAR}
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+		)
+	</insert>
+	
+	<select id="getFileOne" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , FIX_DEAL_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_FIX_FILE
+		WHERE 1=1
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	</select>
+	
+	
+	<delete id="deleteFileOne">
+		DELETE FROM TB_FIX_FILE
+		WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="fixSellFileDelProc">
+		DELETE FROM TB_FIX_FILE
+		WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getTime" resultType="egovMap">
+		SELECT BUN_CHK
+			 , TIME_TYPE
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 ,  CASE DAY_TYPE
+				WHEN '1' THEN '일요일'
+				WHEN '2' THEN '월요일'
+				WHEN '3' THEN '화요일'
+				WHEN '4' THEN '수요일'
+				WHEN '5' THEN '목요일'
+				WHEN '6' THEN '금요일'
+				WHEN '7' THEN '토요일'
+				END AS DAY_KR 
+			 /* , CASE WHEN TO_CHAR(SYSDATE, 'd') IN ('4','6') AND TO_CHAR(SYSDATE, 'HH24:MI') BETWEEN '00:00' AND END_TIME THEN 'Y' 
+			 		WHEN TO_CHAR(SYSDATE, 'd') NOT IN ('4','6') THEN 'Y' */ 
+			 , CASE WHEN TO_CHAR(SYSDATE, 'HH24:MI') BETWEEN STR_TIME AND END_TIME THEN 'Y' ELSE 'N' END AS TIME_CHECK                     
+		FROM TB_NEW_TIME
+		WHERE BUN_CHK = 'C'
+		AND TIME_TYPE = #{timeType}
+		AND TO_CHAR(SYSDATE, 'd') = DAY_TYPE
+	</select>
+	 
+	
+	
+	<!-- 중도매인 구매 -->
+	
+	<select id="getFixBuyList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT FIX_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , PUM_CODE
+			     , (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS P_UNIT2
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , GROUP_CODE
+			     , DEAL_TYPE
+			     , UNIT_PRICE
+			     , CHUL_DATE
+			     , NVL(AUC_DATE, '-') AS AUC_DATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO			       
+			     , AUC_BAN_TEXT
+			     , ITEM_TEXT
+			     , THUMB_IMG
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE
+			     , NVL((SELECT MIN('/uploads/fixAuc/C/' || THUMB_STRE_FILE_NM) FROM TB_FIX_FILE
+				   		WHERE FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ),'/img/noimage.png') AS THUMB_PATH  
+			     , BID_CNT
+			     , UNIT_SOK
+            FROM (SELECT T2.*
+                       , (SELECT COUNT(BID_SEQ) FROM TB_FIX_BID WHERE FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ AND J_CODE = #{code}) AS BID_CNT
+                  FROM TB_FIX_DEAL T2
+                  WHERE T2.BUN_CHK = 'C'
+                  AND T2.FIX_STATE IN ('3', '4', '5', '6')
+                  AND T2.AUC_DATE BETWEEN TO_CHAR(SYSDATE-7,'YYYY-MM-DD') AND TO_CHAR(SYSDATE+7,'YYYY-MM-DD')
+                 ) T1
+            WHERE 1=1
+            AND (FIX_STATE = '3' OR (FIX_STATE IN ('4', '5', '6') AND BID_CNT &gt; 0))
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND AUC_DATE &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND AUC_DATE &lt;= #{searchEndDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY DECODE(FIX_STATE, '7', 1, '3', 2, '8',3,4) ASC, AUC_DATE DESC
+		) TB ) <!-- WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage} -->
+	</select>
+	 
+	<select id="getFixBuyListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(FIX_DEAL_SEQ) AS CNT
+			FROM (SELECT T2.*
+                       , (SELECT COUNT(BID_SEQ) FROM TB_FIX_BID WHERE FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ AND J_CODE = #{code}) AS BID_CNT
+                  FROM TB_FIX_DEAL T2
+                  WHERE T2.BUN_CHK = 'C'
+                  AND T2.FIX_STATE IN ('3', '4', '5', '6')
+                  AND T2.AUC_DATE BETWEEN TO_CHAR(SYSDATE-7,'YYYY-MM-DD') AND TO_CHAR(SYSDATE+7,'YYYY-MM-DD')
+                 ) T1
+            WHERE 1=1
+            AND (FIX_STATE = '3' OR (FIX_STATE IN ('4', '5', '6') AND BID_CNT &gt; 0))
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND AUC_DATE &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND AUC_DATE &lt;= #{searchEndDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	 
+	<select id="getFixBuyArticle" resultMap="egovResultMap">
+		SELECT FIX_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , CASE WHEN (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) = '상'
+			   THEN 'Y'
+			   ELSE 'N' END AS P_UNIT2
+		     , PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+		     , TWIN_CNT
+		     , BOX_CNT
+		     , SOK_CNT
+		     , GROUP_CODE
+		     , DEAL_TYPE
+		     , UNIT_PRICE
+		     , CHUL_DATE
+		     , AUC_DATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO			       
+		     , AUC_BAN_TEXT
+		     , ITEM_TEXT
+		     , THUMB_IMG
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , (SELECT NVL(SUM(BID_SOK_CNT),0) FROM TB_FIX_BID WHERE BUN_CHK = 'C' AND FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ AND BID_STATE != '5') AS BID_SOK_CNT
+		     , UNIT_SOK
+		FROM TB_FIX_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_STATE IN ('3','4','5','6')
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		
+	</select>
+	
+	<select id="getLimitAmt" resultMap="egovResultMap">
+	SELECT TODAY_BO
+	     , FIX_AMT
+	     , REQ_AMT
+	     , (TODAY_BO - FIX_AMT - REQ_AMT) AS LIMIT_AMT
+	FROM (
+		SELECT T1.J_CODE
+		     , T1.J_DAY
+		     , T1.SOK_CNT
+		     , T1.MEIP
+		     , T1.IPGUM
+		     , T1.MEIP_TOT
+		     , T1.IPGUM_TOT
+		     , T1.ORG_MEIP
+		     , T1.ORG_IPGUM_T
+		     , T1.UN_P_TOT
+		     , T1.DLY_P_TOT
+		     , T1.TODAY_DLY
+		     , T1.DLY_TOT
+		     , T1.TODAY_CUT
+		     , T1.TODAY_RET
+		     , T1.R_P_TOT
+		     , T1.TD_DLY_RET
+		     , T1.DLY_RET_TOT
+		     , T1.TEMP_PRICE
+		     , T1.TODAY_BO
+		     , T1.ADD_AMT
+		     , T1.F_I_ID
+		     , T1.F_I_DT
+		     , T1.L_U_ID
+		     , T1.L_U_DT
+		     , T1.OK_YESNO
+		     , T1.BO_ADD_AMT
+		     , T1.SBTRAY_AMT
+		     , T1.SBTRAY_RET
+		     , T1.SBTRAY_JAN
+		     , NVL(T1.TRADE_AMT,0) AS TRADE_AMT
+		     , T1.VAT
+		     , T1.VAT_TOT
+		     , (SELECT NVL(SUM(FIX_AMT),0) AS FIX_AMT
+                FROM (
+                    SELECT NVL(DECODE(FS1.P_UNIT2, '상', S1.BID_BOX_CNT, S1.BID_SOK_CNT)*S1.BID_UNIT_PRICE,0) AS FIX_AMT
+                         , S2.FIX_DEAL_SEQ
+                         , S1.BID_SEQ
+                         , S3.TRAN_YN
+                         , S2.CHUL_DATE
+                    FROM TB_FIX_BID S1
+                       , TB_FIX_DEAL S2
+                       , (SELECT *
+                         FROM TB_MAGAM_MASTER
+                         WHERE BUN_CHK = 'C'
+                         AND UP_DAY <![CDATA[>]]> TO_CHAR(SYSDATE-10, 'YYYY-MM-DD')
+                         AND FIX_TYPE = '1') S3
+                       , FLOMEJANG.A_PUM_JONG_INFO FS1
+                    WHERE S1.FIX_DEAL_SEQ = S2.FIX_DEAL_SEQ
+                    AND S1.BID_SEQ = S3.FIX_SEQ(+)
+                    AND S1.BID_DATE <![CDATA[>]]> TO_CHAR(SYSDATE-10, 'YYYY-MM-DD')
+                    AND S2.CHUL_DATE <![CDATA[>]]> TO_CHAR(SYSDATE-10, 'YYYY-MM-DD')
+                    AND S1.J_CODE = #{code} 
+                    AND S1.BID_STATE != '5'
+                    AND S2.PUM_CODE = FS1.PUM_CODE
+                )WHERE TRAN_YN IS NULL OR TRAN_YN = 'N') AS FIX_AMT
+             , (SELECT NVL(SUM(REQ_AMT),0) AS REQ_AMT
+                FROM (
+                    SELECT NVL(decode(FS2.P_UNIT2, '상', S4.BOX_CNT,S4.SOK_CNT)*S4.UNIT_PRICE,0) AS REQ_AMT
+                         , S4.REQ_DEAL_SEQ
+                         , S5.TRAN_YN
+                    FROM TB_REQ_DEAL S4
+                       , (SELECT *
+                         FROM TB_MAGAM_MASTER
+                         WHERE BUN_CHK = 'C'
+                         AND UP_DAY <![CDATA[>]]> TO_CHAR(SYSDATE-10, 'YYYY-MM-DD')
+                         AND FIX_TYPE = '2') S5
+                       , FLOMEJANG.A_PUM_JONG_INFO FS2
+                    WHERE S4.REQ_DEAL_SEQ = S5.FIX_SEQ(+)
+                    AND S4.CHUL_DATE <![CDATA[>]]> TO_CHAR(SYSDATE-10, 'YYYY-MM-DD')
+                    AND S4.J_CODE = #{code} 
+                    AND S4.FIX_STATE != '2'
+                    AND S4.FIX_STATE != '5'
+                    AND S4.PUM_CODE = FS2.PUM_CODE
+                )WHERE TRAN_YN IS NULL OR TRAN_YN = 'N') AS REQ_AMT
+		FROM FLOMEJANG.A_J_DOME_CNT T1
+		WHERE T1.J_CODE = #{code}
+		AND T1.J_DAY = (SELECT MAX(J_DAY) FROM FLOMEJANG.A_J_DOME_CNT WHERE J_CODE = #{code} AND J_DAY <![CDATA[<=]]> TO_CHAR(SYSDATE,'yyyymmdd'))
+	)
+	</select>
+	
+	<select id="getBidBuyInfo" resultType="egovMap">
+		SELECT BID_SEQ
+			 , FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , J_CODE
+			 , BID_BOX_CNT
+			 , BID_SOK_CNT
+			 , BID_UNIT_PRICE
+			 , BID_STATE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , BID_ADMIN_YN
+			 , BID_CANCEL_TEXT
+			 , NAK_SOK_CNT
+		FROM TB_FIX_BID
+		WHERE 1=1
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND J_CODE = #{code, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertBid">
+		INSERT INTO TB_FIX_BID (
+		   BID_SEQ
+		 , FIX_DEAL_SEQ
+		 , BUN_CHK
+		 , BID_DATE
+		 , J_CODE
+		 , BID_BOX_CNT
+		 , BID_SOK_CNT
+		 , BID_UNIT_PRICE
+		 , BID_STATE
+		 , INSERT_ID
+		 , INSERT_DATE
+		 , UPDATE_ID
+		 , UPDATE_DATE
+		 , BID_ADMIN_YN) 
+		VALUES ( #{bidSeq, jdbcType=VARCHAR}
+		 , #{fixDealSeq, jdbcType=VARCHAR}
+		 , 'C'
+		 , TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		 , #{code, jdbcType=VARCHAR}
+		 , #{bidBoxCnt, jdbcType=VARCHAR}
+		 , #{bidSokCnt, jdbcType=VARCHAR}
+		 , #{bidUnitPrice, jdbcType=VARCHAR}
+		 , '1'
+		 , #{id, jdbcType=VARCHAR}
+		 , SYSDATE
+		 , #{id, jdbcType=VARCHAR}
+		 , SYSDATE 
+		 , NULL
+		)
+	</insert>
+	
+	<update id="updateBid">
+		UPDATE TB_FIX_BID
+		   SET BID_BOX_CNT = #{bidBoxCnt, jdbcType=VARCHAR}
+			 , BID_SOK_CNT = #{bidSokCnt, jdbcType=VARCHAR}
+			 , BID_UNIT_PRICE = #{bidUnitPrice, jdbcType=VARCHAR}
+			 , BID_STATE = '1'
+			 , UPDATE_ID = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+			 , BID_ADMIN_YN = NULL
+		WHERE BID_SEQ = #{bidSeq, jdbcType=VARCHAR}  
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND J_CODE = #{code, jdbcType=VARCHAR}
+		
+	</update>
+	
+	<!-- 경매사 판매관리 -->
+	<select id="getFixAdmList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT FIX_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , T4.CHUL_NAME
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , GROUP_CODE
+			     , DEAL_TYPE
+			     , UNIT_PRICE
+			     , CHUL_DATE
+			     , NVL(AUC_DATE, '-') AS AUC_DATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO			       
+			     , AUC_BAN_TEXT
+			     , ITEM_TEXT
+			     , THUMB_IMG
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			     , TRANS
+			     , PUM_KG
+			     , (SELECT COUNT(FIX_DEAL_SEQ) FROM TB_FIX_BID WHERE BUN_CHK = 'C' AND BID_STATE != '5' AND FIX_DEAL_SEQ = T3.FIX_DEAL_SEQ) AS BID_CNT
+                 , (SELECT SUM(BID_SOK_CNT) FROM TB_FIX_BID WHERE BUN_CHK = 'C' AND BID_STATE != '5' AND FIX_DEAL_SEQ = T3.FIX_DEAL_SEQ) AS BID_SOK_SUM
+                 , NVL((SELECT MIN('/uploads/fixAuc/C/' || THUMB_STRE_FILE_NM) FROM TB_FIX_FILE
+				   		WHERE FIX_DEAL_SEQ = T3.FIX_DEAL_SEQ),'/img/noimage.png') AS THUMB_PATH  
+			FROM TB_FIX_DEAL T3
+			, (
+			   	SELECT T1.CODE
+				     , T1.NAME AS CHUL_NAME
+				     , T1.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T1
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T1.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1
+			AND T3.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY INSERT_DATE_SORT DESC
+		) TB ) <!-- WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage} -->
+	</select>
+	 
+	<select id="getFixAdmListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(FIX_DEAL_SEQ) AS CNT
+			FROM TB_FIX_DEAL
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+	<update id="fixAdmApply">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '3'
+			, AUC_DATE = #{aucDate, jdbcType=VARCHAR}
+			, AUC_BAN_TEXT = NULL
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('1','2','4','5','6')
+	</update>
+	
+	<update id="fixAdmAppCancel">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '1'
+			, AUC_DATE = #{aucDate, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<update id="fixAdmBan">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '2'
+			, AUC_BAN_TEXT = #{banText, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('1','3')
+	</update>
+	
+	<update id="fixAdmComp">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '4'
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<insert id="fixAdmRegProc">
+		INSERT INTO TB_FIX_DEAL (
+			   FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , GROUP_CODE
+			 , DEAL_TYPE
+			 , UNIT_PRICE
+			 , CHUL_DATE
+			 , AUC_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , ITEM_TEXT
+			 , THUMB_IMG
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , CHUL_LEVEL_CUSTOM
+			 , UNIT_SOK
+		)VALUES ( 
+			  #{fixDealSeq, jdbcType=VARCHAR}
+			, #{bunCheck, jdbcType=VARCHAR}
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			, #{boxCnt, jdbcType=VARCHAR}
+			, #{sokCnt, jdbcType=VARCHAR}
+			, #{groupCode, jdbcType=VARCHAR}
+			, #{dealType, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{chulDate, jdbcType=VARCHAR}
+			, #{chulDate, jdbcType=VARCHAR}
+			, '3'
+			, #{aucBanText, jdbcType=VARCHAR}
+			, #{itemText, jdbcType=VARCHAR}
+			, #{thumbImg, jdbcType=VARCHAR}
+			, #{chulId, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE 
+			, #{chulLevelCustom, jdbcType=VARCHAR}
+			, #{unitSok, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="fixAdmUptProc">
+		UPDATE TB_FIX_DEAL
+		   SET CHUL_CODE    = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE     = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME     = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE     = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME     = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL   = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME   = #{chulLevelName, jdbcType=VARCHAR}
+			 , TWIN_CNT     = NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			 , BOX_CNT      = #{boxCnt, jdbcType=VARCHAR}
+			 , SOK_CNT      = #{sokCnt, jdbcType=VARCHAR}
+			 , GROUP_CODE   = #{groupCode, jdbcType=VARCHAR}
+			 , DEAL_TYPE    = #{dealType, jdbcType=VARCHAR}
+			 , UNIT_PRICE   = #{unitPrice, jdbcType=VARCHAR}
+			 , CHUL_DATE    = #{chulDate, jdbcType=VARCHAR}
+			 , AUC_DATE     = #{chulDate, jdbcType=VARCHAR}
+			 , FIX_STATE    = '3'
+			 , AUC_BAN_TEXT = #{aucBanText, jdbcType=VARCHAR}
+			 , ITEM_TEXT    = #{itemText, jdbcType=VARCHAR}
+			 , THUMB_IMG    = #{thumbImg, jdbcType=VARCHAR}
+			 , UPDATE_ID    = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE  = SYSDATE
+			 , LOGIN_ID 	= #{chulId, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_CUSTOM = #{chulLevelCustom, jdbcType=VARCHAR}
+			 , UNIT_SOK = #{unitSok, jdbcType=VARCHAR}
+		WHERE  FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND BUN_CHK = 'C'
+	</update>
+	
+	<select id="getFixAdmArticle" resultMap="egovResultMap">
+		SELECT FIX_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+		     , TWIN_CNT
+		     , BOX_CNT
+		     , SOK_CNT
+		     , GROUP_CODE
+		     , DEAL_TYPE
+		     , UNIT_PRICE
+		     , CHUL_DATE
+		     , AUC_DATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'C' AND TIME_TYPE = '3' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO			       
+		     , AUC_BAN_TEXT
+		     , ITEM_TEXT
+		     , THUMB_IMG
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , (SELECT NVL(SUM(BID_SOK_CNT),0) FROM TB_FIX_BID WHERE BUN_CHK = 'C' AND FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ AND BID_STATE != '5') AS BID_SOK_CNT
+		FROM TB_FIX_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		
+	</select>
+	
+	<delete id="fixAdmDelProc">
+		DELETE FROM TB_FIX_DEAL
+		WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND BUN_CHK = 'C'
+	</delete>
+	
+	
+	<select id="getFixAucTime" resultMap="egovResultMap">
+		SELECT BUN_CHK
+			 , TIME_TYPE
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_TIME
+		WHERE BUN_CHK ='C'
+		ORDER BY TIME_TYPE ASC
+	</select>
+	
+	<update id="updatetime">	
+		UPDATE TB_TIME
+		   SET STR_TIME = #{strTime, jdbcType=VARCHAR}
+			 , END_TIME = #{endTime, jdbcType=VARCHAR}
+			 , UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+		WHERE BUN_CHK = 'C'  
+		AND TIME_TYPE = #{timeType, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<insert id="reqBuyRegProc">
+		INSERT INTO TB_REQ_DEAL (
+			   REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , PAN_TYPE
+		)VALUES ( 
+			  #{reqDealSeq, jdbcType=VARCHAR}
+			, 'C'
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, #{jCode, jdbcType=VARCHAR}
+			, NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			, #{boxCnt, jdbcType=VARCHAR}
+			, #{sokCnt, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{aucPrice, jdbcType=VARCHAR}
+			, TO_CHAR(SYSDATE,'YYYY-MM-DD')
+			, #{chulDate, jdbcType=VARCHAR}
+			, '1'
+			, #{aucBanText, jdbcType=VARCHAR}
+			, #{chulBanText, jdbcType=VARCHAR}
+			, #{reqText, jdbcType=VARCHAR}
+			, #{gtext, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE 
+			, '03'
+		)
+	</insert>
+	
+	
+	<update id="reqBuyUptProc">
+		UPDATE TB_REQ_DEAL SET
+			   CHUL_CODE = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME = #{chulLevelName, jdbcType=VARCHAR}
+			 , J_CODE = #{jCode, jdbcType=VARCHAR}
+			 , TWIN_CNT = NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			 , BOX_CNT = #{boxCnt, jdbcType=VARCHAR}
+			 , SOK_CNT = #{sokCnt, jdbcType=VARCHAR}
+			 , UNIT_PRICE = #{unitPrice, jdbcType=VARCHAR}
+			 , AUC_PRICE = #{aucPrice, jdbcType=VARCHAR}
+			 , CHUL_DATE = #{chulDate, jdbcType=VARCHAR}
+			 , FIX_STATE = '1'
+			 , AUC_BAN_TEXT = #{aucBanText, jdbcType=VARCHAR}
+			 , CHUL_BAN_TEXT = #{chulBanText, jdbcType=VARCHAR}
+			 , REQ_TEXT = #{reqText, jdbcType=VARCHAR}
+			 , GTEXT = #{gtext, jdbcType=VARCHAR}
+			 , UPDATE_ID = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+		WHERE BUN_CHK = 'C'
+		AND REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+		AND LOGIN_ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getReqArticle" resultMap="egovResultMap">
+		SELECT REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS P_UNIT2
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , PAN_TYPE
+		FROM TB_REQ_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND REQ_DEAL_SEQ = #{reqDealSeq}
+		AND J_CODE IN
+			<foreach collection="jCodeList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		    </foreach>
+		
+	</select>
+	
+	<select id="getReqList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT REQ_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , J_CODE
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , UNIT_PRICE
+			     , AUC_PRICE
+			     , REQ_DATE
+			     , CHUL_DATE
+			     , FIX_STATE
+			     , AUC_BAN_TEXT
+			     , CHUL_BAN_TEXT
+			     , REQ_TEXT
+			     , GTEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1 
+			AND T1.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			AND J_CODE IN
+			<foreach collection="jCodeList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		    </foreach>
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY INSERT_DATE_SORT DESC
+		) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+	 
+	<select id="getReqListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(REQ_DEAL_SEQ) AS CNT
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1 
+			AND T1.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			AND J_CODE IN
+			<foreach collection="jCodeList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		    </foreach>
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+	<delete id="reqBuyDelProc">
+		DELETE FROM TB_REQ_DEAL
+		WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+		AND LOGIN_ID = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 경매사 요청관리 -->
+	
+	<insert id="reqAdmRegProc">
+		INSERT INTO TB_REQ_DEAL (
+			   REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , PAN_TYPE
+		)VALUES ( 
+			  #{reqDealSeq, jdbcType=VARCHAR}
+			, 'C'
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, #{jCode, jdbcType=VARCHAR}
+			, NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			, #{boxCnt, jdbcType=VARCHAR}
+			, #{sokCnt, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, TO_CHAR(SYSDATE,'YYYY-MM-DD')
+			, #{chulDate, jdbcType=VARCHAR}
+			, '3'
+			, #{aucBanText, jdbcType=VARCHAR}
+			, #{chulBanText, jdbcType=VARCHAR}
+			, #{reqText, jdbcType=VARCHAR}
+			, #{gtext, jdbcType=VARCHAR}
+			, #{jId, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE 
+			, #{panType, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	<update id="reqAdmUptProc">
+		UPDATE TB_REQ_DEAL SET
+			   CHUL_CODE = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME = #{chulLevelName, jdbcType=VARCHAR}
+			 , J_CODE = #{jCode, jdbcType=VARCHAR}
+			 , TWIN_CNT = NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			 , BOX_CNT = #{boxCnt, jdbcType=VARCHAR}
+			 , SOK_CNT = #{sokCnt, jdbcType=VARCHAR}
+			 , UNIT_PRICE = #{unitPrice, jdbcType=VARCHAR}
+			 , AUC_PRICE = #{unitPrice, jdbcType=VARCHAR}
+			 , CHUL_DATE = #{chulDate, jdbcType=VARCHAR}
+			 , AUC_BAN_TEXT = #{aucBanText, jdbcType=VARCHAR}
+			 , CHUL_BAN_TEXT = #{chulBanText, jdbcType=VARCHAR}
+			 , REQ_TEXT = #{reqText, jdbcType=VARCHAR}
+			 , GTEXT = #{gtext, jdbcType=VARCHAR}
+			 , UPDATE_ID = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+			 , LOGIN_ID = #{jId, jdbcType=VARCHAR}
+			 , PAN_TYPE = #{panType, jdbcType=VARCHAR}
+		WHERE BUN_CHK = 'C'
+		AND REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getReqAdmArticle" resultMap="egovResultMap">
+		SELECT REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			 , (SELECT NVL(MAX(COP_NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS COP_NAME
+			 , (SELECT NVL(MAX(TRIM(REPLACE(REPLACE(HANDY_TEL_NO,'-',''),' ',''))),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_PHONE_NO
+			 , PAN_TYPE
+		FROM TB_REQ_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND REQ_DEAL_SEQ = #{reqDealSeq}
+		
+	</select>
+	
+	<select id="getReqAdmList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT REQ_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , T4.CHUL_NAME
+			     , T4.CHUL_AREA
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , J_CODE
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , UNIT_PRICE
+			     , AUC_PRICE
+			     , REQ_DATE
+			     , CHUL_DATE
+			     , FIX_STATE
+			     , AUC_BAN_TEXT
+			     , CHUL_BAN_TEXT
+			     , REQ_TEXT
+			     , GTEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'MM/DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			     , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			     , PAN_TYPE
+			     , TRANS
+			     , PUM_KG
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1
+			AND T1.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND CHUL_DATE = #{searchEndDt}
+			</if>
+			<!-- 
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+			</if> -->
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY MOK_NAME ASC, PUM_NAME ASC
+		) TB ) <!-- WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage} -->
+	</select>
+	 
+	<select id="getReqAdmListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(REQ_DEAL_SEQ) AS CNT
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4 
+			WHERE 1=1 
+			AND T1.CHUL_CODE = T4.CODE 
+			AND BUN_CHK = 'C'
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND CHUL_DATE = #{searchEndDt}
+			</if>
+			<!-- 
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+			</if> -->
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+	<delete id="reqAdmDelProc">
+		DELETE FROM TB_REQ_DEAL
+		WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="reqAdmApply">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '3'
+			<if test='aucPrice != null and aucPrice != ""'>
+			, AUC_PRICE = #{aucPrice, jdbcType=VARCHAR}
+			</if>
+			<if test='aucPrice == null or aucPrice == ""'>
+			, AUC_PRICE = UNIT_PRICE
+			</if>
+			, AUC_BAN_TEXT = NULL
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('1','2','4')
+	</update>
+	
+	<update id="reqAdmAppCancel">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '1'
+			<if test='aucPrice != null and aucPrice != ""'>
+			, AUC_PRICE = #{aucPrice, jdbcType=VARCHAR}
+			</if>
+			<if test='aucPrice == null or aucPrice == ""'>
+			, AUC_PRICE = UNIT_PRICE
+			</if>
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<update id="reqAdmBan">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '2'
+			, AUC_BAN_TEXT = #{banText, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('1','3')
+	</update>
+	
+	<update id="reqAdmComp">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '4'
+			<if test='aucPrice != null and aucPrice != ""'>
+			, AUC_PRICE = #{aucPrice, jdbcType=VARCHAR}
+			</if>
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<!-- 출하자 요청 -->
+	<select id="getReqChulArticle" resultMap="egovResultMap">
+		SELECT REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			 , (SELECT NVL(MAX(COP_NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS COP_NAME
+		FROM TB_REQ_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_STATE IN ('3','4')
+		AND REQ_DEAL_SEQ = #{reqDealSeq}
+		
+	</select>
+	
+	<select id="getReqChulList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT REQ_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , J_CODE
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , UNIT_PRICE
+			     , AUC_PRICE
+			     , REQ_DATE
+			     , CHUL_DATE
+			     , FIX_STATE
+			     , AUC_BAN_TEXT
+			     , CHUL_BAN_TEXT
+			     , REQ_TEXT
+			     , GTEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			     , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1 
+			AND T1.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			AND FIX_STATE IN ('3','4')
+			AND CHUL_CODE IN
+			<foreach collection="chulCodeArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		    </foreach>
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchJCode != null and searchJCode != ""'>
+			   AND J_CODE LIKE '%'||#{searchJCode}||'%'
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY INSERT_DATE_SORT DESC
+		) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+	 
+	<select id="getReqChulListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(REQ_DEAL_SEQ) AS CNT
+			FROM TB_REQ_DEAL T1
+			, (
+			   	SELECT T3.CODE
+				     , T3.NAME AS CHUL_NAME
+				     , T3.GWANRI_ZONE
+				     , T2.NAME AS CHUL_AREA
+				     , T2.CITY_GUBUN 
+				FROM FLOMEJANG.A_CHUL_INFO T3
+				   , FLOMEJANG.A_GWANRI_CODE T2
+				WHERE 1=1
+				AND T3.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+			   ) T4
+			WHERE 1=1 
+			AND T1.CHUL_CODE = T4.CODE
+			AND BUN_CHK = 'C'
+			AND FIX_STATE IN ('3','4')
+			AND CHUL_CODE IN
+			<foreach collection="chulCodeArr" item="item" index="index" open="(" close=")" separator=",">
+           		#{item}
+   		    </foreach>
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND CHUL_DATE = #{searchStartDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND ( CHUL_CODE LIKE '%'||#{searchChulCode}||'%' OR CHUL_NAME LIKE '%'||#{searchChulCode}||'%' )
+			</if>
+			<if test='searchJCode != null and searchJCode != ""'>
+			   AND J_CODE LIKE '%'||#{searchJCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+
+	<update id="reqChulBan">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '2'
+			, CHUL_BAN_TEXT = #{banText, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('3','4')
+	    AND CHUL_CODE IN
+		<foreach collection="chulCodeArr" item="item" index="index" open="(" close=")" separator=",">
+        	#{item}
+  		</foreach>
+	</update>
+	
+	<update id="reqChulComp">
+		UPDATE TB_REQ_DEAL SET
+			  FIX_STATE = '4'
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE IN ('3','4')
+	    AND CHUL_CODE IN
+		<foreach collection="chulCodeArr" item="item" index="index" open="(" close=")" separator=",">
+        	#{item}
+  		</foreach>
+	</update>
+	
+	
+	<!-- 경매사 완료처리 관련-->
+	
+	<select id="getBidList" resultType="egovMap">
+		SELECT BID_SEQ
+			 , FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , J_CODE
+			 , BID_BOX_CNT
+			 , BID_SOK_CNT
+			 , BID_UNIT_PRICE
+			 , BID_STATE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , NVL(NAK_SOK_CNT, 0) AS NAK_SOK_CNT 
+			 , BID_ADMIN_YN
+			 , TO_CHAR(INSERT_DATE,'YYYY-MM-DD HH24:MI:SS') AS BID_TIME
+			 , BID_CANCEL_TEXT
+		FROM TB_FIX_BID
+		WHERE 1=1
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		AND BID_STATE != '5'
+		<choose>
+			<when test='bidOrder != null and bidOrder != ""'>
+				<if test='bidOrder == "F"'>
+					ORDER BY INSERT_DATE ASC
+				</if>
+				<if test='bidOrder == "L"'>
+					ORDER BY BID_UNIT_PRICE DESC, INSERT_DATE ASC
+				</if>
+			</when>
+			<otherwise>
+			ORDER BY BID_UNIT_PRICE DESC, INSERT_DATE ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getBidCancelList" resultType="egovMap">
+		SELECT BID_SEQ
+			 , FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , J_CODE
+			 , BID_BOX_CNT
+			 , BID_SOK_CNT
+			 , BID_UNIT_PRICE
+			 , BID_STATE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , NVL(NAK_SOK_CNT, 0) AS NAK_SOK_CNT 
+			 , BID_ADMIN_YN
+			 , TO_CHAR(INSERT_DATE,'YYYY-MM-DD HH24:MI:SS') AS BID_TIME
+			 , BID_CANCEL_TEXT
+		FROM TB_FIX_BID
+		WHERE 1=1
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		AND BID_STATE = '5'
+	</select>
+	
+	
+	<select id="getBidTotSokCnt" resultType="java.lang.Integer">
+		SELECT NVL(SUM(BID_SOK_CNT),0) AS BID_TOT_SOK_CNT
+		FROM TB_FIX_BID
+		WHERE 1=1
+		AND BUN_CHK = 'C'
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		AND BID_STATE != '5'
+	</select>
+	
+	<update id="fixAdmUChal">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '5'
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<update id="fixAdmPartUChal">
+		UPDATE TB_FIX_DEAL SET
+			  FIX_STATE = '6'
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND FIX_STATE = '3'
+	</update>
+	
+	<update id="fixAdmBidTotSuc">
+		UPDATE TB_FIX_BID SET
+			  BID_STATE = '2'
+			, NAK_SOK_CNT = BID_SOK_CNT
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_STATE != '5'
+	</update>
+	
+	<update id="fixAdmBidSuc">
+		UPDATE TB_FIX_BID SET
+			  BID_STATE = '2'
+			, NAK_SOK_CNT = BID_SOK_CNT
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_SEQ = #{bidSeq, jdbcType=VARCHAR}
+	    AND BID_STATE != '5'
+	</update>
+	
+	<update id="fixAdmBidPartSuc">
+		UPDATE TB_FIX_BID SET
+			  BID_STATE = '4'
+			, NAK_SOK_CNT = #{nakSokCnt, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_SEQ = #{bidSeq, jdbcType=VARCHAR}
+	    AND BID_STATE != '5'
+	</update>
+	 
+	<update id="fixAdmBidFail">
+		UPDATE TB_FIX_BID SET
+			  BID_STATE = '3'
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_SEQ = #{bidSeq, jdbcType=VARCHAR}
+	    AND BID_STATE != '5'
+	</update>
+	
+	<update id="fixAdmBidCancel">
+		UPDATE TB_FIX_BID SET
+			  BID_STATE = '5'
+			, BID_CANCEL_TEXT = #{bidCancelText, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_SEQ = #{bidSeq, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="fixAdmBidUpdate">
+		UPDATE TB_FIX_BID
+		   SET BID_BOX_CNT = #{bidBoxCnt, jdbcType=VARCHAR}
+			 , BID_SOK_CNT = #{bidSokCnt, jdbcType=VARCHAR}
+			 , BID_UNIT_PRICE = #{bidUnitPrice, jdbcType=VARCHAR}
+			 , BID_STATE = '1'
+			 , UPDATE_ID = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+			 , BID_ADMIN_YN = NULL
+			 , BID_CANCEL_TEXT = NULL
+		WHERE BID_SEQ = #{bidSeq, jdbcType=VARCHAR}  
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="fixAdmBidAdmin">
+		UPDATE TB_FIX_BID SET
+			  BID_ADMIN_YN = #{bidAdminYn, jdbcType=VARCHAR}
+			, UPDATE_ID = #{id, jdbcType=VARCHAR}
+		    , UPDATE_DATE = SYSDATE
+	    WHERE FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	    AND BID_SEQ = #{bidSeq, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="fixSmsProc" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL FIX_SMS_PROC(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{applyArray, jdbcType=VARCHAR, mode=IN}
+		  , #{bidStrArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , 'C'
+		)}
+	</select>
+	
+	<select id="reqSmsProc" parameterType="java.util.HashMap" statementType="CALLABLE">
+		
+		{ CALL REQ_SMS_PROC(
+			#{banArray, jdbcType=VARCHAR, mode=IN}
+		  , #{applyArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealDisCompArray, jdbcType=VARCHAR, mode=IN}
+		  , #{dealCompArray, jdbcType=VARCHAR, mode=IN}
+		  , 'C'
+		)}
+	</select>
+	
+	<!-- 관엽 중도매인 요청표 -->
+	
+	
+	<select id="getReqAdmTable" resultMap="egovResultMap">
+		    SELECT REQ_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , NVL((SELECT NAME FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE),'정보없음') AS CHUL_NAME
+			     , NVL((SELECT NAME FROM FLOMEJANG.A_GWANRI_CODE WHERE GWANRI_ZONE = (SELECT GWANRI_ZONE FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE)),'정보없음') AS CHUL_AREA  
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , J_CODE
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , UNIT_PRICE
+			     , NVL(AUC_PRICE, UNIT_PRICE) AS AUC_PRICE
+			     , REQ_DATE
+			     , CHUL_DATE
+			     , FIX_STATE
+			     , CASE WHEN FIX_STATE = '1' THEN '신청'
+			     		WHEN FIX_STATE = '2' THEN '미체결'
+			     		WHEN FIX_STATE = '3' THEN '승인'
+			     		WHEN FIX_STATE = '4' THEN '체결'
+			     		WHEN FIX_STATE = '5' THEN '미체결'
+			     	ELSE '오류' END AS FIX_STATE_NAME
+			     , AUC_BAN_TEXT
+			     , CHUL_BAN_TEXT
+			     , REQ_TEXT
+			     , GTEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			     , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			FROM TB_REQ_DEAL T1
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			AND CHUL_DATE = #{chulDate}
+			<!-- AND FIX_STATE != '2' -->
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchJCode != null and searchJCode != ""'>
+			   AND J_CODE LIKE '%'||#{searchJCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY CHUL_NAME ASC, CHUL_CODE ASC, J_NAME ASC, J_CODE ASC
+	</select>
+	 
+	<select id="getReqAdmTableCnt" resultType="java.lang.Integer">
+			SELECT COUNT(REQ_DEAL_SEQ) AS CNT
+			FROM TB_REQ_DEAL
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			AND CHUL_DATE = #{chulDate}
+			AND FIX_STATE != '2'
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND TO_CHAR(INSERT_DATE, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+			</if>
+			<if test='searchFixState != null and searchFixState != ""'>
+				AND FIX_STATE = #{searchFixState}
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchJCode != null and searchJCode != ""'>
+			   AND J_CODE LIKE '%'||#{searchJCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	 
+	<update id="updateReaDealTable">
+		UPDATE TB_REQ_DEAL SET
+		   CHUL_CODE = #{chulCode, jdbcType=VARCHAR}
+	     , BOX_CNT = #{boxCnt, jdbcType=VARCHAR}
+	     , SOK_CNT = #{sokCnt, jdbcType=VARCHAR}
+	     , AUC_PRICE = #{aucPrice, jdbcType=VARCHAR}
+	     , GTEXT = TRIM(#{gtext, jdbcType=VARCHAR})
+	     , AUC_BAN_TEXT = TRIM(#{gtext, jdbcType=VARCHAR})
+	    WHERE REQ_DEAL_SEQ = #{reqDealSeq}
+	    AND BUN_CHK = 'C'
+	</update>
+	
+	<update id="updateReaDealTableComp">
+		UPDATE TB_REQ_DEAL SET
+		FIX_STATE = '4'
+	    WHERE CHUL_DATE = #{chulDate}
+	    AND BUN_CHK = 'C'
+	    AND GTEXT IS NULL
+	</update>
+	 
+	<update id="updateReaDealTableDisComp">
+		UPDATE TB_REQ_DEAL SET
+		FIX_STATE = '2'
+	    WHERE CHUL_DATE = #{chulDate}
+	    AND BUN_CHK = 'C'
+	    AND GTEXT IS NOT NULL
+	</update>
+	
+	<select id="getReqAdmTableExcellComp" resultMap="egovResultMap">
+		    SELECT REQ_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , NVL((SELECT NAME FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE),'정보없음') AS CHUL_NAME
+			     , NVL((SELECT NAME FROM FLOMEJANG.A_GWANRI_CODE WHERE GWANRI_ZONE = (SELECT GWANRI_ZONE FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE)),'정보없음') AS CHUL_AREA  
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , J_CODE
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , UNIT_PRICE
+			     , NVL(AUC_PRICE, UNIT_PRICE) AS AUC_PRICE
+			     , REQ_DATE
+			     , CHUL_DATE
+			     , FIX_STATE
+			     , CASE WHEN FIX_STATE = '1' THEN '신청'
+			     		WHEN FIX_STATE = '2' THEN '미체결'
+			     		WHEN FIX_STATE = '3' THEN '승인'
+			     		WHEN FIX_STATE = '4' THEN '체결'
+			     		WHEN FIX_STATE = '5' THEN '미체결'
+			     	ELSE '오류' END AS FIX_STATE_NAME
+			     , AUC_BAN_TEXT
+			     , CHUL_BAN_TEXT
+			     , REQ_TEXT
+			     , GTEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE 
+			     , (SELECT NVL(MAX(NAME),'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS J_NAME
+			     , TO_CHAR(TO_DATE(#{chulDate}, 'YYYY-MM-DD'),'DY','NLS_DATE_LANGUAGE=korean') AS DAY_KO
+			     , SOK_CNT * UNIT_PRICE AS TOT_AMT
+			FROM TB_REQ_DEAL T1
+			WHERE 1=1 
+			AND BUN_CHK = 'C'
+			AND CHUL_DATE = #{chulDate}
+			AND FIX_STATE IN ('4','2')
+			ORDER BY J_CODE ASC, CHUL_CODE ASC
+	</select>
+	
+	<!-- 관엽 중도매인 요청표 끝 -->
+	
+	<!-- 관엽 분갈이 --> 
+	<select id="getfixSubChulInfoCnt" resultType="java.lang.Integer">
+		    SELECT COUNT(CHUL_CODE)
+			FROM TB_FIX_SUB_CHUL     
+			WHERE BUN_CHK = 'C'
+			AND CHUL_CODE IN
+			<foreach collection="floMemberList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item.chulCd}
+   		    </foreach>
+	</select>
+	
+	<select id="getfixSubChulInfo" resultMap="egovResultMap">
+		    SELECT CHUL_CODE
+			FROM TB_FIX_SUB_CHUL     
+			WHERE BUN_CHK = 'C'
+			AND CHUL_CODE = #{chulCode}
+	</select>
+	 
+	<select id="getfixSubChulList" resultMap="egovResultMap">
+		    SELECT CHUL_CODE
+		         , NVL((SELECT NAME FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE),'정보없음') AS CHUL_NAME
+			FROM TB_FIX_SUB_CHUL T1  
+			WHERE BUN_CHK = 'C'
+			ORDER BY CHUL_NAME ASC
+	</select>
+	
+	<select id="fixSellSubList" resultMap="egovResultMap">
+		    SELECT FIX_SUB_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , MOK_CODE
+			     , MOK_NAME
+			     , PUM_CODE
+			     , NVL(PUM_NAME_CUSTOM, PUM_NAME) AS PUM_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , UNIT_PRICE
+			     , ITEM_TEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , USE_YN
+			     , INSERT_ID
+			     , INSERT_DATE
+			     , UPDATE_ID
+			     , UPDATE_DATE
+			     , NVL((SELECT MIN('/uploads/fixAuc/C/' || THUMB_STRE_FILE_NM) KEEP(DENSE_RANK FIRST ORDER BY FILE_SEQ ASC) FROM TB_FIX_SUB_FILE
+				   		WHERE FIX_SUB_DEAL_SEQ = T1.FIX_SUB_DEAL_SEQ),'/img/noimage.png') AS THUMB_PATH
+				 , UNIT_SOK
+			FROM TB_FIX_SUB_DEAL T1
+			WHERE BUN_CHK = 'C'
+			AND CHUL_CODE IN
+			<foreach collection="floMemberList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item.chulCd}
+   		    </foreach>
+   		    <if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME_CUSTOM LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			<if test='searchUseYn != null and searchUseYn != ""'>
+			   AND USE_YN = #{searchUseYn}
+			</if>
+			ORDER BY INSERT_DATE DESC
+	</select>
+	
+	<select id="fixSellSubListCnt" resultType="java.lang.Integer">
+		    SELECT COUNT(FIX_SUB_DEAL_SEQ)
+			FROM TB_FIX_SUB_DEAL
+			WHERE BUN_CHK = 'C'
+			AND CHUL_CODE IN
+			<foreach collection="floMemberList" item="item" index="index" open="(" close=")" separator=",">
+           		#{item.chulCd}
+   		    </foreach>
+   		    <if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME_CUSTOM LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			<if test='searchUseYn != null and searchUseYn != ""'>
+			   AND USE_YN = #{searchUseYn}
+			</if>
+	</select>
+	
+	<select id="getFixSubArticle" resultMap="egovResultMap">
+		SELECT FIX_SUB_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , NVL(PUM_NAME_CUSTOM, PUM_NAME) AS PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , CHUL_LEVEL_NAME
+		     , UNIT_PRICE
+		     , ITEM_TEXT
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , USE_YN
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , UNIT_SOK
+		FROM TB_FIX_SUB_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_SUB_DEAL_SEQ = #{fixSubDealSeq}
+		AND LOGIN_ID = #{id}
+		
+	</select>
+	
+	<select id="getFixAdmSubArticle" resultMap="egovResultMap">
+		SELECT FIX_SUB_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , NVL(PUM_NAME_CUSTOM, PUM_NAME) AS PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , CHUL_LEVEL_NAME
+		     , UNIT_PRICE
+		     , ITEM_TEXT
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , USE_YN
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , UNIT_SOK
+		FROM TB_FIX_SUB_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND FIX_SUB_DEAL_SEQ = #{fixSubDealSeq}
+		
+	</select>
+	
+	<update id="fixAdmSubUptProc">
+		UPDATE TB_FIX_SUB_DEAL
+		   SET CHUL_CODE    = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE     = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME     = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE     = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME     = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL   = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME   = #{chulLevelName, jdbcType=VARCHAR}
+			 , UNIT_PRICE   = #{unitPrice, jdbcType=VARCHAR}
+			 , ITEM_TEXT    = #{itemText, jdbcType=VARCHAR}
+			 , USE_YN    = #{useYn, jdbcType=VARCHAR}
+			 , UPDATE_ID    = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE  = SYSDATE
+			 , PUM_NAME_CUSTOM  = #{pumNameCustom, jdbcType=VARCHAR}
+			 , UNIT_SOK    = #{unitSok, jdbcType=VARCHAR}
+		WHERE  FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+	</update>
+	 
+	<delete id="fixAdmSubDelProc">
+		DELETE FROM TB_FIX_SUB_DEAL
+		WHERE FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getFixSubFileList" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , FIX_SUB_DEAL_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_FIX_SUB_FILE
+		WHERE 1=1
+		AND FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="fixSellSubRegProc">
+		INSERT INTO TB_FIX_SUB_DEAL (
+			   FIX_SUB_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , UNIT_PRICE
+			 , ITEM_TEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , USE_YN
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , PUM_NAME_CUSTOM
+			 , UNIT_SOK
+		)VALUES ( 
+			  #{fixSubDealSeq, jdbcType=VARCHAR}
+			, #{bunCheck, jdbcType=VARCHAR}
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{itemText, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{useYn, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{pumNameCustom, jdbcType=VARCHAR}
+			, #{unitSok, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="fixSellSubFileProc">
+		INSERT INTO TB_FIX_SUB_FILE (
+		     FILE_SEQ
+		   , FIX_SUB_DEAL_SEQ
+		   , STRE_FILE_PATH
+		   , STRE_FILE_NM
+		   , ORIGNL_FILE_NM
+		   , THUMB_STRE_FILE_NM
+		   , FILE_EXTSN
+		   , FILE_CN
+		   , FILE_SIZE
+		   , INSERT_ID
+		   , INSERT_DATE
+		   , UPDATE_ID
+		   , UPDATE_DATE
+		)VALUES ( 
+			   #{fileSeq, jdbcType=VARCHAR}
+			 , #{fixSubDealSeq, jdbcType=VARCHAR}
+			 , #{streFilePath, jdbcType=VARCHAR}
+			 , #{streFileNm, jdbcType=VARCHAR}
+			 , #{orignlFileNm, jdbcType=VARCHAR}
+			 , #{thumbStreFileNm, jdbcType=VARCHAR}
+			 , #{fileExtsn, jdbcType=VARCHAR}
+			 , #{fileCn, jdbcType=VARCHAR}
+			 , #{fileSize, jdbcType=VARCHAR}
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+		)
+	</insert>
+	
+	<update id="fixSellSubUptProc">
+		UPDATE TB_FIX_SUB_DEAL
+		   SET CHUL_CODE    = #{chulCode, jdbcType=VARCHAR}
+			 , PUM_CODE     = #{pumCode, jdbcType=VARCHAR}
+			 , PUM_NAME     = #{pumName, jdbcType=VARCHAR}
+			 , MOK_CODE     = #{mokCode, jdbcType=VARCHAR}
+			 , MOK_NAME     = #{mokName, jdbcType=VARCHAR}
+			 , CHUL_LEVEL   = #{chulLevel, jdbcType=VARCHAR}
+			 , CHUL_LEVEL_NAME   = #{chulLevelName, jdbcType=VARCHAR}
+			 , UNIT_PRICE   = #{unitPrice, jdbcType=VARCHAR}
+			 , ITEM_TEXT    = #{itemText, jdbcType=VARCHAR}
+			 , USE_YN    = #{useYn, jdbcType=VARCHAR}
+			 , UPDATE_ID    = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE  = SYSDATE
+			 , PUM_NAME_CUSTOM  = #{pumNameCustom, jdbcType=VARCHAR}
+			 , UNIT_SOK    = #{unitSok, jdbcType=VARCHAR}
+		WHERE  FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+		AND INSERT_ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getSubFileOne" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , FIX_SUB_DEAL_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_FIX_SUB_FILE
+		WHERE 1=1
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+		AND FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+	</select>
+	
+	 
+	<delete id="deleteSubFileOne">
+		DELETE FROM TB_FIX_SUB_FILE
+		WHERE FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+	</delete>
+	 
+	<delete id="fixSellSubFileDelProc">
+		DELETE FROM TB_FIX_SUB_FILE
+		WHERE FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="fixSellSubDelProc">
+		DELETE FROM TB_FIX_SUB_DEAL
+		WHERE FIX_SUB_DEAL_SEQ = #{fixSubDealSeq, jdbcType=VARCHAR}
+		AND LOGIN_ID = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	
+	<select id="fixBuySubList" resultMap="egovResultMap">
+		    SELECT FIX_SUB_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , (SELECT NVL(NAME,'정보없음') FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE) AS  CHUL_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , PUM_CODE
+			     , NVL(PUM_NAME_CUSTOM, PUM_NAME) AS PUM_NAME
+			     , CHUL_LEVEL
+			     , CHUL_LEVEL_NAME
+			     , UNIT_PRICE
+			     , ITEM_TEXT
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , USE_YN
+			     , INSERT_ID
+			     , INSERT_DATE
+			     , UPDATE_ID
+			     , UPDATE_DATE
+			     , NVL((SELECT MIN('/uploads/fixAuc/C/' || THUMB_STRE_FILE_NM) KEEP(DENSE_RANK FIRST ORDER BY FILE_SEQ ASC) FROM TB_FIX_SUB_FILE
+				   		WHERE FIX_SUB_DEAL_SEQ = T1.FIX_SUB_DEAL_SEQ),'/img/noimage.png') AS THUMB_PATH
+				 , UNIT_SOK
+			FROM TB_FIX_SUB_DEAL T1
+			WHERE BUN_CHK = 'C'
+			AND USE_YN = 'Y'
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME_CUSTOM LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE = #{searchChulCode}
+			</if>
+			<if test='searchChulCode == null or searchChulCode == ""'>
+				AND CHUL_CODE IN (SELECT CHUL_CODE FROM TB_FIX_SUB_CHUL WHERE BUN_CHK='C')
+			</if>
+			ORDER BY INSERT_DATE DESC
+	</select>
+	
+	<select id="fixBuySubListCnt" resultType="java.lang.Integer">
+		    SELECT COUNT(FIX_SUB_DEAL_SEQ)
+			FROM TB_FIX_SUB_DEAL
+			WHERE BUN_CHK = 'C'
+			AND USE_YN = 'Y'
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME_CUSTOM LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE = #{searchChulCode}
+			</if>
+			<if test='searchChulCode == null or searchChulCode == ""'>
+				AND CHUL_CODE IN (SELECT CHUL_CODE FROM TB_FIX_SUB_CHUL WHERE BUN_CHK='C')
+			</if>
+	</select>
+	 
+	<select id="getFixBuySubArticle" resultMap="egovResultMap">
+		SELECT FIX_SUB_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , NVL(PUM_NAME_CUSTOM, PUM_NAME) AS PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , CHUL_LEVEL_NAME
+		     , UNIT_PRICE
+		     , ITEM_TEXT
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , USE_YN
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , UNIT_SOK
+		FROM TB_FIX_SUB_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'C'
+		AND USE_YN = 'Y'
+		AND FIX_SUB_DEAL_SEQ = #{fixSubDealSeq}
+		AND CHUL_CODE IN (SELECT CHUL_CODE FROM TB_FIX_SUB_CHUL WHERE BUN_CHK='C')
+	</select>
+	
+	<insert id="fixAdmSubChulRegProc">
+		INSERT INTO TB_FIX_SUB_CHUL (
+	   		CHUL_CODE
+	   	  , BUN_CHK
+	   	  , INSERT_ID
+	   	  , INSERT_DATE
+	   	  , UPDATE_ID
+	   	  , UPDATE_DATE
+	   	 ) VALUES ( 
+	   	 	#{chulCode, jdbcType=VARCHAR}
+	   	  , 'C'
+	   	  , #{id, jdbcType=VARCHAR}
+	   	  , SYSDATE
+	   	  , #{id, jdbcType=VARCHAR}
+	   	  , SYSDATE)
+	</insert>
+	
+	
+	<delete id="fixAdmSubChulDelProc">
+		DELETE FROM TB_FIX_SUB_CHUL
+		WHERE CHUL_CODE = #{chulCode, jdbcType=VARCHAR}
+	</delete>
+	
+	
+	<insert id="reqBuySubRegProc">
+		INSERT INTO TB_REQ_DEAL (
+			   REQ_DEAL_SEQ
+			 , BUN_CHK
+			 , CHUL_CODE
+			 , PUM_CODE
+			 , PUM_NAME
+			 , MOK_CODE
+			 , MOK_NAME
+			 , CHUL_LEVEL
+			 , CHUL_LEVEL_NAME
+			 , J_CODE
+			 , TWIN_CNT
+			 , BOX_CNT
+			 , SOK_CNT
+			 , UNIT_PRICE
+			 , AUC_PRICE
+			 , REQ_DATE
+			 , CHUL_DATE
+			 , FIX_STATE
+			 , AUC_BAN_TEXT
+			 , CHUL_BAN_TEXT
+			 , REQ_TEXT
+			 , GTEXT
+			 , LOGIN_ID
+			 , MEMBER_ID
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		)VALUES ( 
+			  #{reqDealSeq, jdbcType=VARCHAR}
+			, 'C'
+			, #{chulCode, jdbcType=VARCHAR}
+			, #{pumCode, jdbcType=VARCHAR}
+			, #{pumName, jdbcType=VARCHAR}
+			, #{mokCode, jdbcType=VARCHAR}
+			, #{mokName, jdbcType=VARCHAR}
+			, #{chulLevel, jdbcType=VARCHAR}
+			, #{chulLevelName, jdbcType=VARCHAR}
+			, #{jCode, jdbcType=VARCHAR}
+			, NVL(#{twinCnt, jdbcType=VARCHAR},0)
+			, #{boxCnt, jdbcType=VARCHAR}
+			, #{sokCnt, jdbcType=VARCHAR}
+			, #{unitPrice, jdbcType=VARCHAR}
+			, #{aucPrice, jdbcType=VARCHAR}
+			, TO_CHAR(SYSDATE,'YYYY-MM-DD')
+			, #{chulDate, jdbcType=VARCHAR}
+			, '3'
+			, #{aucBanText, jdbcType=VARCHAR}
+			, #{chulBanText, jdbcType=VARCHAR}
+			, #{reqText, jdbcType=VARCHAR}
+			, #{gtext, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, #{memberId, jdbcType=VARCHAR}
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE
+			, #{id, jdbcType=VARCHAR}
+			, SYSDATE 
+		)
+	</insert>
+	
+	<!-- 관엽 분갈이 끝-->
+	
+	<!-- 정산관리 -->
+	
+	<select id="selectMaxChulDate" resultType="java.lang.String">
+		SELECT MAX(CHUL_DATE)
+		FROM (
+			SELECT MAX(AUC_DATE) AS CHUL_DATE 
+			FROM TB_FIX_DEAL 
+			WHERE BUN_CHK = 'C' AND FIX_STATE IN ('4','6')
+			UNION ALL
+			SELECT MAX(CHUL_DATE) AS CHUL_DATE FROM TB_REQ_DEAL WHERE BUN_CHK = 'C' AND FIX_STATE IN ('4') 
+		) 
+	</select>
+	<select id="getTranAdmInfo" resultType="egovMap">
+		SELECT CHUL_DATE
+		     , FIX_BOX_CNT + REQ_BOX_CNT AS TOT_BOX_CNT
+		     , FIX_SOK_CNT + REQ_SOK_CNT AS TOT_SOK_CNT
+		     , FIX_TRADE_PRICE + REQ_TRADE_PRICE AS TOT_TRADE_PRICE
+		     , FIX_BOX_CNT
+		     , FIX_SOK_CNT
+		     , FIX_TRADE_PRICE
+		     , FIX_DIS_COMP_CNT
+		     , FIX_COMP_CNT
+		     , REQ_BOX_CNT
+		     , REQ_SOK_CNT
+		     , REQ_TRADE_PRICE
+		     , REQ_DIS_COMP_CNT + REQ_APP_CNT AS REQ_DIS_COMP_CNT
+		     , REQ_APP_CNT
+		     , REQ_COMP_CNT
+		FROM (
+		    SELECT T3.CHUL_DATE
+		         , NVL(T4.FIX_BOX_CNT,'0') AS FIX_BOX_CNT
+		         , NVL(T4.FIX_SOK_CNT,'0') AS FIX_SOK_CNT
+		         , NVL(T4.FIX_TRADE_PRICE,'0') AS FIX_TRADE_PRICE
+		         , NVL(T4.FIX_DIS_COMP_CNT,'0') AS FIX_DIS_COMP_CNT
+		         , NVL(T4.FIX_COMP_CNT,'0') AS FIX_COMP_CNT
+		         , NVL(T5.REQ_BOX_CNT,'0') AS REQ_BOX_CNT
+		         , NVL(T5.REQ_SOK_CNT,'0') AS REQ_SOK_CNT
+		         , NVL(T5.REQ_TRADE_PRICE,'0') AS REQ_TRADE_PRICE
+		         , NVL(T5.REQ_DIS_COMP_CNT,'0') AS REQ_DIS_COMP_CNT
+		         , NVL(T5.REQ_APP_CNT,'0') AS REQ_APP_CNT
+		         , NVL(T5.REQ_COMP_CNT,'0') AS REQ_COMP_CNT
+		    FROM (
+		        SELECT #{searchChulDate, jdbcType=VARCHAR} AS CHUL_DATE FROM DUAL
+		    ) T3
+		    ,(
+		        SELECT AUC_DATE
+		             , SUM(T2.BID_SOK_CNT/T1.UNIT_SOK) AS FIX_BOX_CNT
+		             , SUM(T2.NAK_SOK_CNT) AS FIX_SOK_CNT
+		             , SUM(CASE WHEN (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) = '상' 
+		             	   	THEN (T2.NAK_SOK_CNT/T1.UNIT_SOK)*T2.BID_UNIT_PRICE
+		             	   ELSE T2.NAK_SOK_CNT*T2.BID_UNIT_PRICE END) AS FIX_TRADE_PRICE
+		             , COUNT(CASE WHEN T1.FIX_STATE = '3' THEN T1.FIX_DEAL_SEQ END ) AS FIX_DIS_COMP_CNT
+		             , COUNT(CASE WHEN T1.FIX_STATE IN ('4','6') THEN T1.FIX_DEAL_SEQ END ) AS FIX_COMP_CNT
+		        FROM TB_FIX_DEAL T1
+		           , TB_FIX_BID T2
+		        WHERE T1.FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ
+		        AND T1.BUN_CHK = 'C'
+		        AND T1.AUC_DATE = #{searchChulDate, jdbcType=VARCHAR}
+		        AND T1.FIX_STATE IN ('3','4','6')
+		        AND T2.BID_STATE IN ('2','4')
+		        GROUP BY AUC_DATE
+		    ) T4
+		    ,(
+		        SELECT CHUL_DATE
+		             , SUM(BOX_CNT) AS REQ_BOX_CNT
+		             , SUM(SOK_CNT) AS REQ_SOK_CNT
+		             , SUM(CASE WHEN (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T6.PUM_CODE) = '상' 
+		             	   	THEN BOX_CNT*UNIT_PRICE
+		             	   ELSE SOK_CNT*UNIT_PRICE END) AS REQ_TRADE_PRICE
+		             , COUNT(CASE WHEN FIX_STATE = '3' THEN REQ_DEAL_SEQ END ) AS REQ_DIS_COMP_CNT
+		             , COUNT(CASE WHEN FIX_STATE = '1' THEN REQ_DEAL_SEQ END ) AS REQ_APP_CNT
+		             , COUNT(CASE WHEN FIX_STATE = '4' THEN REQ_DEAL_SEQ END ) AS REQ_COMP_CNT
+		        FROM TB_REQ_DEAL T6
+		        WHERE BUN_CHK = 'C'
+		        AND CHUL_DATE = #{searchChulDate, jdbcType=VARCHAR}
+		        AND FIX_STATE IN ('1','3','4')
+		        GROUP BY CHUL_DATE
+		    ) T5
+		    WHERE T3.CHUL_DATE = T4.AUC_DATE(+)
+		    AND T3.CHUL_DATE = T5.CHUL_DATE(+)
+		)
+	</select>
+	<select id="getTranAdmList" resultType="egovMap">
+		SELECT TRAN_SEQ
+	    	 , BUN_CHK
+	    	 , UP_DAY
+	    	 , UP_NO
+	    	 , CHUL_CODE
+	    	 , J_CODE
+	    	 , MOK_CODE
+		     , PUM_CODE
+		     , CHUL_LEVEL
+		     , BOX_CNT
+		     , SOK_CNT
+		     , F_SONGE_CNT
+		     , TRAN_YN
+		     , FIX_TYPE
+		     , FIX_SEQ
+		     , KM_P_ORG
+		     , MOK_NAME
+		     , PUM_NAME
+		     , CHUL_NAME
+		     , J_NAME
+		     , CHUL_LEVEL_NAME
+		     , TRANS
+		     , PUM_KG
+	    FROM (
+		    SELECT T1.BUN_CHK || T1.UP_DAY || T1.UP_NO AS TRAN_SEQ
+		         , T1.BUN_CHK
+			     , T1.UP_DAY
+			     , T1.UP_NO
+			     , T1.CHUL_CODE
+			     , T1.J_CODE
+			     , T1.MOK_CODE
+			     , T1.PUM_CODE
+			     , T1.CHUL_LEVEL
+			     , T1.BOX_CNT
+			     , T1.SOK_CNT
+			     , T1.F_SONGE_CNT
+			     , T1.TRAN_YN
+			     , T1.FIX_TYPE
+			     , T1.FIX_SEQ
+			     , T1.KM_P_ORG
+			     , (SELECT NVL(P_MOK_NAME,'미등록') FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE || P_MOK_CODE = T1.MOK_CODE) AS  MOK_NAME
+			     , (SELECT NVL(P_JONG_NAME,'미등록') FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS  PUM_NAME
+			     , (SELECT NVL(NAME,'정보없음') FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE) AS  CHUL_NAME
+			     , (SELECT NVL(NAME,'정보없음') FROM FLOMEJANG.A_DOME_INFO WHERE CODE = T1.J_CODE) AS  J_NAME
+			     , (SELECT NVL(NAME,'정보없음') FROM FLOMEJANG.A_LEVEL WHERE CODE = T1.CHUL_LEVEL AND BUN_CHK = 'C') AS  CHUL_LEVEL_NAME
+			     , T1.TRANS
+			     , T1.PUM_KG
+			FROM TB_MAGAM_MASTER T1
+			WHERE UP_DAY = #{searchChulDate, jdbcType=VARCHAR}
+			AND BUN_CHK = 'C'
+		)WHERE 1=1
+		<if test='searchChulCode != null and searchChulCode != ""'>
+		   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+		</if>
+		<if test='searchMokCode != null and searchMokCode != ""'>
+		   AND (
+		   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+		   		OR
+		   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+		   		)
+		</if>
+		<if test='searchPumCode != null and searchPumCode != ""'>
+		   AND (
+		   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+		   		OR
+		   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+		   		)
+		</if>
+	</select>
+	
+	<select id="getTranAdmListCnt" resultType="java.lang.Integer">
+		SELECT COUNT(BUN_CHK)
+		FROM TB_MAGAM_MASTER
+		WHERE UP_DAY = #{searchChulDate, jdbcType=VARCHAR}
+		AND BUN_CHK = 'C'
+	</select>
+	 
+	<delete id="tranMagamDelProc">
+		DELETE FROM TB_MAGAM_MASTER 
+		WHERE BUN_CHK = 'C' 
+		AND UP_DAY = #{chulDate, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="tranMagamInsProc">
+		INSERT INTO TB_MAGAM_MASTER
+		VALUE(
+			SELECT BUN_CHK
+                 , AUC_DATE
+                 , 'C'||LPAD(UP_NO + RNUM,4,0)
+                 , CHUL_CODE
+                 , J_CODE
+                 , MOK_CODE
+                 , PUM_CODE
+                 , CHUL_LEVEL
+                 , BOX_CNT
+                 , SOK_CNT
+                 , TWIN_CNT
+                 , UNIT_PRICE
+                 , 'N'
+                 , FIX_TYPE
+                 , FIX_SEQ
+                 , NVL(T4.TRANS,(SELECT MAX(TRANS) KEEP(DENSE_RANK FIRST ORDER BY UP_DAY DESC) 
+                    FROM FLOMEJANG.A_SANG_JANG 
+                    WHERE CHUL_CODE = T4.CHUL_CODE)) AS TRANS
+                 , '' AS BIGO
+                 , PAN_TYPE
+                 , PUM_KG AS PUM_KG
+                 , NULL AS BOX_CODE
+            FROM (
+                SELECT BUN_CHK
+                     , AUC_DATE
+                     , (
+                        SELECT NVL(SUBSTR(MAX(UP_NO),2,4),0) AS UP_NO  
+                        FROM FLOMEJANG.A_SANG_JANG
+                        WHERE BUN_CHK = 'C'
+                        AND UP_DAY = REPLACE(#{chulDate, jdbcType=VARCHAR},'-','')
+                        AND UP_NO LIKE 'C%'
+                       ) AS UP_NO
+                     , ROWNUM AS RNUM
+                     , CHUL_CODE
+                     , MOK_CODE
+                     , PUM_CODE
+                     , BOX_CNT
+                     , SOK_CNT
+                     , TWIN_CNT
+                     , UNIT_PRICE
+                     , J_CODE
+                     , CHUL_LEVEL
+                     , FIX_TYPE
+                     , FIX_SEQ
+                     , PAN_TYPE
+                     , TRANS
+                     , PUM_KG
+                FROM (
+                    SELECT T1.BUN_CHK
+                         , T1.AUC_DATE
+                         , T1.CHUL_CODE
+                         , T1.MOK_CODE
+                         , T1.PUM_CODE
+                         , (T2.NAK_SOK_CNT / T1.UNIT_SOK) AS BOX_CNT
+                         , T2.NAK_SOK_CNT AS SOK_CNT
+                         , T2.BID_UNIT_PRICE AS UNIT_PRICE
+                         , T2.J_CODE
+                         , T1.TWIN_CNT
+                         , T1.CHUL_LEVEL
+                         , '1' AS FIX_TYPE
+                         , T2.BID_SEQ AS FIX_SEQ
+                         , (SELECT NAME FROM FLOMEJANG.A_CHUL_INFO WHERE BUN_CHK = T1.BUN_CHK AND CODE = T1.CHUL_CODE) AS CHUL_NAME
+                         , '03' AS PAN_TYPE
+                         , T1.TRANS
+                         , T1.PUM_KG
+                    FROM TB_FIX_DEAL T1
+                       , TB_FIX_BID T2
+                    WHERE T1.FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ
+                    AND T1.BUN_CHK = 'C'
+                    AND T1.AUC_DATE = #{chulDate, jdbcType=VARCHAR}
+                    AND T1.FIX_STATE IN ('4','6')
+                    AND T2.BID_STATE IN ('2','4')
+                    UNION ALL
+                    SELECT BUN_CHK
+                         , CHUL_DATE
+                         , CHUL_CODE
+                         , MOK_CODE 
+                         , PUM_CODE
+                         , BOX_CNT
+                         , SOK_CNT
+                         , NVL(AUC_PRICE, UNIT_PRICE)
+                         , J_CODE
+                         , TWIN_CNT
+                         , CHUL_LEVEL
+                         , '2' AS FIX_TYPE
+                         , REQ_DEAL_SEQ AS FIX_SEQ
+                         , (SELECT NAME FROM FLOMEJANG.A_CHUL_INFO WHERE BUN_CHK = T3.BUN_CHK AND CODE = T3.CHUL_CODE) AS CHUL_NAME
+                         , NVL(PAN_TYPE, '03')
+                         , T3.TRANS
+                         , T3.PUM_KG
+                    FROM TB_REQ_DEAL T3
+                    WHERE BUN_CHK = 'C'
+                    AND CHUL_DATE = #{chulDate, jdbcType=VARCHAR}
+                    AND FIX_STATE IN ('4')
+                    ORDER BY CHUL_NAME ASC
+                ) 
+            ) T4
+		)
+	</insert>
+	
+	<select id="tranMagamCompCheck" resultType="egovMap">
+		
+	    SELECT T1.BUN_CHK
+		     , T1.UP_DAY
+		     , T1.UP_NO
+		     , T1.F_UP_DAY
+		     , T1.F_UP_NO
+		     , T1.CHUL_CODE
+		     , T1.PUM_CODE
+		     , T1.PUM_KG
+		     , T1.CHUL_LEVEL
+		     , T1.ACC_LEVEL
+		     , T1.BOX_TYPE
+		     , T1.TRANS
+		     , T1.BOX_CNT
+		     , T1.SOK_CNT
+		     , T1.UP_CNT
+		     , T1.P_U_PR1
+		     , T1.P_U_PR2
+		     , T1.GROUP_CODE
+		     , T1.TR_AMOUNT
+		     , T1.RE_BOX_P
+		     , T1.BOX_P
+		     , T1.DOWN_P
+		     , T1.KG_P
+		     , T1.DAEGI_P
+		     , T1.F_SONGE_CNT
+		     , T1.TR_JIWON
+		     , T1.F_I_ID
+		     , T1.F_I_DT
+		     , T1.L_U_ID
+		     , T1.L_U_DT
+		     , T1.TRANS_CODE
+		     , T1.BIGO
+		     , T1.CONTRACT
+		     , T1.PRE_ORDER
+		     , T1.GWANRI_ZONE
+		     , T1.TRADE_TYPE
+		     , T1.B_UP_DAY
+		     , T1.B_UP_NO
+		     , T1.IN_DEVICE
+		FROM FLOMEJANG.A_SANG_JANG T1
+		WHERE T1.BUN_CHK = 'C'
+	    AND T1.BUN_CHK || T1.UP_DAY || T1.UP_NO = REPLACE(#{tranSeq, jdbcType=VARCHAR},'-','')
+	    
+	   
+	</select>
+	
+	<insert id="tranMagamCompSangjang">
+	INSERT INTO FLOMEJANG.A_SANG_JANG (
+          BUN_CHK
+        , UP_DAY
+        , UP_NO
+        , F_UP_DAY
+        , F_UP_NO
+        , CHUL_CODE
+        , PUM_CODE
+        , CHUL_LEVEL
+        , ACC_LEVEL
+        , BOX_TYPE
+        , TRANS
+        , BOX_CNT
+        , SOK_CNT
+        , UP_CNT
+        , P_U_PR1
+        , P_U_PR2
+        , F_SONGE_CNT
+        , F_I_ID
+        , L_U_ID
+        , GROUP_CODE
+        , GWANRI_ZONE
+        , TR_AMOUNT
+        , DOWN_P
+        , RE_BOX_P
+        , TR_JIWON
+        , TRADE_TYPE
+        , BIGO
+        , PUM_KG
+    ) 
+       SELECT BUN_CHK
+            , REPLACE(UP_DAY,'-','')
+            , UP_NO
+            , REPLACE(UP_DAY,'-','') AS F_UP_DAY
+            , UP_NO AS F_UP_NO
+            , CHUL_CODE
+            , PUM_CODE
+            , CHUL_LEVEL
+            , CHUL_LEVEL AS ACC_LEVEL
+            , CASE WHEN T2.PAN_TYPE = '04' AND SUBSTR(PUM_CODE,1,4) = '8029' THEN '200'
+              ELSE '100' END AS BOX_TYPE
+            , TRANS
+            , BOX_CNT
+            , SOK_CNT
+            , 1      AS up_cnt
+            , BOX_CNT AS P_U_PR1
+            , SOK_CNT AS P_U_PR2
+            , F_SONGE_CNT AS F_SONGE_CNT
+            , '9' AS f_i_id
+            , '9' AS l_u_id
+            , (SELECT G_CODE FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T2.CHUL_CODE) AS GROUP_CODE
+            , (SELECT GWANRI_ZONE FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T2.CHUL_CODE) AS GWANRI_ZONE
+            , NVL((SELECT S_PRICE FROM FLOMEJANG.A_TRAVEL_AREA 
+                    WHERE TRAVEL_CODE = T2.TRANS 
+                    AND BUN_CHK = T2.BUN_CHK 
+                    AND AREA_CODE = (SELECT GWANRI_ZONE FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T2.CHUL_CODE))
+                 ,(SELECT S_PRICE FROM FLOMEJANG.A_TRAVEL_AREA 
+                    WHERE TRAVEL_CODE = T2.TRANS 
+                    AND BUN_CHK = T2.BUN_CHK 
+                    AND AREA_CODE = '0000')
+                 ) AS TR_AMOUNT
+            , (SELECT DOWN_PRICE FROM FLOMEJANG.A_BOX WHERE BOX_CODE = DECODE(T2.PAN_TYPE,'04',DECODE(SUBSTR(PUM_CODE,1,4),'8029','200','100'),'100') AND BUN_CHK = T2.BUN_CHK) AS DOWN_P
+            , (SELECT REP_PRICE FROM FLOMEJANG.A_BOX WHERE BOX_CODE = DECODE(T2.PAN_TYPE,'04',DECODE(SUBSTR(PUM_CODE,1,4),'8029','200','100'),'100') AND BUN_CHK = T2.BUN_CHK) AS RE_BOX_P
+            , (SELECT AMT
+              FROM FLOMEJANG.A_PUBLIC_INFO a, FLOMEJANG.A_GWANRI_CODE b, FLOMEJANG.A_CHUL_INFO c
+              WHERE c.CODE = T2.CHUL_CODE
+              AND b.GWANRI_ZONE = c.GWANRI_ZONE
+              AND b.JISA_CODE = a.CD1
+              AND a.CD_GUBUN = '04') AS TR_JIWON
+             , '00' AS TRADE_TYPE
+             , '' AS BIGO
+             , NVL(PUM_KG, 0) AS PUM_KG
+         FROM (
+             SELECT BUN_CHK
+                  , UP_DAY
+                  , UP_NO
+                  , CHUL_CODE
+                  , J_CODE
+                  , MOK_CODE
+                  , PUM_CODE
+                  , CHUL_LEVEL
+                  , BOX_CNT
+                  , SOK_CNT
+                  , F_SONGE_CNT
+                  , KM_P_ORG
+                  , TRAN_YN
+                  , FIX_TYPE
+                  , FIX_SEQ
+                  , TRANS
+                  , NVL(PAN_TYPE, DECODE(FIX_TYPE, '1', '03', '03')) AS PAN_TYPE
+                  , PUM_KG
+            FROM TB_MAGAM_MASTER T1
+            WHERE T1.BUN_CHK || T1.UP_DAY || T1.UP_NO = #{tranSeq, jdbcType=VARCHAR}
+         ) T2
+	</insert>
+	
+	<insert id="tranMagamCompPanMae">
+		INSERT INTO FLOMEJANG.A_PAN_MAE (
+		        BUN_CHK
+		      , PAN_DAY
+		      , PAN_NO
+		      , SERIAL_NO
+		      , BOX_CNT
+		      , SOK_CNT
+		      , KM_LIST
+		      , KM_P_ORG
+		      , KM_P_NEW
+		      , PAN_PRICE
+		      , J_DOME_CODE
+		      , KM_MAN_CODE
+		      , PAN_TYPE
+		)SELECT BUN_CHK
+		      , REPLACE(UP_DAY,'-','')
+		      , UP_NO
+		      , '01'
+		      , BOX_CNT
+		      , SOK_CNT
+		      , '4'
+		      , KM_P_ORG
+		      , KM_P_ORG
+		      , CASE WHEN (SELECT P_UNIT2 FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) = '상' THEN BOX_CNT * KM_P_ORG 
+                                    ELSE SOK_CNT * KM_P_ORG END AS PAN_PRICE
+		      , J_CODE
+		      , LPAD(#{aucCode, jdbcType=VARCHAR}, 3, '0')
+		      , CASE WHEN FIX_TYPE = '1' 
+		      		 AND ((SELECT DEAL_TYPE FROM TB_FIX_DEAL WHERE FIX_DEAL_SEQ = (SELECT FIX_DEAL_SEQ FROM TB_FIX_BID WHERE BID_SEQ = T1.FIX_SEQ)) = 'L' 
+		      		   OR (SELECT DEAL_TYPE FROM TB_FIX_DEAL WHERE FIX_DEAL_SEQ = (SELECT FIX_DEAL_SEQ FROM TB_FIX_BID WHERE BID_SEQ = T1.FIX_SEQ)) = 'W')
+                     AND (SELECT COUNT(FILE_SEQ) FROM TB_FIX_FILE WHERE FIX_DEAL_SEQ = (SELECT FIX_DEAL_SEQ FROM TB_FIX_BID WHERE BID_SEQ = T1.FIX_SEQ)) <![CDATA[>]]> 0 THEN '05'
+                ELSE NVL(PAN_TYPE, DECODE(FIX_TYPE, '1', '03', '03')) END AS PAN_TYPE
+		FROM TB_MAGAM_MASTER T1
+		WHERE T1.BUN_CHK || T1.UP_DAY || T1.UP_NO = #{tranSeq, jdbcType=VARCHAR}
+	</insert>
+	
+	<update id="tranMagamCompStatusUpt">
+		UPDATE TB_MAGAM_MASTER
+		SET TRAN_YN = 'Y'
+		WHERE BUN_CHK || UP_DAY || UP_NO = #{tranSeq, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="tranMagamTranCnt" resultType="java.lang.Integer">
+		SELECT COUNT(BUN_CHK)
+		FROM TB_MAGAM_MASTER
+		WHERE BUN_CHK = 'C' 
+		AND UP_DAY = #{chulDate, jdbcType=VARCHAR}
+		AND TRAN_YN = 'Y'
+	</select>
+	 
+	<select id="getTranCompListSangJang" resultType="java.util.HashMap">
+		SELECT T1.BUN_CHK
+		     , T1.UP_DAY
+		     , T1.UP_NO
+		     , T1.F_UP_DAY
+		     , T1.F_UP_NO
+		     , T1.CHUL_CODE
+		     , T1.PUM_CODE
+		     , T1.PUM_KG
+		     , T1.CHUL_LEVEL
+		     , T1.ACC_LEVEL
+		     , T1.BOX_TYPE
+		     , T1.TRANS
+		     , T1.BOX_CNT
+		     , T1.SOK_CNT
+		     , T1.UP_CNT
+		     , T1.P_U_PR1
+		     , T1.P_U_PR2
+		     , T1.GROUP_CODE
+		     , T1.TR_AMOUNT
+		     , T1.RE_BOX_P
+		     , T1.BOX_P
+		     , T1.DOWN_P
+		     , T1.KG_P
+		     , T1.DAEGI_P
+		     , T1.F_SONGE_CNT
+		     , T1.TR_JIWON
+		     , T1.F_I_ID
+		     , T1.F_I_DT
+		     , T1.L_U_ID
+		     , T1.L_U_DT
+		     , T1.TRANS_CODE
+		     , T1.BIGO
+		     , T1.CONTRACT
+		     , T1.PRE_ORDER
+		     , T1.GWANRI_ZONE
+		     , T1.TRADE_TYPE
+		     , T1.B_UP_DAY
+		     , T1.B_UP_NO
+		     , T1.IN_DEVICE
+		FROM FLOMEJANG.A_SANG_JANG T1
+		   , TB_MAGAM_MASTER T2
+		WHERE T1.BUN_CHK = T2.BUN_CHK
+		AND T1.UP_DAY = REPLACE(T2.UP_DAY,'-','')
+		AND T1.UP_NO = T2.UP_NO
+		AND T1.BUN_CHK = 'C'
+	    AND T1.UP_DAY = REPLACE(#{chulDate, jdbcType=VARCHAR},'-','')
+	</select>
+	 
+	<select id="getTranCompListPanMae" resultType="java.util.HashMap">
+		SELECT T1.BUN_CHK
+		     , T1.PAN_DAY
+		     , T1.PAN_NO
+		     , T1.SERIAL_NO
+		     , T1.BOX_CNT
+		     , T1.SOK_CNT
+		     , T1.KM_LIST
+		     , T1.KM_P_ORG
+		     , T1.KM_P_NEW
+		     , T1.PAN_PRICE
+		     , T1.J_DOME_CODE
+		     , T1.KM_MAN_CODE
+		     , T1.SU_SU_P
+		     , T1.JANG_P
+		     , T1.DIS_DAY
+		     , T1.DIS_PRICE_OLD
+		     , T1.DIS_PRICE_NEW
+		     , T1.P_AMOUNT
+		     , T1.B_PERCENT
+		     , T1.SOK_PRICE
+		     , T1.TOT_PRICE
+		     , T1.BOX_PRICE
+		     , T1.TRANS_PRICE
+		     , T1.DOWN_RE_P
+		     , T1.MISU
+		     , T1.P_MISU
+		     , T1.MISU_NUGE
+		     , T1.PEGI_DAY
+		     , T1.RE_BOX_P
+		     , T1.SANG_HWAN
+		     , T1.CHAIN
+		     , T1.T_MISU_RET
+		     , T1.DAEGI_PRICE
+		     , T1.FAULT_CODE
+		     , T1.FAULT_DOME_CODE
+		     , T1.FAULT_PRICE
+		     , T1.FAULT_KM_LIST
+		     , T1.F_I_ID
+		     , T1.F_I_DT
+		     , T1.L_U_ID
+		     , T1.L_U_DT
+		     , T1.RETURN_AMT
+		     , T1.SELF_AMT
+		     , T1.DOWN_RE_PG
+		     , T1.BIGO
+		     , T1.SELF_AMT_G
+		     , T1.DOWN_RE_PC
+		     , T1.FEE_AMT
+		     , T1.TRANS_PRICE_ADD
+		     , T1.BOX_PRICE_ADD
+		     , T1.PAN_TYPE
+		     , T1.RTN_TYPE
+		     , T1.RENTAL_AMT
+		     , T1.RENTAL_AMT_G
+		     , T1.HE_AMT
+		     , T1.KM_CHK
+		     , T1.VAT
+		     , T1.BAEK_AMT
+		FROM FLOMEJANG.A_PAN_MAE T1
+		   , TB_MAGAM_MASTER T2
+		WHERE T1.BUN_CHK = T2.BUN_CHK
+		AND T1.PAN_DAY = REPLACE(T2.UP_DAY,'-','')
+		AND T1.PAN_NO = T2.UP_NO
+		AND T1.BUN_CHK = 'C'
+	    AND T1.PAN_DAY = REPLACE(#{chulDate, jdbcType=VARCHAR},'-','')
+	</select>
+	
+	<select id="getTranListMagam" resultType="java.util.HashMap">
+		SELECT BUN_CHK
+		     , UP_DAY
+		     , UP_NO
+		     , CHUL_CODE
+		     , J_CODE
+		     , MOK_CODE
+		     , PUM_CODE
+		     , CHUL_LEVEL
+		     , BOX_CNT
+		     , SOK_CNT
+		     , F_SONGE_CNT
+		     , KM_P_ORG
+		     , TRAN_YN
+		     , FIX_TYPE
+		     , FIX_SEQ
+		     , TRANS
+		     , BIGO
+		     , PAN_TYPE
+		     , PUM_KG
+		     , BOX_CODE
+		FROM TB_MAGAM_MASTER
+		WHERE BUN_CHK = 'C'
+	    AND UP_DAY = #{chulDate, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getFixAucCompChulList" resultType="egovMap">
+	     select  a.bun_chk || a.up_day || a.up_no AS TRAN_SEQ
+	          ,  a.bun_chk         AS BUN_CHK
+	     	  ,  a.up_day          AS UP_DAY
+              ,  a.up_no           AS UP_NO
+              ,  a.j_code          AS DOME_CODE
+              ,  b.name            AS DOME_NAME
+              ,  a.chul_code       AS CHUL_CODE
+              ,  nvl(c.name, '정보없음') AS CHUL_NAME
+              ,  d.p_mok_name        AS PUM_MOK
+              ,  d.p_jong_name       AS PUM_JONG
+              ,  e.name              AS GRADE
+              ,  nvl(a.box_cnt, 0)   AS BOX_CNT
+              ,  nvl(a.sok_cnt, 0)   AS SOK_CNT
+              ,  a.trans             AS TRANS
+              ,  nvl(h.name, '정보없음') AS TRANS_NAME
+              ,  A.BIGO AS BIGO
+           from  TB_MAGAM_MASTER  a
+              ,  FLOMEJANG.a_dome_info      b
+              ,  FLOMEJANG.a_chul_info      c
+              ,  FLOMEJANG.v_mok_jong_list  d
+              ,  FLOMEJANG.a_level          e
+              ,  FLOMEJANG.a_gwanri_code    g
+              ,  FLOMEJANG.a_travel         h
+          where  1=1
+            and  a.j_code      = b.code
+            and  a.chul_code   = c.code
+            and  a.pum_code    = d.pum_code
+            and  a.chul_level  = e.code
+            and  a.bun_chk     = e.bun_chk
+            and  c.gwanri_zone = g.gwanri_zone
+            and  a.trans       = h.code    (+)
+            and  a.bun_chk     = h.bun_chk (+)
+            and  a.bun_chk     = 'C'
+            AND  a.up_day  = #{chulDate, jdbcType=VARCHAR}
+            order by CHUL_CODE asc, UP_NO asc
+     </select>
+     
+     <select id="getFixAucCompDomeList" resultType="egovMap">
+	     select  a.bun_chk         AS BUN_CHK
+	     	  ,  a.up_day          AS UP_DAY
+              ,  nvl(a.up_no, 0)   AS UP_NO
+              ,  a.j_code          AS DOME_CODE
+              ,  b.name            AS DOME_NAME
+              ,  a.chul_code       AS CHUL_CODE
+              ,  nvl(c.name, '정보없음') AS CHUL_NAME
+              ,  d.p_mok_name        AS PUM_MOK
+              ,  d.p_jong_name       AS PUM_JONG
+              ,  e.name              AS GRADE
+              ,  nvl(a.box_cnt, 0)   AS BOX_CNT
+              ,  nvl(a.sok_cnt, 0)   AS SOK_CNT
+              ,  a.trans             AS TRANS
+              ,  decode(a.trans, '06', substr(g.name, 4, 4), nvl(h.name, '정보없음')) AS TRANS_NAME
+              ,  A.BIGO AS BIGO
+           from  TB_MAGAM_MASTER  a
+              ,  FLOMEJANG.a_dome_info      b
+              ,  FLOMEJANG.a_chul_info      c
+              ,  FLOMEJANG.v_mok_jong_list  d
+              ,  FLOMEJANG.a_level          e
+              ,  FLOMEJANG.a_gwanri_code    g
+              ,  FLOMEJANG.a_travel         h
+          where  1=1
+            and  a.j_code      = b.code
+            and  a.chul_code   = c.code
+            and  a.pum_code    = d.pum_code
+            and  a.chul_level  = e.code
+            and  a.bun_chk     = e.bun_chk
+            and  c.gwanri_zone = g.gwanri_zone
+            and  a.trans       = h.code    (+)
+            and  a.bun_chk     = h.bun_chk (+)
+            and  a.bun_chk     = 'C'
+            AND  a.up_day  = #{chulDate, jdbcType=VARCHAR}
+            order by DOME_CODE asc, CHUL_CODE asc
+     </select>
+     
+     <update id="updateFixAucCompChulBigo">
+     	UPDATE TB_MAGAM_MASTER
+     	SET BIGO = #{bigo, jdbcType=VARCHAR}
+     	WHERE BUN_CHK || UP_DAY || UP_NO = #{tranSeq, jdbcType=VARCHAR}
+     </update>
+		
+	 <update id="updateMagamTrans">
+     	UPDATE TB_MAGAM_MASTER
+     	SET TRANS = #{trans, jdbcType=VARCHAR}
+     	  , PUM_KG = #{pumKg, jdbcType=INTEGER}
+     	WHERE BUN_CHK || UP_DAY || UP_NO = #{tranSeq, jdbcType=VARCHAR}
+     </update>
+     
+     <update id="updateTransReq">
+     	UPDATE TB_REQ_DEAL
+     	SET TRANS = #{trans, jdbcType=VARCHAR}
+     	  , PUM_KG = #{pumKg, jdbcType=INTEGER}
+     	WHERE REQ_DEAL_SEQ = #{tranSeq, jdbcType=VARCHAR}
+     	  AND BUN_CHK = 'C'
+     </update>
+     
+     <update id="updateTransFix">
+     	UPDATE TB_FIX_DEAL
+     	SET TRANS = #{trans, jdbcType=VARCHAR}
+     	  , PUM_KG = #{pumKg, jdbcType=INTEGER}
+     	WHERE FIX_DEAL_SEQ = #{tranSeq, jdbcType=VARCHAR}
+     	  AND BUN_CHK = 'C'
+     </update>
+	
+</mapper>

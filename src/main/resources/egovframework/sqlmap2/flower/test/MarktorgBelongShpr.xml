@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :MarktorgBelongShpr.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 소속농가현황.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="MarktorgBelongShpr">
+	<typeAlias alias="MarktorgBelongShprDTO" type="at.service.business.FLOMEJANG.marktorgbelongshpr.dto.MarktorgBelongShprDTO" />
+	
+	<!-- 출하자 목록 resultMap -->
+	<resultMap id="MarktorgBelongShpr.selectListMap" class="java.util.HashMap">
+	    <result property="code"         column="code"         columnIndex="1" />  <!--출하자코드    -->
+	    <result property="name"         column="name"         columnIndex="2" />  <!--출하자성명    -->
+	    <result property="juminNo"      column="juminNo"      columnIndex="3" />  <!--출하자주민번호-->
+	    <result property="hZipPk"       column="hZipPk"       columnIndex="4" />  <!--자택우편번호순번  -->
+	    <result property="hZipNo"       column="hZipNo"       columnIndex="5" />  <!--자택우편번호  -->
+	    <result property="hAddr1"       column="hAddr1"       columnIndex="6" />  <!--자택주소1   -->
+	    <result property="hAddr2"       column="hAddr2"       columnIndex="7" />  <!--자택주소2   -->
+	    <result property="hTelNo"       column="hTelNo"       columnIndex="8" />  <!--자택전화번호  -->
+	</resultMap>
+	
+	<resultMap id="SelectInfoListMap" class="java.util.HashMap">
+	    <result property="gCode"         column="gCode"         columnIndex="1" /> 
+	    <result property="gName"         column="gName"         columnIndex="2" /> 
+	    <result property="bunChk"        column="bunChk"        columnIndex="3" /> 
+	    <result property="toDay"         column="toDay"         columnIndex="4" /> 
+	</resultMap>
+	
+	<select id="MarktorgBelongShpr.selectList" resultMap="MarktorgBelongShpr.selectListMap">
+		<![CDATA[
+				SELECT nvl(substr(a.code,0,4)||'-'||substr(a.code,5,4),'') as code         
+				      ,nvl(a.name           ,'') as name         
+				      ,nvl(a.jumin_no       ,'') as juminNo      
+				      ,nvl(a.h_zip_pk       , 0) as hZipPk    
+				      ,(select nvl(zip_no,'') from e_zip_no@flower where zip_pk = a.h_zip_pk) as hZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from e_zip_no@flower where zip_pk = a.h_zip_pk) as hAddr1    
+				      ,nvl(a.h_addr         ,'') as hAddr2        
+				      ,nvl(a.h_tel_no       ,'') as hTelNo      
+				      ,nvl(a.f_zip_pk       ,'') as fZipPk    
+				      ,(select nvl(zip_no,'') from e_zip_no@flower where zip_pk = a.f_zip_pk) as fZipNo    
+				      ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from e_zip_no@flower where zip_pk = a.f_zip_pk) as fAddr1    
+				      ,nvl(a.f_addr         ,'') as fAddr2        
+				      ,nvl(a.f_tel_no       ,'') as fTelNo      
+				      
+				  FROM A_CHUL_INFO@flower a
+				 WHERE a.G_CODE = #gCode# 
+		 ]]>
+	</select>
+	
+	<select id="MarktorgBelongShpr.selectListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+				SELECT COUNT(a.code) AS COUNT
+				  FROM A_CHUL_INFO@flower a
+				 WHERE a.G_CODE = #gCode# 
+		]]>
+	</select>
+	
+	<select id="MarktorgBelongShpr.selectInfoList" resultMap="SelectInfoListMap">
+		<![CDATA[
+				SELECT  g_code as gCode,
+				        g_name as gName,
+				        decode(bun_chk,'N','절화','Y','난','C','관엽')   as bunChk,
+				        to_char(sysdate,'yyyy-mm-dd')             as toDay
+				  FROM  A_C_GROUP@flower G 
+				 WHERE  G.G_CODE = #gCode# 
+		 ]]>
+	</select>
+	
+</sqlMap>

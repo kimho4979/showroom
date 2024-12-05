@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :ItemCupr.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 품목별시세조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="ItemCupr">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="pumCode"        column="pumCode"          columnIndex="1" />  <!--품종코드 -->
+	    <result property="pMokName"       column="pMokName"         columnIndex="2" />  <!--품목명    -->
+	    <result property="pJongName"      column="pJongName"        columnIndex="3" />  <!--품종명    -->
+	    <result property="sokCnt"         column="sokCnt"           columnIndex="4" />  <!--거래량 -->
+	    <result property="topAmount"      column="topAmount"        columnIndex="5" />  <!--최고가 -->
+	    <result property="botAmount"      column="botAmount"        columnIndex="6" />  <!--최저가 -->
+	    <result property="sum"            column="price"            columnIndex="7" />  <!--평균가 -->
+		<result property="tPrice"            column="tPrice"            columnIndex="8" />  <!--판매대금 -->
+	</resultMap>
+	
+	<resultMap id="ItemCupr.selectCodeListMap" class="java.util.HashMap">
+	    <result property="flowerCode"    column="flowerCode"    columnIndex="1" />  <!--플라워코드  -->
+	    <result property="flowerName"    column="flowerName"    columnIndex="2" />  <!--플라워명    -->
+	    <result property="pMokCode"      column="pMokCode"      columnIndex="3" />  <!--품목코드    -->
+	    <result property="pMokName"      column="pMokName"      columnIndex="4" />  <!--품목명      -->
+	    <result property="pJongCode"     column="pJongCode"     columnIndex="5" />  <!--품종코드  -->
+	    <result property="pJongName"     column="pJongName"     columnIndex="6" />  <!--품종명      -->
+	    <result property="sMokCode"      column="sMokCode"      columnIndex="3" />  <!--품목+품종코드    -->
+	</resultMap>
+	
+	<resultMap id="ItemCupr.buryuListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="flowerName"    column="flowerName"    columnIndex="2" /><!--플라워 명-->
+	</resultMap>
+	
+	<resultMap id="ItemCupr.selectPopupListMap" class="java.util.HashMap">
+		<result property="flowerCode"    column="flowerCode"    columnIndex="1" /><!--플라워 코드 -->
+		<result property="pMokCode"      column="pMokCode"      columnIndex="2" /><!--플라워 명-->
+		<result property="pMokName"      column="pMokName"      columnIndex="3" /><!--플라워 명-->
+	</resultMap>
+	
+	<resultMap id="latelyAuctionDateMap" class="at.service.FLOMEJANG.auctionprice.dto.LatelyAuctionDateDTO">
+		<result property="bunChk" column="구분" />
+		<result property="latelyDate" column="최근경매일" />
+		<result property="yoil" column="요일" />
+	</resultMap>
+	
+	<select id="ItemCupr.selectList" resultMap="SelectListMap">
+		<![CDATA[
+			SELECT pumCode
+				, pMokName
+				, pJongName
+				, SUM(sokCnt) sokCnt
+				, MAX(topAmount) topAmount
+				, MIN(botAmount) botAmount
+				, ROUND(SUM(totalPrice) / SUM(sokCnt)) price
+				, SUM(totalPrice) tPrice
+			FROM (
+				SELECT   max(C.P_MOK_NAME) as pMokName,
+					max(nvl(B.P_JONG_NAME,0))||''||max(nvl(decode(a.f_songe_cnt,'0','','/'||a.f_songe_cnt),' ')) as pJongName,
+					max(B.PUM_CODE) as pumCode,
+					sum(A.SOK_CNT) as sokCnt,
+					max(A.TOP_AMOUNT) as topAmount,
+					min(A.BOT_AMOUNT) as botAmount,
+					round(sum(A.P_PRICE) / sum(A.SOK_CNT),0) as sum,
+					sum(A.P_PRICE) totalPrice
+				FROM A_LEVEL_PRICE@flower A,
+					A_PUM_JONG_INFO@flower B,
+					A_PUM_MOK_INFO@flower C
+				WHERE ( A.PM_CODE = B.PUM_CODE ) and
+					( B.FLOWER_CODE = C.FLOWER_CODE ) and
+					( B.P_MOK_CODE = C.P_MOK_CODE ) and
+					(
+				]]>
+					<isNotEmpty property="startDate">
+						(A.PM_DAY between #startDate# and #endDate#)  /*and*/ 
+					</isNotEmpty>
+						/*(A.PM_CODE not in ('10010000','10020000','10030000','10050000','10030145','10010674', '10110000','10100000','10870000','10030261'))*/
+					)
+		<isEqual property="items" compareValue="N">
+			<![CDATA[
+				-- 절화의 경우 월,수,금 요일만 조회
+				and to_char(to_date(substr(PM_DAY,3,2)||'-'||substr(PM_DAY,5,2)||'-'||substr(PM_DAY,7,2)),'DY') in ('월','수','금')
+		]]>
+		</isEqual>
+		<isEmpty property="gubun">
+			<![CDATA[
+					and (A.PM_CODE like #pMokCode# || '%')
+			]]>
+		</isEmpty>
+		<isNotEmpty property="gubun">
+			<![CDATA[
+					and (A.BUN_CHK like #gubun#)
+			]]>
+		</isNotEmpty>
+		<![CDATA[
+				GROUP BY PM_DAY, A.PM_CODE, A.F_SONGE_CNT
+				)
+			GROUP BY pumCode, pMokName, pJongName
+			ORDER BY 1, 2, 3
+		]]>
+	</select>
+	
+	<select id="ItemCupr.buryuList" resultMap="ItemCupr.buryuListMap">
+		<![CDATA[
+				SELECT distinct d.cd1 as flowerCode,
+				       d.cd_name as flowerName 
+				  FROM e_concern@flower b, 
+				       a_public_info@flower d 
+				 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+				   and d.cd_gubun=2 
+				   and b.chul_code = #id#  
+		 ]]>
+	</select>
+	
+	<select id="ItemCupr.selectPopupList" resultMap="ItemCupr.selectPopupListMap">
+		<![CDATA[
+				select  flower_code||p_mok_code as flowerCode
+				       ,p_mok_code  as pMokCode
+				       ,p_mok_name  as pMokName 
+				from  a_pum_mok_info@flower
+				where 1 = 1
+ 		 ]]>
+ 		 <isEqual property="flower" compareValue="N">
+		 	<![CDATA[
+				  and  flower_code in ( '1' ,'3')  
+				  and ( flower_code||p_mok_code not in('1011','1010','1087','8129') ) 
+		    ]]>
+		 </isEqual>
+ 		 <isEqual property="flower" compareValue="Y">
+		 	<![CDATA[
+				  and  flower_code = '6'
+				  and ( flower_code||p_mok_code not in('1011','1010','1087','8129') ) 
+		    ]]>
+		 </isEqual>
+ 		 <isEqual property="flower" compareValue="C">
+		 	<![CDATA[
+				  and  flower_code = '8' 
+				  and ( flower_code||p_mok_code not in('1011','1010','1087','8129') ) 
+		    ]]>
+		 </isEqual>
+		 <isEqual property="flower" compareValue="G">
+		 	<![CDATA[
+				  and  flower_code = '5' 
+				  and ( flower_code||p_mok_code not in('1011','1010','1087','8129') ) 
+		    ]]>
+		 </isEqual>
+ 		 <isEmpty property="flower" >
+		 	<![CDATA[
+				  and ( flower_code||p_mok_code not in('1011','1010','1087','8129') ) 
+		    ]]>
+		 </isEmpty>
+		 <!-- 품목 검색 수정 20120424_김계원  -->
+		 <isNotEmpty property="item" >
+		 	<isEqual property="isCode" compareValue="0">
+				<![CDATA[
+						and p_mok_name like #item#
+				]]>
+			</isEqual>
+			<isNotEqual property="isCode" compareValue="0">
+				<![CDATA[
+						and p_mok_code = #item#
+				]]>
+			</isNotEqual>
+		 </isNotEmpty>
+		 <![CDATA[
+				order by p_mok_name
+		 ]]>
+	</select>
+	<select id="ItemCupr.LatelyAuctionDate" resultMap="latelyAuctionDateMap">
+		<![CDATA[
+			SELECT 구분, 최근경매일, TO_CHAR(최근경매일, 'DY') AS 요일
+			FROM ( SELECT CASE WHEN BUN_CHK = 'N' THEN '절화' 
+							   WHEN BUN_CHK = 'Y' THEN '난'
+							   WHEN BUN_CHK = 'C' THEN '관엽' 
+							   WHEN BUN_CHK = 'G' THEN '춘란' END 구분, 
+						 TO_DATE(TO_CHAR(max(MAGAM_ILJA)), 'YYYY-MM-DD') AS 최근경매일
+					FROM A_DAY_MAGAM@flower
+					GROUP BY BUN_CHK 
+			 ), DUAL
+		]]>
+	</select>
+
+</sqlMap>

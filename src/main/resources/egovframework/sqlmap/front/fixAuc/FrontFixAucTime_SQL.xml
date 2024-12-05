@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.fixAuc.service.impl.FrontFixAucTimeMapper">
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="AUC_BAN_TEXT" column="AUC_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="ITEM_TEXT" column="ITEM_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="CHUL_BAN_TEXT" column="CHUL_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="REQ_TEXT" column="REQ_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<select id="getFixAucTime" parameterType="String" resultMap="egovResultMap" >
+		SELECT BUN_CHK
+			 , DAY_TYPE
+			 , TIME_TYPE
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_NEW_TIME
+		WHERE BUN_CHK = #{bunChk, jdbcType=VARCHAR}
+		AND (TIME_TYPE = '1' OR TIME_TYPE = '2') 
+		ORDER BY TIME_TYPE, DAY_TYPE  ASC
+	</select>
+	
+	<select id="getFixAucTimeBid" parameterType="String" resultMap="egovResultMap" >
+		SELECT BUN_CHK
+			 , DAY_TYPE
+			 , TIME_TYPE
+			 , STR_FEW_DAY
+			 , END_FEW_DAY
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_NEW_TIME
+		WHERE BUN_CHK = #{bunChk, jdbcType=VARCHAR}
+		AND TIME_TYPE = '3' 
+		ORDER BY TIME_TYPE, DAY_TYPE  ASC
+	</select>
+	
+	
+		<select id="getFixAucTimeWriteBid" parameterType="String" resultMap="egovResultMap" >
+		SELECT BUN_CHK
+			 , DAY_TYPE
+			 , TIME_TYPE
+			 , STR_FEW_DAY
+			 , END_FEW_DAY
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_NEW_TIME
+		WHERE BUN_CHK = #{bunChk, jdbcType=VARCHAR}
+		AND TIME_TYPE = '4' 
+		ORDER BY TIME_TYPE, DAY_TYPE  ASC
+	</select>
+	
+	
+	<update id="updatetime">	
+		UPDATE TB_NEW_TIME
+		   SET STR_TIME = #{strTime, jdbcType=VARCHAR}
+			 , END_TIME = #{endTime, jdbcType=VARCHAR}
+			 , STR_FEW_DAY = #{strFewDay, jdbcType=VARCHAR}
+			 , END_FEW_DAY = #{endFewDay, jdbcType=VARCHAR}
+			 , UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+		WHERE BUN_CHK = #{bunChk, jdbcType=VARCHAR}
+		AND DAY_TYPE = #{dayType, jdbcType=VARCHAR}  
+		AND TIME_TYPE = #{timeType, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getCurrentTime" resultMap="egovResultMap" >
+		SELECT 
+			TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI') as CURRENT_TIME
+		FROM DUAL
+	</select>
+	
+</mapper>	

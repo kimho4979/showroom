@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WholesalerShipping.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 항운노조 중도매인 배송비내역.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="WholesalerShipping">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="jdomeCode" column="J_DOME_CODE" columnIndex="1" />  <!-- -->
+	    <result property="name"		column="NAME"		columnIndex="2" />  <!-- -->
+	    <result property="sumt"		column="SUMT"		columnIndex="3" />  <!-- -->
+	    <result property="cnt30"	column="CNT30"		columnIndex="4" />  <!-- -->
+	    <result property="amt30"	column="AMT30"		columnIndex="5" />  <!-- -->
+	    <result property="cnt50"	column="CNT50"		columnIndex="6" />  <!-- -->
+	    <result property="amt50"	column="AMT50"		columnIndex="7" />  <!-- -->
+	    <result property="cnt50up"	column="CNT50UP"	columnIndex="8" />  <!-- -->
+	    <result property="amt50up"	column="AMT50UP"	columnIndex="9" />  <!-- -->
+	    <result property="cnt0"		column="CNT0"		columnIndex="10" />  <!-- -->
+	    <result property="amt0"		column="AMT0"		columnIndex="11" />  <!-- -->
+	    <result property="cntw"		column="CNTW"		columnIndex="12" />  <!-- -->
+	    <result property="amtw"		column="AMTW"		columnIndex="13" />  <!-- -->
+	</resultMap>
+	
+	<select id="WholesalerShipping.selectList" resultMap="SelectListMap">
+		<![CDATA[
+			SELECT
+				NVL(B.J_DOME_CODE, '합계') AS J_DOME_CODE
+			    ,(SELECT NAME FROM A_DOME_INFO@flower WHERE CODE = B.J_DOME_CODE) AS NAME
+			    ,'' AS SUMT
+			    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT30
+			    ,NVL(Sum(Case When SOK_CNT <= 30 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT30
+			    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50
+			    ,NVL(Sum(Case When SOK_CNT > 30 AND SOK_CNT <= 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1000 Else 0 End), 0) AS AMT50
+			    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNT50UP
+			    ,NVL(Sum(Case When SOK_CNT > 50 AND TRADE_TYPE NOT IN ('01', '02', '03') Then BOX_CNT * 1500 Else 0 End), 0) AS AMT50UP
+			    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 1 Else 0 End), 0) AS CNT0
+			    ,NVL(Sum(Case When SOK_CNT > 10 AND TRADE_TYPE NOT IN ('01', '02', '03') AND BOX_CNT = 0 Then 500 Else 0 End), 0) AS AMT0
+			    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT Else 0 End), 0) AS CNTW
+			    ,NVL(Sum(Case When TRADE_TYPE IN ('01', '02', '03') Then BOX_CNT * 500 Else 0 End), 0) AS AMTW
+			FROM (
+			    SELECT J_DOME_CODE
+				    ,TRADE_TYPE,Round(P_SOK_CNT / Decode(P_BOX_CNT,0,1,P_BOX_CNT), 0) SOK_CNT
+				    ,P_BOX_CNT BOX_CNT 
+				FROM V_SANG_PAN_LIST@flower
+			    WHERE 1 = 1
+		]]>
+	<isNotEmpty property="gubun">
+		<![CDATA[
+					AND P_BUN_CHK = #gubun#
+		]]>
+	</isNotEmpty>
+	<isNotEmpty property="startDate">
+		<isNotEmpty property="endDate">
+		<![CDATA[
+			        AND PAN_DAY BETWEEN #startDate# AND #endDate#
+		]]>
+		</isNotEmpty>
+	</isNotEmpty>
+		<![CDATA[
+			        AND KM_LIST IN ('1','3','4')
+			        AND PAN_TYPE <> '01'
+			        AND BOX_TYPE <> '900'
+			) B
+			GROUP BY ROLLUP(B.J_DOME_CODE)
+			ORDER BY B.J_DOME_CODE ASC
+		]]>
+	</select>
+</sqlMap>

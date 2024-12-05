@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.login.service.impl.FrontLoginMapper">
+	
+	
+
+	<select id="getSnsCheckVO" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+		SELECT SNS_ID
+		     , SNS_TYPE
+		     , ACCESS_TOKEN
+		     , REFRESH_TOKEN
+		     , EXP_DATE
+		     , USER_ID AS ID
+		     , INSERT_DATE
+		FROM TB_OAUTH
+		WHERE 1=1
+		AND SNS_ID = #{id}
+		AND SNS_TYPE = #{type}
+		
+	</select>
+	
+	<insert id="insertAtSns">
+		INSERT INTO TB_OAUTH(
+			SNS_ID
+		  , SNS_TYPE
+		  , ACCESS_TOKEN
+		  , REFRESH_TOKEN
+		  , EXP_DATE
+		  , USER_ID
+		  , INSERT_DATE
+		)VALUES(
+			#{id, jdbcType=VARCHAR}
+		  , #{type, jdbcType=VARCHAR}
+		  , #{accessToken, jdbcType=VARCHAR}
+		  , #{refreshToken, jdbcType=VARCHAR}
+		  , #{expDate, jdbcType=VARCHAR}
+		  , #{atId, jdbcType=VARCHAR}
+		  , SYSDATE
+		)
+	</insert>
+	
+	<select id="getNaverInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+		SELECT SNS_ID
+		     , SNS_TYPE
+		     , ACCESS_TOKEN
+		     , REFRESH_TOKEN
+		     , EXP_DATE
+		     , USER_ID
+		     , INSERT_DATE
+		FROM TB_OAUTH
+		WHERE 1=1
+		AND USER_ID = #{loginId}
+		AND SNS_TYPE = 'N'
+		AND ROWNUM = 1
+	</select>
+	
+	<select id="getKakaoInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+		SELECT SNS_ID
+		     , SNS_TYPE
+		     , ACCESS_TOKEN
+		     , REFRESH_TOKEN
+		     , EXP_DATE
+		     , USER_ID
+		     , INSERT_DATE
+		FROM TB_OAUTH
+		WHERE 1=1
+		AND USER_ID = #{loginId}
+		AND SNS_TYPE = 'K'
+		AND ROWNUM = 1
+	</select>
+	
+	<select id="getFacebookInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+		SELECT SNS_ID
+		     , SNS_TYPE
+		     , ACCESS_TOKEN
+		     , REFRESH_TOKEN
+		     , EXP_DATE
+		     , USER_ID
+		     , INSERT_DATE
+		FROM TB_OAUTH
+		WHERE 1=1
+		AND USER_ID = #{loginId}
+		AND SNS_TYPE = 'F'
+		AND ROWNUM = 1
+	</select>
+	
+	<delete id="deleteSns">
+		DELETE FROM TB_OAUTH
+		WHERE USER_ID = #{userId}
+		AND SNS_TYPE = #{snsType}
+	</delete>
+	
+	<select id="getFloDef" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+	   SELECT BUN_CHK
+	        , CODE
+	        , LOGIN_ID
+	        , MEMBER_ID
+	        , INSERT_ID
+	        , INSERT_DATE
+	        , UPDATE_ID
+	        , UPDATE_DATE
+	   FROM TB_FLO_DEF
+	   WHERE BUN_CHK = #{bunChk}
+	   AND LOGIN_ID = #{loginId}
+	</select>
+	
+	<insert id="insertFloDef">
+		INSERT INTO TB_FLO_DEF(
+			  BUN_CHK
+	        , CODE
+	        , LOGIN_ID
+	        , MEMBER_ID
+	        , INSERT_ID
+	        , INSERT_DATE
+	        , UPDATE_ID
+	        , UPDATE_DATE
+		)VALUES(
+			  #{bunChk}
+			, #{code}
+			, #{loginId}
+			, #{memberId}
+			, #{loginId}
+			, SYSDATE
+			, #{loginId}
+			, SYSDATE
+		)
+	</insert>
+	 
+	<update id="updateFloDef">
+		UPDATE TB_FLO_DEF 
+		SET CODE = #{code}
+		  , UPDATE_ID = #{loginId}
+		  , UPDATE_DATE = SYSDATE
+	    WHERE BUN_CHK = #{bunChk}
+	    AND LOGIN_ID = #{loginId}
+	</update>
+	
+	
+	
+	
+	
+</mapper>

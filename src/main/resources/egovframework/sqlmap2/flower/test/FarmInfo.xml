@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :FarmInfo.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 농가생산출하정보.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="FarmInfo">
+	<typeAlias alias="FarmInfoDTO" type="at.service.business.FLOMEJANG.farminfo.dto.FarmInfoDTO" />
+	
+	<!-- 업체 정보 resultMap -->
+	<resultMap id="FarmInfoMap" class="at.service.business.FLOMEJANG.farminfo.dto.FarmInfoDTO">
+	    <result property="farmCode"      column="farmCode"      columnIndex="1" />   <!-- 농가코드 -->
+	    <result property="farmName"      column="farmName"      columnIndex="2" />   <!-- 농가명 -->
+	    <result property="farmYear"      column="farmYear"      columnIndex="3" />   <!-- 연도 -->
+	    <result property="hZipPk"        column="hZipPk"        columnIndex="4" />   <!-- 우편번호순번 -->
+	    <result property="hZipNo"        column="hZipNo"        columnIndex="5" />   <!-- 우편번호 -->
+	    <result property="hAddr1"        column="hAddr1"        columnIndex="6" />   <!-- 주소1 -->
+	    <result property="hAddr2"        column="hAddr2"        columnIndex="7" />   <!-- 주소2 -->
+	    <result property="fZipPk"        column="fZipPk"        columnIndex="8" />   <!-- 우편번호순번 --> 
+	    <result property="fZipNo"        column="fZipNo"        columnIndex="9" />   <!-- 우편번호 -->     
+	    <result property="fAddr1"        column="fAddr1"        columnIndex="10" />  <!-- 주소1 -->        
+	    <result property="fAddr2"        column="fAddr2"        columnIndex="11" />  <!-- 주소2 -->        
+	    <result property="jmCode"        column="jmCode"        columnIndex="12" />  <!-- 소속작목반 -->
+	    <result property="jmPosition"    column="jmPosition"    columnIndex="13" />  <!-- 직위 -->
+	    <result property="fTelNo"        column="fTelNo"        columnIndex="14" />  <!-- 전화 -->
+	    <result property="handyPhoneNo"  column="handyPhoneNo"  columnIndex="15" />  <!-- HP -->
+	    <result property="faxNo"         column="faxNo"         columnIndex="16" />  <!-- 팩스 -->
+	    <result property="emailId"       column="emailId"       columnIndex="17" />  <!-- 이메일 -->
+	    <result property="chulha1"       column="chulha1"       columnIndex="18" />  <!-- 경매장 -->
+	    <result property="chulha2"       column="chulha2"       columnIndex="19" />  <!-- 유사시장 -->
+	    <result property="chulha3"       column="chulha3"       columnIndex="20" />  <!-- 기타 -->
+	                                                                                      
+	    <result property="chulCode"      column="chulCode"      columnIndex="21" />  <!-- 출하자코드 -->
+	    <result property="chulName"      column="chulName"      columnIndex="22" />  <!-- 출하자성명 -->
+	    <result property="chulBirth"     column="chulBirth"     columnIndex="23" />  <!-- 생년월일 -->
+	    <result property="growCareer"    column="growCareer"    columnIndex="24" />  <!-- 재배경력 -->
+	    <result property="fRelation"     column="fRelation"     columnIndex="25" />  <!-- 관계 -->
+	                                                                                      
+	    <result property="total"         column="total"         columnIndex="26" />  <!-- 계 -->
+	    <result property="outdoors"      column="outdoors"      columnIndex="27" />  <!-- 노지 -->
+	    <result property="vinylHouse"    column="vinylHouse"    columnIndex="28" />  <!-- 비닐온실 -->
+	    <result property="glassHouse"    column="glassHouse"    columnIndex="29" />  <!-- 경질온실 -->
+	    <result property="steelHouse"    column="steelHouse"    columnIndex="30" />  <!-- 유리온실 -->
+	    <result property="etcHouse"      column="etcHouse"      columnIndex="31" />  <!-- 기타온실-->
+	                                                                                      
+	    <result property="pumCode"       column="pumCode"       columnIndex="32" />  <!-- 품목코드 -->
+	    <result property="pumMok"        column="pumMok"        columnIndex="33" />  <!-- 품목 -->
+	    <result property="pumJong"       column="pumJong"       columnIndex="34" />  <!-- 품종 -->
+	    <result property="growArea"      column="growArea"      columnIndex="35" />  <!-- 면적 -->
+	    <result property="product99"     column="product99"     columnIndex="36" />  <!-- 계 -->
+	    <result property="product01"     column="product01"     columnIndex="37" />  <!-- 01월 -->
+	    <result property="product02"     column="product02"     columnIndex="38" />  <!-- 02월 -->
+	    <result property="product03"     column="product03"     columnIndex="39" />  <!-- 03월 -->
+	    <result property="product04"     column="product04"     columnIndex="40" />  <!-- 04월 -->
+	    <result property="product05"     column="product05"     columnIndex="41" />  <!-- 05월 -->
+	    <result property="product06"     column="product06"     columnIndex="42" />  <!-- 06월 -->
+	    <result property="product07"     column="product07"     columnIndex="43" />  <!-- 07월 -->
+	    <result property="product08"     column="product08"     columnIndex="44" />  <!-- 08월 -->
+	    <result property="product09"     column="product09"     columnIndex="45" />  <!-- 09월 -->
+	    <result property="product10"     column="product10"     columnIndex="46" />  <!-- 10월 -->
+	    <result property="product11"     column="product11"     columnIndex="47" />  <!-- 11월 -->
+	    <result property="product12"     column="product12"     columnIndex="48" />  <!-- 12월 -->
+	    <result property="sowPeriod"     column="sowPeriod"     columnIndex="49" />  <!-- 파종시기 -->
+	    <result property="bigo"          column="bigo"          columnIndex="50" />  <!-- 비고 -->
+	</resultMap>
+	
+	<!-- 업체 목록 resultMap -->
+	<resultMap id="FarmInfo.selectListMap" class="java.util.HashMap">
+	    <result property="farmCode"         column="farmCode"         columnIndex="1" />  <!--농가코드    -->
+	    <result property="farmName"         column="farmName"         columnIndex="2" />  <!--농가명    -->
+	    <result property="farmYear"         column="farmYear"         columnIndex="3" />  <!--년도    -->
+	</resultMap>
+	
+	<select id="FarmInfo.select" resultMap="FarmInfoMap">
+		<![CDATA[
+				  select  a.FARM_CODE      as  farmCode
+					     ,a.FARM_NAME      as  farmName
+					     ,c.FARM_YEAR      as  farmYear
+				         ,a.H_ZIP_PK       as  hZipPk
+					     ,(select nvl(zip_no,'') from e_zip_no@flower where zip_pk = a.H_ZIP_PK) as hZipNo    
+						 ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from e_zip_no@flower where zip_pk = a.H_ZIP_PK) as hAddr1    
+				  	     ,a.H_ADDR         as  hAddr2
+				  	     ,a.F_ZIP_PK       as  fZipPk
+					     ,(select nvl(zip_no,'') from e_zip_no@flower where zip_pk = a.F_ZIP_PK) as fZipNo    
+						 ,(select nvl(region_1,'') ||' '|| nvl(region_2,'') ||' '|| nvl(region_3,'') ||' '|| nvl(region_4,'') ||' '|| nvl(region_5,'') from e_zip_no@flower where zip_pk = a.F_ZIP_PK) as fAddr1    
+				  	     ,a.F_ADDR         as  fAddr2
+				  	     ,a.JM_CODE        as  jmCode
+				  	     ,a.JM_POSITION    as  jmPosition
+				  	     ,a.F_TEL_NO       as  fTelNo
+				  	     ,a.HANDY_PHONE_NO as  handyPhoneNo
+				  	     ,a.FAX_NO         as  faxNo
+				  	     ,a.EMAIL_ID       as  emailId
+				  	     ,a.CHULHA1        as  chulha1     
+				  	     ,a.CHULHA2        as  chulha2     
+				  	     ,a.CHULHA3        as  chulha3     
+				                               
+				  	     ,b.CHUL_CODE      as  chulCode
+				  	     ,b.CHUL_NAME      as  chulName
+				  	     ,b.CHUL_BIRTH     as  chulBirth
+				  	     ,b.GROW_CAREER    as  growCareer
+ 				         ,(select cd_name from a_public_info@flower where cd_gubun = 8 and cd1 = b.F_RELATION) as fRelation
+				                               
+				  	     ,c.OUTDOORS+c.VINYL_HOUSE+c.GLASS_HOUSE+c.STEEL_HOUSE+c.ETC_HOUSE  as  total
+				  	     ,c.OUTDOORS       as  outdoors
+				  	     ,c.VINYL_HOUSE    as  vinylHouse
+				  	     ,c.GLASS_HOUSE    as  glassHouse
+				  	     ,c.STEEL_HOUSE    as  steelHouse
+				  	     ,c.ETC_HOUSE      as  etcHouse
+				                               
+				  	     ,d.PUM_CODE       as  pumCode
+				         ,(select p_mok_name  from a_pum_mok_info@flower  where flower_code||p_mok_code = substr(d.PUM_CODE,0,4)) as pumMok
+				         ,(select p_jong_name from a_pum_jong_info@flower where pum_code = d.PUM_CODE) as pumJong
+				         ,d.GROW_AREA      as  growArea
+				  	     ,d.PRODUCT01+d.PRODUCT02+d.PRODUCT03+d.PRODUCT04+d.PRODUCT05+d.PRODUCT06+d.PRODUCT07+d.PRODUCT08+d.PRODUCT09+d.PRODUCT10+d.PRODUCT11+d.PRODUCT12  as  product99
+				         ,d.PRODUCT01      as  product01
+				         ,d.PRODUCT02      as  product02
+				         ,d.PRODUCT03      as  product03
+				         ,d.PRODUCT04      as  product04
+				         ,d.PRODUCT05      as  product05
+				         ,d.PRODUCT06      as  product06
+				         ,d.PRODUCT07      as  product07
+				         ,d.PRODUCT08      as  product08
+				         ,d.PRODUCT09      as  product09
+				         ,d.PRODUCT10      as  product10
+				         ,d.PRODUCT11      as  product11
+				         ,d.PRODUCT12      as  product12
+				         ,d.SOW_PERIOD     as  sowPeriod
+				         ,d.BIGO           as  bigo
+				      
+				    from  A_FARM_INFO@flower a,      -- 농가현황(A_FARM_INFO)      
+				          A_FARM_CHUL@flower b,      -- 출하자(A_FARM_CHUL)        
+				          A_FARM_GROW@flower c,      -- 재배현황(A_FARM_GROW)      
+				          A_FARM_PRODUCT@flower d    -- 생산현황(A_FARM_PRODUCT)   
+				   where  a.FARM_CODE = b.FARM_CODE
+				     and  a.FARM_CODE = c.FARM_CODE
+				     and  a.FARM_CODE = d.FARM_CODE
+				     and  c.FARM_YEAR = d.FARM_YEAR
+				     and  a.FARM_CODE = #farmCode#
+				     and  c.FARM_YEAR = #farmYear#
+		 ]]>
+	</select>
+	
+	<select id="FarmInfo.selectList" resultMap="FarmInfo.selectListMap">
+		<![CDATA[
+			SELECT * FROM (SELECT ATPAGE.*, ROWNUM AS NUM FROM (
+				select /*+ INDEX(a_farm_info farm_code)*/
+				       t2.farm_code as farmCode, 
+				       t1.farm_name as farmName,
+				       trim(nvl(t2.farm_year,'')) as farmYear 
+				  from a_farm_info@flower t1, a_farm_grow@flower t2							
+  				 where t1.farm_code = t2.farm_code								
+				 group by t2.farm_code, t2.farm_year, t1.farm_name				
+		]]>
+		    <isNotEmpty property="searchString">
+		        <![CDATA[
+		            AND UPPER($searchCol$) LIKE '%' || UPPER(#searchString#) || '%'
+		        ]]>
+		    </isNotEmpty>
+		<![CDATA[
+		    ORDER BY t2.farm_code DESC
+			) ATPAGE WHERE ROWNUM < #maxNum#) WHERE NUM > #offsetNum#
+		]]>
+	</select>
+	
+	<select id="FarmInfo.selectListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(t2.farm_code) AS FARMINFOCOUNT
+			  from a_farm_info@flower t1, a_farm_grow@flower t2							
+  			 where t1.farm_code = t2.farm_code								
+		]]>
+			<isNotEmpty property="searchString">
+		        <![CDATA[
+		            AND UPPER($searchCol$) LIKE '%' || UPPER(#searchString#) || '%'
+		        ]]>
+			</isNotEmpty>
+	</select>
+	
+</sqlMap>

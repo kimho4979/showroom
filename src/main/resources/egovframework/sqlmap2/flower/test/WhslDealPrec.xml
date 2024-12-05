@@ -1,0 +1,1635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WhslDealPrec.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 거래정산내역 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+    
+<sqlMap namespace="WhslDealPrec">
+<typeAlias alias="WhslDealPrecDTO" type="at.service.business.FLOMEJANG.whsldealprec.dto.WhslDealPrecDTO" />
+    <!-- 거래정산내역  resutlMap -->
+    <resultMap id="WhslDealPrec.selectListMap" class="java.util.HashMap">
+        <result property="bunchk"           column="bunchk"        />
+        <result property="num"              column="num"           /> 
+        <result property="coldate"          column="coldate"       /> 
+        <result property="domecode"         column="domecode"      /> 
+        <result property="domename"         column="domename"      />
+        <result property="dometel"          column="dometel"      />  
+        <result property="h_dometel"        column="h_dometel"      />  
+        <result property="pummok"           column="pummok"        /> 
+        <result property="pumjong"          column="pumjong"       />
+        <result property="grade"            column="grade"         /> 
+        <result property="box"              column="box"           /> 
+        <result property="sok"              column="sok"           />
+        <result property="panbox"           column="panbox"        /> 
+        <result property="pansok"           column="pansok"        />  
+        <result property="price"            column="price"         />
+        <result property="panprice"         column="panprice"      />
+        <result property="state"            column="state"         />
+        <result property="domeBunchk"       column="domeBunchk"    />
+        <result property="chulname"         column="chulname"      />
+        <result property="chulcode"         column="chulcode"      />
+        <result property="chultel"          column="chultel"       />
+        <result property="h_chultel"        column="h_chultel"     />
+        <result property="boxtype"   	  	column="boxtype"	   />
+        <result property="ableMoney"   	  	column="ableMoney"	   />
+        <result property="commen"   	  	column="commen"		   />
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.selectableMoneyListMap" class="java.util.HashMap">
+		<result property="domecode"         column="domecode"      />
+		<result property="name"         	column="name"     	   /> 
+		<result property="lim"   	  		column="lim"		   />
+        <result property="meip"   	  		column="meip"		   />
+        <result property="chaac"   	  		column="chaac"		   />    
+    </resultMap>
+    
+    <resultMap id="WslDealPrec.smsLogMap" class="java.util.HashMap" >
+        <result property="num"      		column="num"			/>
+        <result property="coldate"    	 	column="coldate"		/>
+        <result property="wait_cnt"     	column="wait_cnt"		/>
+        <result property="sent_cnt"     	column="sent_cnt"		/>
+        <result property="fail_cnt"     	column="fail_cnt"		/>
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.DTOListMap" class="WhslDealPrecDTO" >
+        <result property="bunchk"           column="bunchk"        />
+        <result property="num"              column="num"           /> 
+        <result property="coldate"          column="coldate"       />
+        <result property="boxtype"			column="boxtype"	   /> 
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.selectPopupListMap" class="java.util.HashMap">
+        <result property="coldate"          column="coldate"       /> 
+        <result property="domecode"         column="domecode"      /> 
+        <result property="domename"         column="domename"      />
+        <result property="chulcode"         column="chulcode"      />
+        <result property="chulname"         column="chulname"      />
+        <result property="trans"            column="trans"         />
+        <result property="chuldate"         column="chuldate"      />
+        <result property="pumcode"          column="pumcode"       /> 
+        <result property="pummok"           column="pummok"        /> 
+        <result property="pumjong"          column="pumjong"       /> 
+        <result property="grade"            column="grade"         /> 
+        <result property="box"              column="box"           /> 
+        <result property="sok"              column="sok"           /> 
+        <result property="price"            column="price"         />
+        <result property="boxtype"          column="boxtype"       />
+        <result property="songe"            column="songe"         />
+        <result property="commen"           column="commen"        />
+        <result property="jdate"            column="jdate"         />
+        <result property="jname"            column="jname"         />
+        <result property="state"            column="state"         />
+        <result property="panbox"           column="panbox"        /> 
+        <result property="pansok"           column="pansok"        /> 
+        <result property="panprice"         column="panprice"      />
+        <result property="pancommen"        column="pancommen"     />
+        <result property="kmmancode"        column="kmmancode"     />
+        <result property="kmmanname"        column="kmmanname"     />
+        <result property="pandate"          column="pandate"       />
+        <result property="panjdate"         column="panjdate"      />
+        <result property="bunchk"           column="bunchk"        />
+        <result property="upno"             column="upno"          />
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.loginMap" class="java.util.HashMap">
+        <result property="cd_gubun"         column="cd_gubun"       /> 
+        <result property="kmmancode"        column="cd1"            /> 
+        <result property="bunchk"           column="cd2"            />
+        <result property="kmmanname"        column="cd_name"        />
+        <result property="loginID"          column="cd_explain"     />
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.buryuListMap" class="java.util.HashMap">
+        <result property="flowerCode"   column="flowerCode"     /><!--플라워 코드 -->
+        <result property="flowerName"   column="flowerName"     /><!--플라워 명-->
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.selectItemListMap" class="java.util.HashMap">
+        <result property="flowerCode"   column="flowerCode"     /><!--플라워 코드 -->
+        <result property="pMokCode"     column="pMokCode"       /><!--품목 코드-->
+        <result property="pMokName"     column="pMokName"       /><!--품목 이름-->
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.selectKindListMap" class="java.util.HashMap">
+        <result property="flowerCode"   column="flowerCode"     /><!--플라워 코드 -->
+        <result property="pMokCode"     column="pMokCode"       /><!--품목 코드-->
+        <result property="pJongCode"    column="pJongCode"      /><!--품종 코드-->
+        <result property="pJongName"    column="pJongName"      /><!--품종 이름-->
+    </resultMap> 
+    
+    <resultMap id="WhslDealPrec.selectChulInfo" class="java.util.HashMap">
+        <result property="name"         column="name"           /><!--출하자 이름 -->
+        <result property="code"         column="code"           /><!--출하자 코드 -->
+        <result property="addr"         column="addr"           /><!--출하자 주소-->
+        <result property="chultel"      column="chultel"        /><!--전화 번호-->
+        <result property="h_chultel"    column="h_chultel"      /><!--휴대 전화 번호-->
+        <result property="trans"        column="trans"          /><!--운송 수단-->
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.selectDomeInfo" class="java.util.HashMap">
+        <result property="name"         column="name"           />
+        <result property="code"         column="code"           />
+        <result property="copname"      column="cop_name"       />
+        <result property="addr"         column="addr"           />
+        <result property="dometel"      column="dometel"        /><!--전화 번호-->
+        <result property="domemobile"   column="domemobile"     /><!--휴대 전화 번호-->
+        
+    </resultMap>
+    
+    <resultMap id="WhslDealPrec.boxMap" class="java.util.HashMap">
+        <result property="boxcode"      column="box_code"       />
+        <result property="boxname"      column="box_name"       />
+    </resultMap> 
+    
+    <!-- 엑셀 출력 목록 resutlMap  -->
+    <resultMap id="WhslDealPrec.selectListForExcelMap" class="java.util.HashMap">
+        <result property="bunchk"           column="bunchk"        />
+        <result property="num"              column="num"           />
+        <result property="up_no"            column="up_no"         />
+        <result property="coldate"          column="coldate"       /> 
+        <result property="domecode"         column="domecode"      /> 
+        <result property="domename"         column="domename"      />
+        <result property="dometel"          column="dometel"       /> 
+        <result property="pummok"           column="pummok"        /> 
+        <result property="pumjong"          column="pumjong"       />
+        <result property="grade"            column="grade"         /> 
+        <result property="box"              column="box"           /> 
+        <result property="sok"              column="sok"           />
+        <result property="panbox"           column="panbox"        /> 
+        <result property="pansok"           column="pansok"        />  
+        <result property="price"            column="price"         />
+        <result property="panprice"         column="panprice"      />
+        <result property="pancommen"        column="pancommen"     />
+        <result property="state"            column="state"         />
+        <result property="domeBunchk"       column="domeBunchk"    />
+        <result property="chulname"         column="chulname"      />
+        <result property="chulcode"         column="chulcode"      />
+        <result property="chultel"          column="chultel"       />
+        <result property="transname"        column="transname"     />
+        <result property="trans"            column="trans"         />
+        <result property="avr"              column="avr"           />
+        <result property="jdate"            column="jdate"         />
+        <result property="pandate"          column="pandate"       />
+    </resultMap>    
+    
+    
+    <resultMap id="WhslDealPrec.procedureSMS_MMS_Map" class="java.util.HashMap">
+        <result property="res_code"           column="res_code"        />
+        <result property="res_message"        column="res_message"     />
+    </resultMap>
+    
+    
+		<!-- 
+		Changyeon-Baek
+		SMS_MMS procedure Test
+		bcy3161@at.or.kr
+		2016.05.20
+	-->
+	<!--
+	<parameterMap id="sendTextParam" class="WhslDealPrecDTO">
+		<parameter property="recvNumber" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="sendNumber" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="subject" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="message" jdbcType="CLOB" javaType="java.lang.String" mode="IN"/>
+		<parameter property="domecode" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="pandate" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="kmmancode" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="munseoCode" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		
+		<parameter property="res_code" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+		<parameter property="res_message " jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+	-->
+	<!-- 
+		2016.05.21 쿼리 속도 개선 
+				- Changyeon-Baek/bcy3161@gmail.com
+	 -->
+	 
+    <select id="WhslDealPrec.SelectList" resultMap="WhslDealPrec.selectListMap">
+    <isNotEqual property="domebunchk" compareValue="Y">
+        <![CDATA[
+	     	select * from
+				(select b.*,a.ableMoney from (with dambo as(
+				    select
+					        dome_code
+					        , nvl(sum(db_money),0) as db_money
+					    from
+					        A_DOME_DAMBO@flower
+					    where
+			   ]]>
+			        <isEmpty property="endDate">
+						<![CDATA[
+							TO_CHAR(SYSDATE,'YYYYMMDD') between s_day and e_day	
+						]]>			        	
+			        </isEmpty>
+			        <isNotEmpty property="endDate">
+			        	<![CDATA[
+							#endDate# between s_day and e_day
+						]]>	
+			        </isNotEmpty> 
+			   <![CDATA[
+					    group by
+					        dome_code
+					), lim as(
+					    select
+					        dome_code 
+					        , nvl(sum(limit_add_amt),0) as limit_add_amt
+					    from
+					        A_LIMIT_ADD_AMT@flower
+					    where
+					        ]]>
+					        <isEmpty property="endDate">
+								<![CDATA[
+									TO_CHAR(SYSDATE,'YYYYMMDD') between s_day and e_day	
+								]]>			        	
+					        </isEmpty>
+					        <isNotEmpty property="endDate">
+					        	<![CDATA[
+									#endDate# between s_day and e_day
+								]]>	
+					        </isNotEmpty> 
+					   <![CDATA[
+					    group by
+					        dome_code 
+					), cnt as(
+					    select
+					        j_code
+					        , j_day
+					        , dly_tot+un_p_tot                 as misu
+					        , rank() over(order by j_day desc) as rk
+					    from
+					        A_J_DOME_CNT@flower
+					    where
+					    ]]>
+					        <isEmpty property="endDate">
+								<![CDATA[
+									j_day between to_char(to_date(SYSDATE)-5,'yyyymmdd') and TO_CHAR(SYSDATE,'YYYYMMDD')	
+								]]>			        	
+					        </isEmpty>
+					        <isNotEmpty property="endDate">
+					        	<![CDATA[
+									j_day between to_char(to_date(#endDate#)-5,'yyyymmdd') and #endDate#
+								]]>	
+					        </isNotEmpty> 
+					   <![CDATA[
+					        and
+					        j_code between '1001' and '5999'
+					)
+					select
+					    f.dome_code
+						, (nvl(f.db_money,0)+nvl(g.limit_add_amt,0))-nvl(h.misu,0) as ableMoney
+		
+					from
+					    dambo   f
+					    , lim   g
+					    , cnt   h
+		
+					where
+					    f.dome_code = g.dome_code(+)
+					    and  f.dome_code = h.j_code(+)
+					    and  rk = 1)a,
+		                
+		               
+					(select
+							a.bunchk					as	bunchk
+							, a.num						as	num
+							, a.coldate					as	coldate
+							, a.domecode				as	domecode
+							, nvl(b.name,'정보없음')		as	domename
+							, fc_get_tel@flower(b.c_tel_no)	
+														as	dometel
+							, fc_get_tel@flower(b.handy_tel_no)
+														as	h_dometel
+							, a.chulcode				as	chulcode
+							, nvl(c.name,'정보없음')		as	chulname
+							, fc_get_tel@flower(c.h_tel_no)
+														as	chultel
+							, fc_get_tel@flower(c.handy_phone_no)
+														as	h_chultel
+							, d.p_mok_name				as	pummok
+							, d.p_jong_name || decode(a.songe,'0','','/' || a.songe)				as	pumjong
+							, e.name					as	grade
+							, a.box						as	box
+							, a.sok						as	sok
+							, nvl(a.panbox, 0)			as	panbox
+							, nvl(a.pansok, 0)			as	pansok
+							, a.price					as	price
+							, nvl(a.panprice, 0)		as	panprice
+							, a.state					as	state
+							, b.bun_chk 				as  domeBunchk
+							, a.boxtype        			as  boxtype
+							, a.commen
+							, a.pumcode as pumcode
+						from
+							a_sajeon@flower				a
+							, a_dome_info@flower		b
+							, a_chul_info@flower		c
+							, v_mok_jong_list@flower	d
+							, a_level@flower			e
+						where
+							1=1
+							and  a.domecode    = b.code
+							and  a.chulcode    = c.code
+							and  a.pumcode     = d.pum_code
+							and  a.grade       = e.code
+							and  a.bunchk      = e.bun_chk
+		]]>
+	</isNotEqual>
+	<isEqual property="domebunchk" compareValue="Y">
+        <![CDATA[
+                 select
+					a.bunchk					as	bunchk
+					, a.num						as	num
+					, a.coldate					as	coldate
+					, a.domecode				as	domecode
+					, nvl(b.name,'정보없음')		as	domename
+					, fc_get_tel@flower(b.c_tel_no)	
+												as	dometel
+					, fc_get_tel@flower(b.handy_tel_no)
+												as	h_dometel
+					, a.chulcode				as	chulcode
+					, nvl(c.name,'정보없음')		as	chulname
+					, fc_get_tel@flower(c.h_tel_no)
+												as	chultel
+					, fc_get_tel@flower(c.handy_phone_no)
+												as	h_chultel
+					, d.p_mok_name				as	pummok
+					, d.p_jong_name || decode(a.songe,'0','','/' || a.songe)				as	pumjong
+					, e.name					as	grade
+					, a.box						as	box
+					, a.sok						as	sok
+					, nvl(a.panbox, 0)			as	panbox
+					, nvl(a.pansok, 0)			as	pansok
+					, a.price					as	price
+					, nvl(a.panprice, 0)		as	panprice
+					, a.state					as	state
+					, b.bun_chk 				as  domeBunchk
+					, a.boxtype        			as  boxtype
+					, a.domecode				as	ablemoney
+					, a.commen
+					, a.pumcode as pumcode
+				from
+					a_sajeon@flower				a
+					, a_dome_info@flower		b
+					, a_chul_info@flower		c
+					, v_mok_jong_list@flower	d
+					, a_level@flower			e
+					
+				where
+					1=1
+					and  a.domecode    = b.code
+					and  a.chulcode    = c.code
+					and  a.pumcode     = d.pum_code
+					and  a.grade       = e.code
+					and  a.bunchk      = e.bun_chk
+         ]]>
+     </isEqual>
+	    <isEqual property="domebunchk" compareValue="N">
+            <![CDATA[
+                 and  a.bunchk = 'N'
+            ]]>
+        </isEqual>
+        <isEqual property="domebunchk" compareValue="C">
+            <![CDATA[
+                 and  a.bunchk = 'C'
+            ]]>
+        </isEqual>
+        <isEqual property="domebunchk" compareValue="Y">
+            <![CDATA[
+                 and  a.bunchk = 'Y'
+            ]]>
+        </isEqual>
+	    <isEmpty property="search">
+	        <![CDATA[
+                 AND a.domecode = #domeCode#
+            ]]>
+	    </isEmpty>
+	    <!-- </isNotEqual> -->
+        <isEmpty property="startDate">
+           <![CDATA[
+                 AND a.coldate = to_char(sysdate, 'yyyymmdd')
+           ]]>
+        </isEmpty>
+        <isNotEmpty property="startDate">
+           <![CDATA[
+                 AND a.coldate between #startDate# and #endDate#
+           ]]>
+        </isNotEmpty>
+        <isEqual property="opt" compareValue="code">
+            <![CDATA[
+                AND a.domecode = #optval# 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="name">
+            <![CDATA[
+                AND b.name like '%'||#optval#||'%' 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="chulname">
+            <![CDATA[
+                AND c.name like '%'||#optval#||'%' 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="pummok">
+            <![CDATA[
+                AND d.p_mok_name like '%'||#optval#||'%' 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="pumjong">
+            <![CDATA[
+                AND d.p_jong_name like '%'||#optval#||'%' 
+            ]]>
+        </isEqual>
+        <isNotEmpty property="optstate">
+            <![CDATA[
+                AND a.state like #optstate#
+            ]]>
+        </isNotEmpty>
+        
+        <isEqual property="domebunchk" compareValue="N">
+			<![CDATA[
+                 )b where   a.dome_code = b.domecode(+)
+            ]]>
+		</isEqual>
+		<isEmpty property="sort">
+	         <![CDATA[
+	            order by coldate desc, num desc
+	         ]]>
+        </isEmpty>
+        <isEqual property="sort" compareValue="1">
+            <![CDATA[
+                order by domecode asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="2">
+            <![CDATA[
+                order by pummok asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="3">
+            <![CDATA[
+                order by pumcode asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="4">
+            <![CDATA[
+                order by chulcode asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="5">
+            <![CDATA[
+                order by chulname asc
+            ]]>
+        </isEqual>
+        <isEqual property="domebunchk" compareValue="N">
+			<![CDATA[
+			  ) where domecode is not null
+            ]]>
+		</isEqual>
+    </select>
+    
+    <select id="WhslDealPrec.SelectableMoneyList" resultMap="WhslDealPrec.selectableMoneyListMap">
+    	<![CDATA[
+    		with t as(
+				select
+				    domecode
+				    ,sum(panprice*pansok)   as meip
+				from
+				    A_SAJEON@flower
+				where
+				    bunchk = #bunchk#
+				    and
+				    coldate between #startDate# and #endDate#
+				    and
+				    state <> 3
+				group by
+				    domecode
+				), w as(
+				SELECT 	b.j_code,
+					a.name,
+				        case when b.un_p_tot + b.dly_tot <=0 then (nvl(c.hyungum,0)+nvl(c.bojung,0)+nvl(c.budong,0)+nvl(c.jibo,0)+nvl(c.yegum,0)+nvl(e.add_amt, 0))-(b.meip_tot-b.org_ipgum_t)
+				            else (nvl(c.hyungum,0)+nvl(c.bojung,0)+nvl(c.budong,0)+nvl(c.jibo,0)+nvl(c.yegum,0)+nvl(e.add_amt, 0))-(b.un_p_tot + b.dly_tot) end as lim
+				FROM	a_dome_info@flower    a,
+						a_j_dome_cnt@flower   b,
+						(
+				 		select dome_code,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '5', db_money, 0) ELSE 0 END) as hyungum,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '1', db_money, 0) ELSE 0 END) as bojung,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '3', db_money, 0) ELSE 0 END) as budong,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '6', db_money, 0) ELSE 0 END) as jibo,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '4', db_money, 0) ELSE 0 END) as yegum,
+						   Max(CASE WHEN #endDate# between s_day and e_day THEN decode(b_kind, '2', '2', '0') ELSE '0' END)  as inbo
+						from   a_dome_dambo@flower
+							group by dome_code	
+						) c,
+						(		
+				 		select dome_code,
+						   sum(CASE WHEN #endDate# between s_day and e_day THEN limit_add_amt ELSE 0 END) as add_amt
+						from   a_limit_add_amt@flower
+							group by dome_code	
+						) e
+				WHERE 	b.j_code 	 		   	= a.code
+					AND		b.j_code			   		= c.dome_code(+) 
+					AND		b.j_code						= e.dome_code(+)
+					AND		b.j_day  		 	   	= #endDate#  
+					AND		a.p_end_day  		   	> #endDate#  
+					AND		a.bun_chk 			   	= #bunchk#
+					ORDER BY b.j_code   
+				)
+				select
+				    t.domecode
+				    , w.name    
+				    , w.lim     
+				    , t.meip    
+				    , w.lim-t.meip as chaac
+				from
+				    t
+				    , w
+				where
+				    t.domecode = w.j_code
+				order by
+				    1,3
+    	]]>
+    </select>
+    <select id="WslDealPrec.domeLog" resultMap="WslDealPrec.smsLogMap">
+    	<![CDATA[
+    		select
+    			a.num			as num
+    			, a.coldate		as coldate
+    			, b.wait_cnt	as wait_cnt
+    			, b.sent_cnt	as sent_cnt
+    			, b.fail_cnt	as fail_cnt
+    		from
+    			a_sajeon@flower		a
+    			, v_preorder@db_sms	b
+    		where
+    			a.bunchk	= b.col01
+    			and
+    			a.domecode	= b.col02
+    			and
+    			a.pandate	= b.col03
+    			and
+    	]]>
+		<isEmpty property="startDate">
+			<![CDATA[
+				 a.coldate	= sysdate
+			]]>
+		</isEmpty>
+		<isNotEmpty property="startDate">
+			<![CDATA[
+				 a.coldate	between to_date(#startDate#) and to_date(#endDate#)
+			]]>
+		</isNotEmpty>
+    </select>
+    
+    <select id="WslDealPrec.chulLog" resultMap="WslDealPrec.smsLogMap">
+    	<![CDATA[
+    		select
+    			a.num			as num
+    			, a.coldate		as coldate
+    			, b.wait_cnt	as wait_cnt
+    			, b.sent_cnt	as sent_cnt
+    			, b.fail_cnt	as fail_cnt
+    		from
+    			a_sajeon@flower		a
+    			, v_preorder@db_sms	b
+    		where
+    			a.bunchk	= b.col01
+    			and
+    			a.chulcode	= b.col02
+    			and
+    			a.pandate	= b.col03
+    			and
+    	]]>
+		<isEmpty property="startDate">
+			<![CDATA[
+				 a.coldate	= sysdate
+			]]>
+		</isEmpty>
+		<isNotEmpty property="startDate">
+			<![CDATA[
+				 a.coldate	between to_date(#startDate#) and to_date(#endDate#)
+			]]>
+		</isNotEmpty>
+    </select>
+    
+    <select id="WhslDealPrec.DTOList" resultMap="WhslDealPrec.DTOListMap">
+        <![CDATA[
+            select bunchk,
+                   num,
+                   TO_CHAR(coldate, 'YYYYMMDD') as coldate,
+                   boxtype
+              from a_sajeon@flower a
+              where a.bunchk=#bunchk#
+              AND a.coldate between #startDate# and #endDate#
+              AND state=2
+              order by a.chulcode asc, pumcode asc, grade asc
+        ]]>
+    </select>
+	<!-- 
+		2016.05.21 num = 0 인 경우, 쿼리 수정(원래는 아무 값도 나오지 않았고 지금은 null인 column 결과 받아옴) 
+				- Changyeon-Baek/bcy3161@gmail.com
+	 -->
+    <select id="WhslDealPrec.selectPopupList" resultMap="WhslDealPrec.selectPopupListMap">
+        <isGreaterThan property="num" compareValue="0">
+        <![CDATA[
+                select to_char(coldate, 'yyyymmdd') as coldate
+                     , domecode
+                     , (select name from a_dome_info@flower where code = a.domecode) as domename
+                     , chulcode
+                     , (select name from a_chul_info@flower where code = a.chulcode) as chulname
+                     , trans
+                     , to_char(chuldate, 'yyyymmdd') as chuldate
+                     , pumcode
+                     , (select p_mok_name from v_mok_jong_list@flower where pum_code = a.pumcode) as pummok
+                     , (select p_jong_name from v_mok_jong_list@flower where pum_code = a.pumcode) as pumjong
+                     , grade
+                     , box
+                     , sok
+                     , price
+                     , commen
+                     , jdate
+                     , jname
+                     , state
+                     , panbox
+                     , pansok
+                     , panprice
+                     , pancommen
+                     , kmmancode
+                     , (select cd_name from a_public_info@flower where cd_gubun = '7' and cd1 = a.kmmancode) as kmmanname
+                     , pandate
+                     , panjdate
+                     , bunchk
+                     , up_no as upno
+                     , songe
+                     , boxtype
+                from a_sajeon@flower a 
+                where num=#num# 
+                and bunchk = #bunchk#
+                and coldate = #coldate#
+         ]]>
+        </isGreaterThan>
+        
+        <isEqual property="num" compareValue="0">
+        <![CDATA[
+                
+				select to_char(sysdate, 'yyyymmdd') as coldate
+				    , #auctionFarmCode# as domecode
+				    , (select name from a_dome_info@flower where code = #auctionFarmCode# ) as domename
+					, null as chulcode
+				    , null as chulname
+					, null as trans					
+					, null as chuldate
+					, null as pumcode
+				    , null as pummok
+				    , null as pumjong
+					, null as grade
+					, null as box
+					, null as sok
+					, null as price
+					, null as commen
+				    , sysdate as jdate
+					, null as jname
+					, null as state
+					, null as panbox
+					, null as pansok
+				    , sysdate as panprice
+					, null as pancommen
+					, null as kmmancode
+				    , null as kmmanname
+					, null as pandate
+				    , sysdate as panjdate
+				    , #domebunchk# as bunchk
+					, null as upno
+					, null as songe
+					, null as boxtype
+				from dual
+        ]]>
+        </isEqual>
+    </select>
+    
+
+    
+   <insert id="WhslDealPrec.insert" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            insert into A_SAJEON@flower 
+            values(#bunchk#
+            , nvl((select max(num)+1 from a_sajeon@flower where bunchk=#bunchk# and coldate=#coldate#),1)
+            , #coldate#
+            , null
+            , #chuldate#
+            , #domecode#
+            ,#chulcode#
+            ,nvl((select a.trans from (select row_number() over(order by up_day desc) day
+            , trans from v_sang_pan_list@flower where chul_code = #chulcode#) a
+where a.day = 1 group by a.trans),'06'),#pumcode#,#grade#,#box#,#sok#,#price#,#boxtype#,0,#state#,#commen#,#jdate#,#jname#,#box#,#sok#,#price#,null,#kmmancode#,null,null,#colip# )
+         ]]>
+         <selectKey keyProperty="insertCount" resultClass="int">
+            SELECT COUNT(num) insertCount
+                FROM A_SAJEON@flower
+        </selectKey>
+    </insert>
+    
+    <update id="WhslDealPrec.update">
+        <![CDATA[
+            update A_SAJEON@flower set coldate = #coldate#, domecode=#domecode#,chulcode=#chulcode#,chuldate=#chuldate#, trans=#trans#, pumcode=#pumcode#,grade=#grade#,box=#box#,sok=#sok#,price=#price#,boxtype=#boxtype#,songe=nvl(#songe#,0),state=#state#,commen=#commen#,jdate=#jdate#,jname=#jname#, panbox=#box#,pansok=#sok#, panprice = #price#,pancommen = #pancommen#,kmmancode = #kmmancode#,panjdate = sysdate 
+            where num=#num# 
+            and bunchk=#bunchk#
+            and coldate = #coldate#
+         ]]>
+    </update>
+    
+    <delete id="WhslDealPrec.delete">
+        <![CDATA[
+            DELETE FROM A_SAJEON@flower
+            WHERE num=#num#
+            and bunchk=#bunchk#
+            and coldate = #coldate#
+        ]]>
+    </delete>
+    
+    <select id="WhslDealPrec.ListCount" resultClass="java.lang.Integer">
+        <![CDATA[
+                SELECT 
+                    COUNT(*) COUNT
+                FROM A_SAJEON@flower
+         ]]>
+    </select>
+    
+    <select id="WhslDealPrec.login" resultMap="WhslDealPrec.loginMap">
+    <![CDATA[
+            select 	cd_gubun
+            		, cd1
+            		, cd2
+            		, cd_name
+            		, cd_explain 
+            from	wb_cm_로그인ID a
+            		, a_public_info@flower b
+            where
+            		a.로그인ID=#loginID# 
+            		and
+            		b.cd_explain = a.로그인ID
+            ]]>
+    </select>
+    
+    <select id="WhslDealPrec.selectListFlowerCode" resultMap="WhslDealPrec.buryuListMap">
+         <![CDATA[
+            select 
+                cd1 as flowerCode
+                ,cd_name as flowerName 
+            from a_public_info@flower
+            where cd_gubun=2  and cd1 <> '3'
+          ]]>
+    </select>
+    
+    <select id="WhslDealPrec.buryuList" resultMap="WhslDealPrec.buryuListMap">
+        <![CDATA[
+                SELECT distinct d.cd1 as flowerCode,
+                       d.cd_name as flowerName 
+                 FROM e_concern@flower b, 
+                      a_public_info@flower d 
+                 WHERE substr(b.pumjong_code,1,1) = d.cd1 
+                   and d.cd_gubun=2 
+                   and b.chul_code = #id#  
+         ]]>
+    </select>
+    
+    <select id="WhslDealPrec.selectItemList" resultMap="WhslDealPrec.selectItemListMap">
+        <![CDATA[
+				select  flower_code||p_mok_code as flowerCode
+					,	p_mok_code  as pMokCode
+					,	p_mok_name  as pMokName 
+				from	a_pum_mok_info@flower
+         ]]>
+         <isEqual property="flower" compareValue="N">
+            <![CDATA[
+				where	flower_code in ( '1' ,'3')  
+            ]]>
+         </isEqual>
+         <isEqual property="flower" compareValue="Y">
+            <![CDATA[
+				where	flower_code = '6' 
+            ]]>
+         </isEqual>
+         <isEqual property="flower" compareValue="C">
+            <![CDATA[
+				where	flower_code = '8'
+            ]]>
+         </isEqual>
+		<!-- 
+			where	( flower_code||p_mok_code not in('1011','1010','1087') ) 
+		-->
+         <isEmpty property="flower" >
+            <![CDATA[
+				where	( flower_code||p_mok_code not in('1011','1087') ) 
+            ]]>
+         </isEmpty>
+         
+		 <isNotEqual property="pJongName" compareValue="%">
+			 <isNotEqual property="pJongName" compareValue="품종명을 입력하세요%">
+			 <!-- 
+			 	where	((flower_code||p_mok_code||p_jong_code not in ('10010000','10020000','10030000','10050000','10030145', '10010674', '10110000','10100000','10870000','10030261')))
+			 	bcy3161@at.or.kr
+			 	아코니톰 - 아코니톰 검색 불가문제로 품종코드 0000인것 제외 쿼리를 삭제 - 20160912
+			  -->
+	            <![CDATA[
+						and	flower_code || p_mok_code
+									 in  (	select
+												flower_code||p_mok_code
+											from
+												a_pum_jong_info@flower 
+											where	((flower_code||p_mok_code||p_jong_code not in ('10030145', '10010674','10030261')))
+												and	p_jong_name like #pJongName#
+										  )
+	            ]]>
+	         </isNotEqual>
+         </isNotEqual>
+         <isNotEmpty property="pMokName" >
+            <![CDATA[
+					and	p_mok_name like #pMokName#
+            ]]>
+         </isNotEmpty>
+         <![CDATA[
+				order by p_mok_name
+         ]]>
+    </select>
+
+	<!-- 
+		2016.05.24 flower_code 조건 추가
+				- Changyeon-Baek/bcy3161@gmail.com
+	 -->
+    <select id="WhslDealPrec.selectKindList" resultMap="WhslDealPrec.selectKindListMap">
+         	
+         	<!-- 
+         	where	((flower_code||p_mok_code||p_jong_code not in ('10010000','10020000','10030000','10050000','10030145', '10010674', '10110000','10100000','10870000','10030261')))
+         	 -->
+           <![CDATA[
+			SELECT	flower_code||p_mok_code||p_jong_code as flowerCode
+				,	p_mok_code   as pMokCode
+				,	p_jong_code  as pJongCode
+				,	p_jong_name  as pJongName
+			FROM	a_pum_jong_info@flower 
+			where	((flower_code||p_mok_code||p_jong_code not in ('10030145', '10010674','10030261')))
+				and	p_mok_code = substr(#pMokCode#,2,3)
+				and	flower_code = substr(#pMokCode#,1,1)
+           ]]>
+           
+         <isNotEmpty property="pMokCode" >
+            <![CDATA[
+            ]]>
+         </isNotEmpty>
+         <isEqual property="flower" compareValue="N">
+            <![CDATA[
+                   and  flower_code in ( '1' ,'3')  
+            ]]>
+         </isEqual>
+         <isEqual property="flower" compareValue="Y">
+            <![CDATA[
+                   and  flower_code in ( '6' ,'3')  
+            ]]>
+         </isEqual>
+         <isEqual property="flower" compareValue="C">
+            <![CDATA[
+                   and  flower_code in ( '8' ,'3')  
+            ]]>
+         </isEqual>
+         <isNotEmpty property="pJongName" >
+            <![CDATA[
+                   and p_jong_name like #pJongName#
+            ]]>
+         </isNotEmpty>
+         <![CDATA[
+                 order by p_jong_name
+         ]]>
+    </select>
+    
+    <!-- 사전주문//출하자 조회 -->
+    <select id="WhslDealPrec.cpopup" resultMap="WhslDealPrec.selectChulInfo">
+        <![CDATA[
+            select 	a.name as name
+           			, a.code as code 
+            		, a.trans as trans 
+            		, b.name as addr
+            		, fc_get_tel@flower(h_tel_no) as h_chultel 
+			       	, fc_get_tel@flower(handy_phone_no) as chultel 
+            from 	a_chul_info@flower a
+            		, a_gwanri_code@flower b
+            where 	
+         	]]>
+         	<isEmpty property="name" >
+         		<![CDATA[
+         			a.name = #name#
+         			and
+         		]]>
+            </isEmpty>
+            <isNotEmpty property="name" >
+         		<![CDATA[
+            		a.name like '%' || #name# || '%'
+       				and 
+         		]]>
+            </isNotEmpty>
+   		<![CDATA[
+       		a.bun_chk = #bunchk# 
+       		and 
+       		a.gwanri_zone = b.gwanri_zone
+   		]]>
+           
+    </select>
+    
+    <select id="WhslDealPrec.cpopupJSON" resultMap="WhslDealPrec.selectChulInfo">
+        <![CDATA[
+            
+			select 	a.name as name
+           			, a.code as code 
+            		, a.trans as trans 
+            		, b.name as addr
+            		, fc_get_tel@flower(h_tel_no) as h_chultel 
+			       	, fc_get_tel@flower(handy_phone_no) as chultel 
+            from 	a_chul_info@flower a
+            		, a_gwanri_code@flower b
+					, 
+					( SELECT	chul_code
+								, sum(pan_price) as pan_price
+								, sum(p_box_cnt) as box_cnt
+								, sum(p_sok_cnt) as sok_cnt
+					FROM    v_sang_pan_list@flower
+					WHERE	p_bun_chk	=	#bunchk#
+							AND	
+							pan_day	between	to_char(sysdate - 15,'YYYYMMDD') and to_char(sysdate,'YYYYMMDD')
+							AND    
+							km_list	in ('1', '3', '4')   
+					GROUP BY chul_code
+					) c
+            where
+            
+         	]]>
+         	
+         	<isEmpty property="name" >
+         		<![CDATA[
+         			a.name = #name#
+         			and
+         		]]>
+            </isEmpty>
+            <isNotEmpty property="name" >
+         		<![CDATA[
+            		a.name like '%' || #name# || '%'
+					and
+         		]]>
+            </isNotEmpty>
+      	<![CDATA[ 	
+            
+			code = c.chul_code
+        	and 
+        	a.bun_chk = #bunchk# 
+        	and 
+        	a.gwanri_zone = b.gwanri_zone
+
+			
+        ]]>
+    </select>
+    
+    <select id="WhslDealPrec.dpopup" resultMap="WhslDealPrec.selectDomeInfo">
+        <![CDATA[
+            select code 
+			       ,  name 
+			       ,  cop_name 
+			       ,  office_addr as addr 
+			       ,  fc_get_tel@flower(c_tel_no) as dometel 
+			       ,  fc_get_tel@flower(handy_tel_no) as domemobile 
+            from a_dome_info@flower 
+            where bun_chk = #bunchk#
+        ]]>
+        <isEqual property="isCode" compareValue="N">
+        	<isEmpty property="name" >
+        		<![CDATA[
+	            	and name = #name#
+	            ]]>
+        	</isEmpty>
+            <isNotEmpty property="name" >
+	            <![CDATA[
+	            	and name like '%'||#name#||'%' 
+	            ]]>
+            </isNotEmpty>
+         </isEqual>
+         <isEqual property="isCode" compareValue="Y">
+            <![CDATA[
+            	and (code = #code# or #code# = 'ALL') 
+            ]]>
+         </isEqual>
+         and  p_end_day >= to_char(sysdate, 'yyyymmdd') 
+         order by  code 
+    </select>
+    
+    <insert id="WhslDealPrec.Swrite" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            insert into a_sang_jang@flower(
+                    bun_chk
+                    , up_day
+                    , up_no
+                    , f_up_day
+                    , f_up_no
+                    , chul_code
+                    , pum_code
+                    , chul_level
+                    , acc_level
+                    , box_type
+                    , trans
+                    , box_cnt
+                    , sok_cnt
+                    , up_cnt
+                    , p_u_pr1
+                    , p_u_pr2
+                    , f_songe_cnt
+                    , f_i_id
+                    , l_u_id
+                    , group_code
+                    , gwanri_zone
+                    , tr_amount
+                    , down_p
+                    , re_box_p
+                    , tr_jiwon
+                    , trade_type
+                    , bigo 
+                    )
+            select bunchk
+                    , to_char(to_date(pandate), 'yyyymmdd')
+                    , up_no
+                    , to_char(to_date(pandate), 'yyyymmdd')
+                    , up_no
+                    , chulcode
+                    , pumcode
+                    , grade
+                    , grade
+                    , boxtype
+                    , trans
+                    , panbox
+                    , pansok
+                    , 1
+                    , panbox
+                    , pansok
+                    , songe
+                    , '9'
+                    , '9'
+                    , (select g_code from a_chul_info@flower where code = d.chulcode)
+                    , (select gwanri_zone from a_chul_info@flower where code = d.chulcode)
+                    , NVL((select decode((select 'A' from dual where d.boxtype < '400'), 'A', s_price, u_price) from a_travel_area@flower where travel_code = d.trans and bun_chk = d.bunchk and area_code = (select gwanri_zone from a_chul_info@flower where code = d.chulcode)),(select MAX(decode((select 'A' from dual where d.boxtype < '400'), 'A', s_price, u_price)) from a_travel_area@flower where travel_code = d.trans and bun_chk = d.bunchk and area_code ='0000'))
+                    , (select down_price from a_box@flower where box_code = d.boxtype and bun_chk = d.bunchk)
+                    , (select rep_price from a_box@flower where box_code = d.boxtype and bun_chk = d.bunchk)
+                    , (select amt 
+						from a_public_info@flower a, a_gwanri_code@flower b, a_chul_info@flower c
+						where c.code = d.chulcode
+						and b.gwanri_zone = c.gwanri_zone
+						and b.jisa_code = a.cd1
+						and a.cd_gubun = '04')
+					, #tradeType#
+					, (select commen from a_sajeon@flower where num = #num# and coldate = #coldate# and bunchk = #bunchk# )
+             from a_sajeon@flower d
+             where num=#num#
+             and coldate=#coldate#
+             and bunchk=#bunchk#
+        ]]>
+        <selectKey keyProperty="insertCount" resultClass="int">
+            SELECT COUNT(up_no) insertCount
+                FROM A_sang_jang@flower
+                where bun_chk = #bunchk# and up_day = (replace (#pandate#, '-', '')) and up_no like 'C%'
+        </selectKey>
+    </insert>
+    
+    <insert id="WhslDealPrec.Pwrite" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            insert into a_pan_mae@flower(
+                    bun_chk
+                    , pan_day
+                    , pan_no
+                    , serial_no
+                    , box_cnt
+                    , sok_cnt
+                    , km_list
+                    , km_p_org
+                    , km_p_new
+                    , pan_price
+                    , j_dome_code
+                    , km_man_code
+                    , f_i_id
+                    , l_u_id
+                    , fault_dome_code
+                    , fault_price
+                    , fault_km_list
+                    , pan_type
+                    )
+            select bunchk
+                    , to_char(to_date(pandate), 'yyyymmdd')
+                    , up_no
+                    , '01'
+                    , panbox
+                    , pansok
+                    , '4'
+                    , 0
+                    , panprice
+                    , panprice*pansok
+                    , domecode
+                    , (select cd1 from a_public_info@flower where cd_gubun = '7' and cd1 = a.kmmancode) 
+                    , (select cd_name from a_public_info@flower where cd_gubun = '7' and cd1 = a.kmmancode)
+                    , (select cd_name from a_public_info@flower where cd_gubun = '7' and cd1 = a.kmmancode)
+                    , domecode
+                    , panprice
+                    , '4'
+                    , '02'
+             from a_sajeon@flower a
+             where num=#num#
+             and coldate=#coldate#
+             and bunchk=#bunchk#
+        ]]>
+        <selectKey keyProperty="insertCount" resultClass="int">
+            SELECT COUNT(pan_no) insertCount
+                FROM A_pan_mae@flower
+                where bun_chk = #bunchk# and pan_day = (replace (#pandate#, '-', '')) and pan_no like 'C%'
+        </selectKey>
+    </insert>
+    
+    <select id="WhslDealPrec.box" resultMap="WhslDealPrec.boxMap">
+        <![CDATA[
+            select box_code
+                 , box_name
+            from a_box@flower
+            where bun_chk = #bunchk#
+        ]]>
+    </select>
+    
+    <update id="WhslDealPrec.apply1" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            update a_sajeon@flower
+            set state = 1
+            where coldate between #coldate# and #jdate#
+            and bunchk = #bunchk#
+            and state = 0
+        ]]>
+    </update>
+    
+    <update id="WhslDealPrec.apply2" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+           update a_sajeon@flower
+            set state = 3,
+            panbox = 0,
+            pansok = 0,
+            panprice = 0
+            where coldate = #coldate#
+            and bunchk = #bunchk#
+            and state = 1
+            and num = #numList#
+        ]]> 
+    </update>
+    
+    <update id="WhslDealPrec.apply3" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            update a_sajeon@flower
+            set state = 4
+              , pandate = #pandate#
+              , up_no = (select concat('C', lpad((nvl(substr(max(up_no),2,4),0))+1, 4, '0')) from a_sajeon@flower where bunchk = #bunchk# and pandate = #pandate#)
+            where coldate = #coldate#
+            and bunchk = #bunchk#
+            and num = #num#
+            and state = 2
+        ]]> 
+    </update>
+    
+    <update id="WhslDealPrec.apply4" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            update a_sajeon@flower
+            set state = 2
+            where coldate = #coldate#
+            and bunchk = #bunchk#
+            and state = 1
+            and num = #numList#
+        ]]> 
+    </update>
+    
+    <update id="WhslDealPrec.tremove" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            update a_sajeon@flower
+            set up_no = null
+              , pandate = null
+              , state = 2
+            where coldate = #coldate#
+            and bunchk = #bunchk#
+            and num = #num#
+            and state = 4
+        ]]>
+    </update>
+    
+    <delete id="WhslDealPrec.sremove" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            delete from a_sang_jang@flower
+            where bun_chk = #bunchk#
+            and up_no = #upno#
+            and up_day = replace(#pandate#,'-','')
+        ]]>
+    </delete>
+    
+    <delete id="WhslDealPrec.premove" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            delete from a_pan_mae@flower
+            where bun_chk = #bunchk#
+            and pan_no = #upno#
+            and pan_day = replace(#pandate#,'-','')
+        ]]>
+    </delete>
+    
+    
+	<!-- 
+		2016.05.21 select 값이 4가 아닌경우, 쿼리 속도개선
+							 4인 경우는 as Avg 계산 때문에 느림(수정 필요)  
+				- Changyeon-Baek/bcy3161@gmail.com
+	 -->
+    <select id="WhslDealPrec.SelectExcelList" resultMap="WhslDealPrec.selectListForExcelMap">
+    
+        <isEqual property="excelsort" compareValue="4">
+            <![CDATA[
+        		select  a.bunchk                    as bunchk
+			       ,  a.num                         as num
+			       ,  nvl(a.up_no, 0)               as up_no
+			       ,  a.coldate                     as coldate
+			       ,  a.domecode                    as domecode
+			       ,  b.name                        as domename
+			       ,  b.handy_tel_no                as dometel
+			       ,  a.chulcode                    as chulcode
+			       ,  nvl(c.name, '정보없음')      		as chulname
+			       ,  c.handy_phone_no              as chultel
+			       ,  d.p_mok_name                  as pummok
+			       ,  d.p_jong_name                 as pumjong
+			       ,  e.name                        as grade
+			       ,  a.box                         as box
+			       ,  a.sok                         as sok
+			       ,  nvl(a.panbox, 0)              as panbox
+			       ,  nvl(a.pansok, 0)              as pansok
+			       ,  a.price                       as price
+			       ,  nvl(a.panprice, 0)            as panprice
+			       ,  nvl(a.pancommen, '물량없음')  	as pancommen
+			       ,  decode(a.state, '0', '등록', '1', '진행', '2', '체결', '3', '미결', '4', '상장') 
+			       									as state
+			       ,  a.trans						as trans
+			       ,  a.jdate                       as jdate
+			       ,  a.pandate                     as pandate
+			       ,  decode(a.trans, '06', substr(g.name, 4, 4)
+			                              , nvl(h.name, '정보없음')) 
+			                              			as transname
+			       ,  nvl((
+			       		select round(
+			       						(
+			       						select 	nvl(avg(km_p_new), b.km_p_new) 
+			       						from 	v_sang_pan_list@flower
+				                        where	up_day=a.pandate
+				                        	and bun_chk=#bunchk#
+					                        and b.bun_chk = bun_chk
+				      	        	        and b.pum_code = pum_code
+				        	                and b.acc_level = acc_level
+				            	            and up_no not in b.up_no
+				                    	    and b.chul_code = chul_code
+				                        	and p_sok_cnt/decode(p_box_cnt, 0, 1, p_box_cnt) between b.p_sok_cnt/decode(b.p_box_cnt, 0, 1, b.p_box_cnt)-#son# and b.p_sok_cnt/decode(b.p_box_cnt, 0, 1, b.p_box_cnt) +#son#
+				                        		))||','||round(b.km_p_new - (
+				                        										select	nvl(avg(km_p_new), b.km_p_new) 
+				                        										from 	v_sang_pan_list@flower
+                        														where	up_day = a.pandate
+														                        	and bun_chk=#bunchk#
+														                        	and b.bun_chk = bun_chk
+														                        	and b.pum_code = pum_code
+														                        	and b.acc_level = acc_level
+														                        	and up_no not in b.up_no
+														                        	and b.chul_code = chul_code
+															                     	and p_sok_cnt/decode(p_box_cnt, 0, 1, p_box_cnt) between b.p_sok_cnt/decode(b.p_box_cnt, 0, 1, b.p_box_cnt)-#son# and b.p_sok_cnt/decode(b.p_box_cnt, 0, 1, b.p_box_cnt) +#son#
+												                     		 )
+												               )*b.p_sok_cnt 
+                        from v_sang_pan_list@flower b
+                        where	up_day= a.pandate
+                        	and up_no like 'C%'
+                        	and bun_chk = #bunchk#
+                        	and up_no = a.up_no)
+                        ,'0,0')						as avr
+			       ,  b.bun_chk 					as domeBunchk
+			    from  a_sajeon@flower          a
+			       ,  a_dome_info@flower       b
+			       ,  a_chul_info@flower       c
+			       ,  v_mok_jong_list@flower   d
+			       ,  a_level@flower           e
+			       ,  a_gwanri_code@flower     g
+			       ,  a_travel@flower          h
+			   where  1=1
+			     and  a.domecode    = b.code
+			     and  a.chulcode    = c.code
+			     and  a.pumcode     = d.pum_code
+			     and  a.grade       = e.code
+			     and  a.bunchk      = e.bun_chk
+			     and  c.gwanri_zone = g.gwanri_zone
+			     and  a.trans       = h.code    (+)
+			     and  a.bunchk      = h.bun_chk (+)
+			     and  a.bunchk      = #bunchk#
+            ]]>
+        </isEqual>
+        <isNotEqual property="excelsort" compareValue="4">
+        	<![CDATA[
+        		select  a.bunchk                      as bunchk
+			       ,  a.num                         as num
+			       ,  nvl(a.up_no, 0)               as up_no
+			       ,  a.coldate                     as coldate
+			       ,  a.domecode                    as domecode
+			       ,  b.name                        as domename
+			       ,  b.handy_tel_no                as dometel
+			       ,  a.chulcode                    as chulcode
+			       ,  nvl(c.name, '정보없음')      		as chulname
+			       ,  c.handy_phone_no              as chultel
+			       ,  d.p_mok_name                  as pummok
+			       ,  d.p_jong_name                 as pumjong
+			       ,  e.name                        as grade
+			       ,  a.box                         as box
+			       ,  a.sok                         as sok
+			       ,  nvl(a.panbox, 0)              as panbox
+			       ,  nvl(a.pansok, 0)              as pansok
+			       ,  a.price                       as price
+			       ,  nvl(a.panprice, 0)            as panprice
+			       ,  nvl(a.pancommen, '물량없음')  	as pancommen
+			       ,  decode(a.state, '0', '등록', '1', '진행', '2', '체결', '3', '미결', '4', '상장') as state
+			       ,  a.trans
+			       ,  a.jdate                       as jdate
+			       ,  a.pandate                     as pandate
+			       ,  decode(a.trans, '06', substr(g.name, 4, 4)
+			                              , nvl(h.name, '정보없음')) as transname
+				   ,  null							as avr
+			       ,  b.bun_chk 					as domeBunchk
+			    from  a_sajeon@flower          a
+			       ,  a_dome_info@flower       b
+			       ,  a_chul_info@flower       c
+			       ,  v_mok_jong_list@flower   d
+			       ,  a_level@flower           e
+			       ,  a_gwanri_code@flower     g
+			       ,  a_travel@flower          h
+			   where  1=1
+			     and  a.domecode    = b.code
+			     and  a.chulcode    = c.code
+			     and  a.pumcode     = d.pum_code
+			     and  a.grade       = e.code
+			     and  a.bunchk      = e.bun_chk
+			     and  c.gwanri_zone = g.gwanri_zone
+			     and  a.trans       = h.code    (+)
+			     and  a.bunchk      = h.bun_chk (+)
+			     and  a.bunchk      = #bunchk#
+			]]>
+        </isNotEqual>
+        
+        <!-- <isNotEqual property="loginID" compareValue="bluek2w"> -->
+        <isEqual property="search" compareValue="kmman">
+            <![CDATA[
+                 AND a.domecode like '%'
+            ]]>
+        </isEqual>
+        <isNotEqual property="search" compareValue="kmman">
+            <![CDATA[
+                 AND a.domecode = #domeCode#
+            ]]>
+        </isNotEqual>
+        <isEmpty property="search">
+            <![CDATA[
+                 AND a.domecode=#domeCode#
+            ]]>
+        </isEmpty>
+        <!-- </isNotEqual> -->
+        <isEmpty property="startDate">
+           <![CDATA[
+                 AND a.coldate = to_char(sysdate, 'yyyymmdd')
+           ]]>
+        </isEmpty>
+        <isNotEmpty property="startDate">
+           <![CDATA[
+                 AND a.coldate between #startDate# and #endDate#
+           ]]>
+        </isNotEmpty>
+        <isEqual property="opt" compareValue="code">
+            <![CDATA[
+                AND a.domecode = #optval# 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="name">
+            <![CDATA[
+                AND b.name like '%' || #optval# ||'%' 
+            ]]>
+        </isEqual>
+        <isEqual property="opt" compareValue="chulname">
+            <![CDATA[
+                AND c.name like '%' || #optval# ||'%' 
+            ]]>
+        </isEqual>
+                <isEqual property="opt" compareValue="pummok">
+            <![CDATA[
+                AND d.p_mok_name like '%' || #optval# || '%' 
+            ]]>
+        </isEqual>
+                <isEqual property="opt" compareValue="pumjong">
+            <![CDATA[
+                AND d.p_jong_name like '%'|| #optval# ||'%' 
+            ]]>
+        </isEqual>
+        <isNotEmpty property="optstate">
+            <![CDATA[
+                AND a.state like #optstate#
+            ]]>
+        </isNotEmpty>
+        <isEqual property="sort" compareValue="1">
+            <![CDATA[
+                order by a.domecode asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="2">
+            <![CDATA[
+                order by a.pumcode asc
+            ]]>
+        </isEqual>
+        <isEqual property="sort" compareValue="3">
+            <![CDATA[
+                order by a.chulcode desc
+            ]]>
+        </isEqual>
+        <isEqual property="excelsort" compareValue="3">
+            <![CDATA[
+                order by chulname asc, up_no asc
+            ]]>
+        </isEqual>
+        <isEqual property="select" compareValue="6">
+            <![CDATA[
+                order by a.domecode asc, a.chulcode asc, a.pumcode asc, grade asc
+            ]]>
+        </isEqual>
+        <isEqual property="select" compareValue="7">
+            <![CDATA[
+                order by a.chulcode asc, a.domecode asc, a.pumcode asc, grade asc
+            ]]>
+        </isEqual>
+    </select>
+    
+    <!-- by jjw ai@kldp.org 20150717 -->
+	<insert id="WhslDealPrec.SMS_send" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            insert
+              into  db_sms.sms_queue@flower
+                   (  sms_seq
+                   ,  send_req_date
+                   ,  status
+                   ,  msg_type
+                   ,  recv_number
+                   ,  send_number
+                   ,  message
+                   ,  send_prog
+                   ,  col01
+                   ,  col02
+                   ,  col03
+                   ,  col04
+                   ,  col05 )
+            values (  db_sms.sms_seq.nextval@flower
+                   ,  sysdate
+                   ,  '0'
+                   ,  '0'
+                   ,  #recvNumber#
+                   ,  #sendNumber#
+                   ,  #message# 
+                   ,  'WhslDealPrec'
+                   ,  'N'
+                   ,  #domecode#
+                   ,  #pandate#
+                   ,  #kmmancode#
+                   ,  decode(length(#domecode#),8,'CP','JP'))
+        ]]>
+	</insert>
+	<insert id="WhslDealPrec.MMS_send" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+            insert
+              into  db_sms.mms_queue@flower
+                   (  mms_seq
+                   ,  send_req_date
+                   ,  status
+                   ,  msg_type
+                   ,  recv_number
+                   ,  send_number
+                   ,  subject
+                   ,  message
+                   ,  send_prog
+                   ,  col01
+                   ,  col02
+                   ,  col03
+                   ,  col04
+                   ,  col05 )
+            values (  db_sms.mms_seq.nextval@flower
+                   ,  sysdate
+                   ,  '0'
+                   ,  '0'
+                   ,  #recvNumber#
+                   ,  #sendNumber#
+                   ,  #subject#
+                   ,  #message#
+                   ,  'WhslDealPrec'
+                   ,  'N'
+                   ,  #domecode#
+                   ,  #pandate#
+                   ,  #kmmancode#
+                   ,  decode(length(#domecode#),8,'CP','JP') )
+        ]]>
+	</insert>
+	
+	<!-- 
+		Changyeon-Baek
+		SMS_MMS procedure Test
+		bcy3161@at.or.kr
+		#recvNumber,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+		2016.05.20
+	-->
+	<procedure id="WhslDealPrec.sendSMS_MMS" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+			{ call db_sms.sp_send_text_simple@flower(
+													sysdate
+													, #recvNumber	,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #sendNumber	,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #subject		,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #message		,javaType=java.lang.String,jdbcType=LONG,mode=IN#
+													, 'WhslDealPrec'
+													, 'N'
+													, #domecode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #pandate,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #kmmancode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #munseoCode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #res_code,javaType=java.sql.ResultSet,jdbcType=ORACLECURSOR,mode=OUT#
+													, #res_message,javaType=java.sql.ResultSet,jdbcType=ORACLECURSOR,mode=OUT#
+												) 
+			}
+        ]]>
+	</procedure>
+	
+	
+	<!-- WhslDealPrec.procedureSMS_MMS_Map 
+	
+	-->
+	<procedure id="WhslDealPrec.sendSMS_MMS_lob" parameterClass="WhslDealPrecDTO">
+        <![CDATA[
+			{ call sp_send_text(
+													sysdate
+													, #recvNumber,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #sendNumber,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #subject,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #message,javaType=java.lang.String,jdbcType=CLOB,mode=IN#
+													, 'WhslDealPrec'
+													, 'N'
+													, #domecode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #pandate,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #kmmancode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													, #munseoCode,javaType=java.lang.String,jdbcType=VARCHAR,mode=IN#
+													
+													, #res_code,javaType=java.lang.String,jdbcType=VARCHAR,mode=OUT#
+													, #res_message,javaType=java.lang.String,jdbcType=VARCHAR,mode=OUT#
+												) 
+			}
+        ]]>
+	</procedure>
+	
+	<!--
+	<procedure id="WhslDealPrec.sendSMS_MMS" parameterClass="WhslDealPrecDTO">
+		{ call sp_send_text_simple@db_sms(
+												sysdate
+												, #recvNumber#
+												, #sendNumber#
+												, #subject#
+												, #message#
+												, 'WhslDealPrec'
+												, 'N'
+												, #domecode#
+												, #pandate#
+												, #kmmancode#
+												, decode(length(#domecode#),8,'CP','JP'
+											) 
+		}
+	</procedure>
+	
+	
+	<procedure id="WhslDealPrec.sendSMS_MMS_lob" parameterClass="WhslDealPrecDTO">
+		{ call sp_send_text_simple_lob@db_sms(
+													sysdate
+													, #recvNumber#
+													, #sendNumber#
+													, #subject#
+													, #message#
+													, 'WhslDealPrec'
+													, 'N'
+													, #domecode#
+													, #pandate#
+													, #kmmancode#
+													, decode(length(#domecode#),8,'CP','JP')
+												) 
+		}
+	</procedure>
+	-->
+</sqlMap>

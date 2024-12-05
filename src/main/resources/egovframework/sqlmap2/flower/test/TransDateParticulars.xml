@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :TransDateParticulars.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 일자별운송내역조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="TransDateParticulars">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="panDay"           column="panDay"           columnIndex="1" /> 
+	    <result property="formattedDay"     column="formattedDay"     columnIndex="2" /> 
+	    <result property="chulCount"        column="chulCount"        columnIndex="3" /> 
+	    <result property="sBoxCnt"          column="sBoxCnt"          columnIndex="4" /> 
+	    <result property="uBoxCnt"          column="uBoxCnt"          columnIndex="5" /> 
+	    <result property="tBoxCnt"          column="tBoxCnt"          columnIndex="6" /> 
+	    <result property="trPri"            column="trPri"            columnIndex="7" /> 
+	    <result property="pumKg"            column="pumKg"            columnIndex="8" />  
+	    <result property="toDay"            column="toDay"            columnIndex="9" /> 
+	    <result property="bunChkNm"         column="bunChkNm"         columnIndex="10" /> 
+	    <result property="startDate"        column="startDate"        columnIndex="11" /> 
+	    <result property="endDate"          column="endDate"          columnIndex="12" /> 
+	    <result property="fDay"             column="fDay"             columnIndex="13" /> 
+	    <result property="transName"        column="transName"        columnIndex="14" /> 
+	</resultMap>
+	
+	<resultMap id="TransDateParticulars.SumListMap" class="java.util.HashMap">
+	    <result property="chulCountSum"     column="chulCountSum"     columnIndex="1" /> 
+	    <result property="sBoxCntSum"       column="sBoxCntSum"       columnIndex="2" /> 
+	    <result property="uBoxCntSum"       column="uBoxCntSum"       columnIndex="3" /> 
+	    <result property="tBoxCntSum"       column="tBoxCntSum"       columnIndex="4" /> 
+	    <result property="trPriSum"         column="trPriSum"         columnIndex="5" /> 
+	    <result property="pumKgSum"         column="pumKgSum"         columnIndex="6" />  
+	</resultMap>
+	
+	<!-- 엑셀 출력을 위한 업체 목록 resutlMap -->
+	<resultMap id="TransDateParticulars.selectListForExcelMap" class="java.util.HashMap">
+	    <result property="panDay"           column="panDay"           columnIndex="1" /> 
+	    <result property="formattedDay"     column="formattedDay"     columnIndex="2" /> 
+	    <result property="chulCount"        column="chulCount"        columnIndex="3" /> 
+	    <result property="sBoxCnt"          column="sBoxCnt"          columnIndex="4" /> 
+	    <result property="uBoxCnt"          column="uBoxCnt"          columnIndex="5" /> 
+	    <result property="tBoxCnt"          column="tBoxCnt"          columnIndex="6" /> 
+	    <result property="trPri"            column="trPri"            columnIndex="7" /> 
+	    <result property="pumKg"            column="pumKg"            columnIndex="8" />  
+	    <result property="toDay"            column="toDay"            columnIndex="9" /> 
+	    <result property="bunChkNm"         column="bunChkNm"         columnIndex="10" /> 
+	    <result property="startDate"        column="startDate"        columnIndex="11" /> 
+	    <result property="endDate"          column="endDate"          columnIndex="12" /> 
+	</resultMap>
+	
+	<select id="TransDateParticulars.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				       ,(SELECT nvl(c_name,'')  FROM e_member_info@flower WHERE id = #id#) as transName
+				  from  v_sang_pan_list@flower a
+				 where  a.p_bun_chk = #bunChk#
+				   and  a.pan_day   between #startDate# and #endDate#
+				   and  a.trans     = #transCode#
+				 group  by a.pan_day, a.p_bun_chk
+		 ]]>
+	</select>
+	
+	<select id="TransDateParticulars.sumList" resultMap="TransDateParticulars.SumListMap">
+		<![CDATA[
+				select  sum(chulCount)  as  chulCountSum,
+				        sum(sBoxCnt  )  as  sBoxCntSum  ,
+				        sum(uBoxCnt  )  as  uBoxCntSum  ,
+				        sum(tBoxCnt  )  as  tBoxCntSum  ,
+				        sum(trPri    )  as  trPriSum    ,
+				        sum(pumkg    )  as  pumKgSum     
+				  from  (
+						select  a.pan_day as panDay, 
+						        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+						        count(distinct a.chul_code)                                                             as chulCount, 
+						        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+						        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+						        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+						        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+						        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+						       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+						       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+						       ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+						       ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+						  from  v_sang_pan_list@flower a
+						 where  a.p_bun_chk = #bunChk#
+						   and  a.pan_day   between #startDate# and #endDate#
+						   and  a.trans     = #transCode#
+						 group  by a.pan_day, a.p_bun_chk
+		                )
+		 ]]>
+	</select>
+	
+	<select id="TransDateParticulars.selectListForExcel" resultMap="TransDateParticulars.selectListForExcelMap">
+		<![CDATA[
+				select  a.pan_day as panDay, 
+				        to_char(to_date(substr(a.pan_day,3,2)||'-'||substr(a.pan_day,5,2)||'-'||substr(a.pan_day,7,2)),'DY') as formattedDay, 
+				        count(distinct a.chul_code)                                                             as chulCount, 
+				        nvl(sum(case when substr(a.box_type,1,1) in ('1','2','3') then a.p_box_cnt end), 0)     as sBoxCnt, 
+				        nvl(sum(case when substr(a.box_type,1,1) not in ('1','2','3') then a.p_box_cnt end), 0) as uBoxCnt, 
+				        nvl(sum(a.p_box_cnt), 0)                                                                as tBoxCnt, 
+				        nvl(sum(a.trans_price), 0)                                                              as trPri, 
+				        nvl(sum(a.pum_kg), 0)                                                                   as pumKg 
+				       ,to_char(sysdate,'yyyy-mm-dd') as toDay
+				       ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				       ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				  from  v_sang_pan_list@flower a
+				 where  a.p_bun_chk = #bunChk#
+				   and  a.pan_day   between #startDate# and #endDate#
+				   and  a.trans     = #transCode#
+				 group  by a.pan_day, a.p_bun_chk
+		 ]]>
+	</select>
+	
+
+</sqlMap>

@@ -1,0 +1,652 @@
+<!DCTYPE html> 
+<head>
+	<title>슈퍼관리자 worklist</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1" />
+	<meta name="keywords" content="" />
+	<meta name="description" Content="">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<script src="./js/jquery-1.11.3.min.js" type="text/javascript"></script>
+
+	<style type="text/css">
+	html{}
+	h1{margin:10px 0; width:100%; text-align:center; color:gray; font-size:25px; position:relative; }
+	.workwrap{width:100%; margin:0 auto; padding-bottom: 50px;}
+	.workwrap .issue { margin-top: 10px; }
+	.workwrap .issue h4 { margin: 0; }
+	.workwrap .issue ol { margin: 5px 0; }
+	.workwrap table.worktable{width:100%; font-size:14px; letter-spacing:-1px;}
+	.workwrap table.worktable th{border-bottom:1px solid #000; border-top:1px solid #000; border-left:1px solid #000; border-right:1px solid #000; background:#000; color:#fff; padding:15px 0;}
+	.workwrap table.worktable td{border-bottom:1px solid #000; border-top:1px solid #000; border-left:1px solid #000; border-right:1px solid #000; background:#fff; text-align:center; font-size:13px; padding:8px 5px;}
+	.workwrap table.worktable td:nth-of-type(2){/* font-weight:bold; */}
+	.workwrap table.worktable td a { text-decoration: none; color: #171C61; }
+	.workwrap table.worktable td a:visited,
+	.workwrap table.worktable td a:active,
+	.workwrap table.worktable td a:focus { text-decoration: none;  }
+	.finish_page{background-color:yellow!important;}
+	.ing_page{background-color:red!important;}
+	</style>
+	 
+
+<script type="text/javascript">
+	jQuery(function(){
+		jQuery(".worktable tr").each(function(){ 
+			var trindex = jQuery(this).index();			
+			jQuery(this).find("td:first-child").text(trindex);
+		});
+	});
+</script>
+
+<head>
+<h1 style="margin-top:50px;"><p style="font-size:20px; color:#222; padding:10px 0;letter-spacing:-2px; margin-top:-35px; margin-bottom:50px;">화훼공판장</p>
+</h1>
+</head>
+<html>
+<body>
+	
+	<p style="font-weight:bold;">작업내용</p>
+	<p>1. 홈페이지이용안내 추가</p>
+	<p>2. 오시는길 추가</p>
+	<p>3. 사이트맵 추가</p>
+	<p>4. 조직도 추가</p>
+	<p>5. 공판장소개-공판장개요 수정</p>
+	<p>6. 공판장소개-일반현황 추가</p>
+	<p>7. 주요사업-절화경매 추가</p>
+	<p>8. 주요사업-분화경매 추가</p>
+	<p>9. 주요사업-유통정보수집전파 추가</p>
+	<p>10. 경매일안내 추가</p>
+	<p>11. reset.css, common.css, sub.css 변경</p>
+	
+	<div class="workwrap">
+		<table class="worktable">
+			<colgroup>
+				<col style="width:5%">
+				<col style="width:35%">
+				<col style="width:15%">
+				<col style="width:15%">
+				<col style="width:5%">
+				<col style="width:10%">
+				<col style="width:10%">
+			</colgroup>
+			<tr>
+				<th>No.</th>
+				<th>depth-01</th>
+				<th>depth-02</th>
+				<th>depth-03</th>
+				<th>완료여부</th>
+				<th>완료날짜</th>
+				<th>비고</th>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/common.html" target="_blank">common.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/common_pack.html" target="_blank">common_pack.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/main.html" target="_blank">main.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/login.html" target="_blank">login.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/센터장인사말.html" target="_blank">센터장인사말.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/홈페이지이용안내.html" target="_blank">홈페이지이용안내.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.23</td>
+				<td>페이지 추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/오시는길.html" target="_blank">오시는길.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.23</td>
+				<td>페이지 추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/사이트맵.html" target="_blank">사이트맵.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.23</td>
+				<td>페이지 추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/조직도.html" target="_blank">조직도.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.26</td>
+				<td>페이지 추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/공판장소개-공판장개요.html" target="_blank">공판장소개-공판장개요.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/공판장소개-일반현황.html" target="_blank">공판장소개-일반현황.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/주요사업-절화경매.html" target="_blank">주요사업-절화경매.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/주요사업-분화경매.html" target="_blank">주요사업-분화경매.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/주요사업-유통정보수집전파.html" target="_blank">주요사업-유통정보수집전파.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td class="finish_page"><a href="./html/경매일안내.html" target="_blank">경매일안내.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>2020.10.27</td>
+				<td>페이지추가</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/온라인매매.html" target="_blank">온라인매매.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-상세(출하자판매).html" target="_blank">정가수의매매-상세(출하자판매).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-상세(출하자-중도매인의요청).html" target="_blank">정가수의매매-상세(출하자-중도매인의요청).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-상세(중도매인의요청).html" target="_blank">정가수의매매-상세(중도매인의요청).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매판매관리-상세(경매사).html" target="_blank">정가수의매매판매관리-상세(경매사).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-등록수정(중도매인요청).html" target="_blank">정가수의매매-등록수정(중도매인요청).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-판매관리등록수정(경매사).html" target="_blank">정가수의매매-등록수정(경매사).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-요청관리등록수정(경매사).html" target="_blank">정가수의매매-요청관리등록수정(경매사).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매-시간관리(경매사).html" target="_blank">정가수의매매-시간관리(경매사).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(출하자-분갈이).html" target="_blank">정가수의매매(출하자-분갈이).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(출하자-분갈이)-상세.html" target="_blank">정가수의매매(출하자-분갈이)-상세.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(출하자-분갈이)-등록수정.html" target="_blank">정가수의매매(출하자-분갈이)-등록수정.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(중도매인-분갈이).html" target="_blank">정가수의매매(중도매인-분갈이).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(중도매인-분갈이)-상세.html" target="_blank">정가수의매매(중도매인-분갈이)-상세.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/정가수의매매(경매사-분갈이).html" target="_blank">정가수의매매(중도매인-분갈이)-상세.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/게시판(공통).html" target="_blank">게시판(공통).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/공지사항(공통).html" target="_blank">공지사항(공통).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개.html" target="_blank">점포소개.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_01_전체점포.html" target="_blank">점포소개_01_전체점포.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_02_생화꽃도매시장점포(1층).html" target="_blank">점포소개_02_생화꽃도매시장점포(1층).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_03_생화꽃도매시장점포(2층).html" target="_blank">점포소개_03_생화꽃도매시장점포(2층).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_04_분화온실점포(가동).html" target="_blank">점포소개_04_분화온실점포(가동).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_05_분화온실점포(나동).html" target="_blank">점포소개_05_분화온실점포(나동).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_06_화환점포.html" target="_blank">점포소개_06_화환점포.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_07_본관입주점포(지하1층).html" target="_blank">점포소개_07_본관입주점포(지하1층).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개_08_본관입주점포(2층).html" target="_blank">점포소개_08_본관입주점포(2층).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/점포소개-상세.html" target="_blank">점포소개-상세.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/마이페이지.html" target="_blank">마이페이지.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/알림마당-ARS이용안내.html" target="_blank">알림마당-ARS이용안내.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/알림마당-FAX이용안내.html" target="_blank">알림마당-FAX이용안내.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/경매시세.html" target="_blank">경매시세.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/00_My화훼공판장-일반사항-출하단체등록정보.html" target="_blank">00_My화훼공판장-일반사항-출하단체등록정보.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/01_My화훼공판장-일반사항-소속농가현황.html" target="_blank">01_My화훼공판장-일반사항-소속농가현황.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/02_My화훼공판장-정산내역-판매정산내역[집계].html" target="_blank">02_My화훼공판장-정산내역-판매정산내역[집계].html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/03_My화훼공판장-정산내역-판매정산내역[상세](팝업포함).html" target="_blank">03_My화훼공판장-정산내역-판매정산내역[상세](팝업포함).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>팝업</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/04_My화훼공판장-정산내역-소송농가실적확인서(프린트).html" target="_blank">04_My화훼공판장-정산내역-소송농가실적확인서(프린트).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>확인서</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/05_My화훼공판장-장려금지원금-공동출하장려금.html" target="_blank">05_My화훼공판장-장려금지원금-공동출하장려금.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>월별포함</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/06_My화훼공판장-일반사항-출하농가등록정보.html" target="_blank">06_My화훼공판장-일반사항-출하농가등록정보.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/07_My화훼공판장-정산내역-판매정산내역[집계].html" target="_blank">07_My화훼공판장-정산내역-판매정산내역[집계].html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/08_My화훼공판장-정산내역-판매정산내역[상세].html" target="_blank">08_My화훼공판장-정산내역-판매정산내역[상세] .html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/09_My화훼공판장-정산내역-실적확인서(프린트).html" target="_blank">09_My화훼공판장-정산내역-실적확인서(프린트).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>확인서</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/10_My화훼공판장-판매메뉴-거래내역(낙찰서).html" target="_blank">10_My화훼공판장-판매메뉴-거래내역(낙찰서).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/11_My화훼공판장-판매메뉴-거래원장(팝업포함).html" target="_blank">11_My화훼공판장-판매메뉴-거래원장(팝업포함).html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>팝업</td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/12_My화훼공판장-일반사항-일자별운송내역.html" target="_blank">12_My화훼공판장-일반사항-일자별운송내역.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/13_My화훼공판장-일반사항-출하자별운송내역[집계].html" target="_blank">13_My화훼공판장-일반사항-출하자별운송내역[집계].html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/14_My화훼공판장-일반사항-출하자별운송내역[상세].html" target="_blank">14_My화훼공판장-일반사항-출하자별운송내역[상세].html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/15_My화훼공판장-관리자메뉴-중도매인배송비내역.html" target="_blank">15_My화훼공판장-관리자메뉴-중도매인배송비내역.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>number</td>
+				<td><a href="./html/16_My화훼공판장-관리자메뉴-상자형별하역비내역.html" target="_blank">16_My화훼공판장-관리자메뉴-상자형별하역비내역.html</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

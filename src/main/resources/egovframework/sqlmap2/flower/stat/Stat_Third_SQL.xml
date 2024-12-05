@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.StatThirdMapper">
+
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		
+	</resultMap>
+
+	<select id="getChulList" resultMap="egovResultMap">
+		SELECT T1.CODE
+		     , T1.NAME
+		     , T1.BUN_CHK
+		     , T1.GWANRI_ZONE
+		     , T2.NAME AS CHUL_AREA
+		     , T2.CITY_GUBUN 
+		FROM FLOMEJANG.A_CHUL_INFO T1
+		   , FLOMEJANG.A_GWANRI_CODE T2
+		WHERE 1=1
+		AND T1.GWANRI_ZONE = T2.GWANRI_ZONE
+		AND T1.BUN_CHK = #{bunChk}
+		<if test='searchChulCode != null and searchChulCode != ""'>
+			AND (
+				T1.CODE LIKE '%'||#{searchChulCode}||'%'
+				OR
+				T1.NAME LIKE '%'||#{searchChulCode}||'%'
+			)
+		</if>
+		ORDER BY CODE ASC	
+		
+	</select>		
+	
+	<select id="shprSaleCalcDetailSelect" resultType="egovMap">
+		<![CDATA[
+				SELECT b.chul_code   as chulCode,        
+				       a.name        as name,        
+				       d.p_mok_name  as pMokName,        
+				       to_char(to_date(b.f_up_day),'yyyy-mm-dd') as fUpDay,        
+				       d.p_jong_name||decode(b.f_songe_cnt,'0','',' /'||b.f_songe_cnt) as pJongName,        
+				       b.pum_code    as pumCode,        
+				       b.p_box_cnt   as boxCnt,        
+				       b.p_sok_cnt   as sokCnt,        
+				       c.name        as levelName,          
+				       b.km_p_new    as kmPNew,        
+				       b.pan_price   as panPrice,        
+					   decode(b.km_list,'1','낙찰','3','낙찰','2','유찰','8','유찰','9','폐기','4','선취') as kmList,        
+				       b.serial_no   as serialNo,        
+				       b.tot_price   as totPrice,        
+				       a.h_zip_pk    as hZipPk,        
+				       a.h_addr      as hAddr,        
+				       b.trans_price as transPrice,        
+				       case when b.p_bun_chk = 'Y' 
+				            then b.down_re_pg 
+				            else b.down_re_p 
+				        end          as downReP,        
+				       b.misu_nuge   as misuNuge,        
+				       b.p_re_box_p  as reBoxp,        
+				       b.sang_hwan   as sangHwan,        
+				       b.chain       as chain,        
+				       b.su_su_p     as suSup,        
+				       b.pan_no      as panNo,        
+				       b.bun_chk     as bunChk,        
+				       b.daegi_price as daegiPrice,        
+				       to_char(to_date(b.pan_day),'yyyy-mm-dd') as panDay,        
+				       b.misu        as misu,        
+				       b.p_misu      as pMisu,        
+				       b.t_misu_ret  as tMisuRet,        
+				       a.bank_code   as bankCode,        
+				       b.return_amt  as returnAmt,        
+				       b.self_amt    as selfAmt,        
+				       b.fee_amt     as feeAmt,        
+				       b.trans_price_add as transPriceAdd
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,b.rental_amt as rentalAmt
+			           ,b.baek_amt	 as baekAmt
+			           ,to_char(to_date(#{startDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as startDate
+				       ,to_char(to_date(#{endDate, jdbcType=VARCHAR}),'yyyy-mm-dd') as endDate
+				       ,b.up_no      as upNo
+				       ,b.vat        as vat
+				FROM   FLOMEJANG.a_chul_info a, 
+				       FLOMEJANG.v_sang_pan_list b, 
+				       FLOMEJANG.a_level c, 
+				       FLOMEJANG.v_mok_jong_list d, 
+				       FLOMEJANG.a_day_magam f 
+				WHERE  b.chul_code  = a.code   
+				  AND  b.p_bun_chk  = c.bun_chk   
+				  AND  b.acc_level  = c.code   
+				  AND  b.pum_code   = d.pum_code   
+				  AND  b.p_bun_chk  = f.bun_chk   
+				  AND  b.pan_day    = f.magam_ilja   
+				  AND  b.p_bun_chk  = (select bun_chk from FLOMEJANG.a_chul_info where code = #{chulCode, jdbcType=VARCHAR}) 
+				  AND  b.pan_day between replace(#{startDate, jdbcType=VARCHAR},'-','') and replace(#{endDate, jdbcType=VARCHAR},'-','') 
+				  AND  b.chul_code  = #{chulCode, jdbcType=VARCHAR} 
+				ORDER  BY b.f_up_day, b.pan_no, b.serial_no
+		 ]]>
+	</select>
+		
+	<select id="mafraMagamMasterListJson" resultType="egovMap">
+		SELECT UP_MONTH,
+			   BUN_CHK,
+		       SUM(BOX_CNT) AS TOT_BOX_CNT,
+		       SUM(SOK_CNT) AS TOT_SOK_CNT,
+		       SUM(TRADE_PRICE) AS TOT_TRADE_PRICE
+		  FROM (
+		        SELECT T.*,
+		               SUBSTR(UP_DAY, 1, 7) AS "UP_MONTH"
+		          FROM (
+		                SELECT UP_DAY,
+		                	   BUN_CHK,
+		                       BOX_CNT,
+		                       SOK_CNT,
+		                       SOK_CNT*KM_P_ORG AS TRADE_PRICE
+		                  FROM TB_MAGAM_MASTER
+		                 WHERE 1=1
+		                 <if test='selectBunChk != null and selectBunChk != ""'>
+		                 AND BUN_CHK = #{selectBunChk}
+		                 </if>
+		                   AND UP_DAY BETWEEN CONCAT(#{startMonth}, '-01') AND CONCAT(#{endMonth}, '-31')  
+		               ) T  
+		       ) T2
+		 GROUP BY UP_MONTH, BUN_CHK
+		 ORDER BY UP_MONTH, BUN_CHK
+	</select>	
+
+</mapper>

@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.system.organization.service.impl.OrganizationStaffMapper">
+
+	<resultMap id="organizationStaff" type="egovframework.cms.system.organization.vo.OrganizationStaffVO">
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="deptNm" column="DEPT_NM"/>
+		<result property="staffId" column="STAFF_ID"/>
+		<result property="loginId" column="LOGIN_ID"/>
+		<result property="loginPassword" column="LOGIN_PASSWORD"/>
+		<result property="loginGroupIds" column="LOGIN_GROUP_IDS"/>
+		<result property="loginLevelId" column="LOGIN_LEVEL_ID"/>
+		<result property="loginStatus" column="LOGIN_STATUS"/>
+		<result property="name" column="NAME"/>
+		<result property="duty" column="DUTY"/>
+		<result property="rank" column="RANK"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="faxNo" column="FAX_NO"/>
+		<result property="hpNo" column="HP_NO"/>
+		<result property="email" column="EMAIL"/>
+		<result property="asgnedArea" column="ASGNED_AREA"/>
+		<result property="mainBsnss" column="MAIN_BSNSS"/>
+		<result property="photoFile" column="PHOTO_FILE"/>
+		<result property="position" column="POSITION"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectOrganizationStaffListCnt" parameterType="organizationStaffVO" resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_ORGNZT_STAFF A
+	 LEFT JOIN  WMS_ORGNZT_DEPT B
+	 		ON  A.DEPT_ID = B.DEPT_ID
+		 WHERE  1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "deptNm"'>
+					AND	B.DEPT_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "name"'>
+					AND	A.NAME LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "telNo"'>
+					AND	A.TEL_NO LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "email"'>
+					AND	A.EMAIL LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "asgnedArea"'>
+					AND	A.ASGNED_AREA LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='deptId != null and deptId != ""'>
+		   AND  A.DEPT_ID = #{deptId}
+		</if>
+		<if test='searchDeptId != null and searchDeptId != ""'>
+		   AND  B.LFT BETWEEN #{searchDeptLft} AND #{searchDeptRgt}
+		</if>
+	</select>
+
+	<select id="selectOrganizationStaffList" parameterType="organizationStaffVO" resultMap="organizationStaff">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.DEPT_ID
+			 ,  B.DEPT_NM
+			 ,  A.STAFF_ID
+			 ,  A.LOGIN_ID
+			 ,  A.LOGIN_PASSWORD
+			 ,  A.LOGIN_GROUP_IDS
+			 ,  A.LOGIN_LEVEL_ID
+			 ,  A.LOGIN_STATUS
+			 ,  A.NAME
+			 ,  A.DUTY
+			 ,  A.RANK
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.FAX_NO
+			 ,  A.EMAIL
+			 ,  A.ASGNED_AREA
+			 ,  A.MAIN_BSNSS
+			 ,  A.POSITION
+			 ,  (
+			 		SELECT  REPLACE(SUBSTR(XMLAGG(XMLELEMENT(x,'|||',PARENT.DEPT_NM) ORDER BY PARENT.LFT).EXTRACT('//text()'),4),'|||',' > ')
+					  FROM  WMS_ORGNZT_DEPT NODE
+					     ,  WMS_ORGNZT_DEPT PARENT
+					 WHERE  NODE.LFT BETWEEN PARENT.LFT
+					   AND  PARENT.RGT
+					   AND  PARENT.LVL != 1
+					   AND  NODE.DEPT_ID = A.DEPT_ID
+			 ) AS deptPath
+		  FROM  WMS_ORGNZT_STAFF A
+	 LEFT JOIN  WMS_ORGNZT_DEPT B
+			ON  A.DEPT_ID = B.DEPT_ID
+		 WHERE  1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "deptNm"'>
+					AND	B.DEPT_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "name"'>
+					AND	A.NAME LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "telNo"'>
+					AND	A.TEL_NO LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "email"'>
+					AND	A.EMAIL LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "asgnedArea"'>
+					AND	A.ASGNED_AREA LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='deptId != null and deptId != ""'>
+		   AND  A.DEPT_ID = #{deptId}
+		</if>
+		<if test='searchDeptId != null and searchDeptId != ""'>
+		   AND  B.LFT BETWEEN #{searchDeptLft} AND #{searchDeptRgt}
+		</if>
+	  ORDER BY  B.LFT ASC, A.POSITION ASC
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+
+	<select id="selectOrganizationStaffListAll" parameterType="organizationStaffVO" resultMap="organizationStaff">
+		SELECT  A.DEPT_ID
+			 ,  B.DEPT_NM
+			 ,  A.STAFF_ID
+			 ,  A.LOGIN_ID
+			 ,  A.LOGIN_PASSWORD
+			 ,  A.LOGIN_GROUP_IDS
+			 ,  A.LOGIN_LEVEL_ID
+			 ,  A.LOGIN_STATUS
+			 ,  A.NAME
+			 ,  A.DUTY
+			 ,  A.RANK
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.FAX_NO
+			 ,  A.EMAIL
+			 ,  A.ASGNED_AREA
+			 ,  A.MAIN_BSNSS
+			 ,  A.POSITION
+			 ,  (
+			 		SELECT  REPLACE(SUBSTR(XMLAGG(XMLELEMENT(x,'|||',PARENT.DEPT_NM) ORDER BY PARENT.LFT).EXTRACT('//text()'),4),'|||',' > ')
+					  FROM  WMS_ORGNZT_DEPT NODE
+					     ,  WMS_ORGNZT_DEPT PARENT
+					 WHERE  NODE.LFT BETWEEN PARENT.LFT
+					   AND  PARENT.RGT
+					   AND  PARENT.LVL != 1
+					   AND  NODE.DEPT_ID = A.DEPT_ID
+			 ) AS deptPath
+		  FROM  WMS_ORGNZT_STAFF A
+	 LEFT JOIN  WMS_ORGNZT_DEPT B
+			ON  A.DEPT_ID = B.DEPT_ID
+		 WHERE  1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "deptNm"'>
+					AND	B.DEPT_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "name"'>
+					AND	A.NAME LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "telNo"'>
+					AND	A.TEL_NO LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "email"'>
+					AND	A.EMAIL LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "asgnedArea"'>
+					AND	A.ASGNED_AREA LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='deptId != null and deptId != ""'>
+		   AND  A.DEPT_ID = #{deptId}
+		</if>
+		<if test='searchDeptId != null and searchDeptId != ""'>
+		   AND  B.LFT BETWEEN #{searchDeptLft} AND #{searchDeptRgt}
+		</if>
+	  ORDER BY  B.LFT ASC, A.POSITION ASC
+	</select>
+
+	<select id="selectOrganizationStaff" parameterType="organizationStaffVO" resultMap="organizationStaff">
+		SELECT  A.DEPT_ID
+			 ,  B.DEPT_NM
+			 ,  A.STAFF_ID
+			 ,  A.LOGIN_ID
+			 ,  A.LOGIN_PASSWORD
+			 ,  A.LOGIN_GROUP_IDS
+			 ,  A.LOGIN_LEVEL_ID
+			 ,  A.LOGIN_STATUS
+			 ,  A.NAME
+			 ,  A.DUTY
+			 ,  A.RANK
+			 ,  A.TEL_NO
+			 ,  A.HP_NO
+			 ,  A.FAX_NO
+			 ,  A.EMAIL
+			 ,  A.ASGNED_AREA
+			 ,  A.MAIN_BSNSS
+			 ,  A.PHOTO_FILE
+			 ,  A.POSITION
+			 ,  A.REGIST_DTTM
+			 ,  A.REGIST_ID
+			 ,  A.UPDATE_DTTM
+			 ,  A.UPDATE_ID
+			 ,  (
+			 		SELECT  REPLACE(SUBSTR(XMLAGG(XMLELEMENT(x,'|||',PARENT.DEPT_NM) ORDER BY PARENT.LFT).EXTRACT('//text()'),4),'|||',' > ')
+					  FROM  WMS_ORGNZT_DEPT NODE
+					     ,  WMS_ORGNZT_DEPT PARENT
+					 WHERE  NODE.LFT BETWEEN PARENT.LFT
+					   AND  PARENT.RGT
+					   AND  PARENT.LVL != 1
+					   AND  NODE.DEPT_ID = A.DEPT_ID
+			 ) AS deptPath
+		  FROM  WMS_ORGNZT_STAFF A
+	 LEFT JOIN  WMS_ORGNZT_DEPT B
+		    ON  A.DEPT_ID = B.DEPT_ID
+		 WHERE  A.STAFF_ID = #{staffId}
+	</select>
+
+	<insert id="insertOrganizationStaff">
+		INSERT
+		  INTO  WMS_ORGNZT_STAFF
+		     (  DEPT_ID
+			 ,  STAFF_ID
+			 ,  LOGIN_ID
+			 ,  LOGIN_PASSWORD
+			 ,  LOGIN_GROUP_IDS
+			 ,  LOGIN_LEVEL_ID
+			 ,  LOGIN_STATUS
+			 ,  NAME
+			 ,  DUTY
+			 ,  RANK
+			 ,  TEL_NO
+			 ,  HP_NO
+			 ,  FAX_NO
+			 ,  EMAIL
+			 ,  ASGNED_AREA
+			 ,  MAIN_BSNSS
+			 ,  PHOTO_FILE
+			 ,  POSITION
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  #{deptId, jdbcType=VARCHAR}
+			 ,  #{staffId, jdbcType=VARCHAR}
+			 ,  #{loginId, jdbcType=VARCHAR}
+			 ,  #{loginPassword, jdbcType=VARCHAR}
+			 ,  #{loginGroupIds, jdbcType=VARCHAR}
+			 ,  #{loginLevelId}
+			 ,  #{loginStatus, jdbcType=VARCHAR}
+			 ,  #{name, jdbcType=VARCHAR}
+			 ,  #{duty, jdbcType=VARCHAR}
+			 ,  #{rank, jdbcType=VARCHAR}
+			 ,  #{telNo, jdbcType=VARCHAR}
+			 ,  #{hpNo, jdbcType=VARCHAR}
+			 ,  #{faxNo, jdbcType=VARCHAR}
+			 ,  #{email, jdbcType=VARCHAR}
+			 ,  #{asgnedArea, jdbcType=VARCHAR}
+			 ,  #{mainBsnss, jdbcType=VARCHAR}
+			 ,  #{photoFile, jdbcType=VARCHAR}
+			 ,  #{position, jdbcType=VARCHAR}
+			 ,  SYSDATE
+			 ,  #{registId, jdbcType=VARCHAR}
+		     )
+	</insert>
+
+	<update id="updateOrganizationStaff">
+		UPDATE  WMS_ORGNZT_STAFF
+		   SET  DEPT_ID = #{deptId, jdbcType=VARCHAR}
+		     ,  NAME = #{name, jdbcType=VARCHAR}
+		     <if test='loginId != null and loginId != ""'>
+		     ,  LOGIN_ID = #{loginId}
+		     </if>
+		     <if test='loginPassword != null and loginPassword != ""'>
+		     ,  LOGIN_PASSWORD = #{loginPassword}
+		     </if>
+			 ,  LOGIN_GROUP_IDS = #{loginGroupIds, jdbcType=VARCHAR}
+			 ,  LOGIN_LEVEL_ID = #{loginLevelId}
+			 ,  LOGIN_STATUS = #{loginStatus, jdbcType=VARCHAR}
+			 ,  DUTY = #{duty, jdbcType=VARCHAR}
+		     ,  RANK = #{rank, jdbcType=VARCHAR}
+		     ,  TEL_NO = #{telNo, jdbcType=VARCHAR}
+		     ,  HP_NO = #{hpNo, jdbcType=VARCHAR}
+			 ,  FAX_NO = #{faxNo, jdbcType=VARCHAR}
+			 ,  EMAIL = #{email, jdbcType=VARCHAR}
+			 ,  ASGNED_AREA = #{asgnedArea, jdbcType=VARCHAR}
+			 ,  MAIN_BSNSS = #{mainBsnss, jdbcType=VARCHAR}
+ 			 ,  POSITION = #{position, jdbcType=VARCHAR}
+			 <if test='photoFile != null'>
+			 ,  PHOTO_FILE = #{photoFile}
+			 </if>
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+		 WHERE  STAFF_ID = #{staffId}
+	</update>
+
+    <delete id="deleteOrganizationStaff">
+		DELETE
+		  FROM  WMS_ORGNZT_STAFF
+		 WHERE  STAFF_ID = #{staffId}
+    </delete>
+
+</mapper>

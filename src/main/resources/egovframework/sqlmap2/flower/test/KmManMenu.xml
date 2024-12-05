@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WhslDealPrec.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 거래정산내역 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="KmManMenu">
+    <!-- 거래정산내역  resutlMap -->
+    <resultMap id="KmManMenuChul.selectListMap" class="java.util.HashMap">
+        <result property="name"             column="name"          />
+        <result property="jumin"            column="jumin"         /> 
+        <result property="addr"             column="addr"          /> 
+        <result property="pumname"          column="pumname"       /> 
+        <result property="pumcode"          column="pumcode"       /> 
+        <result property="sok"              column="sok"           /> 
+        <result property="price"            column="price"         />
+    </resultMap>
+    
+    <resultMap id="KmManMenuDome.SelectListMap" class="java.util.HashMap">
+        <result property="upDay"     column="upDay"        columnIndex="1" />  <!-- 경매일자    -->
+        <result property="totBox"    column="totBox"       columnIndex="2" />  <!-- 총 경매량 상자수 -->
+        <result property="totSok"    column="totSok"       columnIndex="3" />  <!-- 총 경매량 속수 -->
+        <result property="panBox"    column="panBox"       columnIndex="4" />  <!-- 판매량 상자수 -->
+        <result property="panSok"    column="panSok"       columnIndex="5" />  <!-- 판매량 속수 -->
+        <result property="uchalBox"  column="uchalBox"     columnIndex="6" />  <!-- 유찰량 상자수 -->
+        <result property="uchalSok"  column="uchalSok"     columnIndex="7" />  <!-- 유찰량 속수 -->
+        <result property="panPrice"  column="panPrice"     columnIndex="8" />  <!-- 판매금액 -->
+        <result property="gongJe"    column="gongJe"       columnIndex="9" /> <!-- 공제금액 -->
+        <result property="chain"     column="chain"        columnIndex="10" /> <!-- 지급금액 --> 
+        <result property="toDay"     column="toDay"        columnIndex="11" /> <!-- sysdate --> 
+        <result property="name"      column="name"         columnIndex="12" />   <!-- 출하자명 -->
+        <result property="fUpDay"    column="fUpDay"       columnIndex="13" />  <!-- 경매일자    -->
+        <result property="startDate" column="startDate"    columnIndex="14" /> 
+        <result property="endDate"   column="endDate"      columnIndex="15" /> 
+    </resultMap>
+
+    <resultMap id="KmManMenu.loginMap" class="java.util.HashMap">
+        <result property="cd_gubun"         column="cd_gubun"       /> 
+        <result property="kmmancode"        column="cd1"            /> 
+        <result property="bunchk"           column="cd2"            />
+        <result property="kmmanname"        column="cd_name"        />
+        <result property="loginID"          column="cd_explain"     />
+    </resultMap>
+
+    <!-- 엑셀 출력 목록 resutlMap -->
+    
+    <select id="KmManMenuChul.SelectList" resultMap="KmManMenuChul.selectListMap">
+        <![CDATA[
+			SELECT  a.name as name,   
+			            Case When Length(Trim(a.jumin_no)) > 6 Then SubStr(a.jumin_no,1,6)||'-'||SubStr(a.jumin_no,7,1)||'******' Else a.jumin_no End   as jumin,
+			            DECODE(#bun_chk#, 'N', Nvl((SELECT addr FROM VIEW_E_ZIP_NO@FLOWER WHERE ZIP_PK = A.H_ZIP_PK),' ')||' '||a.h_addr,
+			                                  Nvl((SELECT addr FROM VIEW_E_ZIP_NO@FLOWER WHERE ZIP_PK = A.F_ZIP_PK),' ')||' '||a.f_addr) as addr,
+			            b.p_mok_name as pumname,
+			            c.pum_code as pumcode,   
+			            c.sok_cnt as sok,    
+			            c.pan_price as price
+			FROM a_chul_info@FLOWER a, a_pum_mok_info@FLOWER b, (
+			    SELECT  SubStr(pum_code,1,4)        as pum_code,   
+			                Sum(p_sok_cnt)          as sok_cnt,    
+			                Sum(pan_price)          as pan_price
+			    FROM        V_SANG_PAN_LIST@FLOWER
+			    WHERE    p_bun_chk      = #bun_chk#
+			    AND      pan_day        BETWEEN #startDate# AND #endDate#
+			    AND      km_list        IN ('1', '3', '4') 
+			    AND      chul_code  = #code#
+			    GROUP BY SubStr(pum_code,1,4)
+			    ) c
+			WHERE 1=1  
+			AND b.flower_code   = SubStr(c.pum_code,1,1)
+			AND b.p_mok_code    = SubStr(c.pum_code,2,3)
+        ]]>
+    </select>
+    
+    <select id="KmManMenuDome.SelectList" resultMap="KmManMenuDome.SelectListMap">
+        <![CDATA[
+                SELECT  a.pan_day as upDay,
+                        to_char(to_date(a.pan_day),'yyyy-mm-dd') as fUpDay,        
+                        sum(a.p_box_cnt) as totBox,        
+                        sum(a.p_sok_cnt) as totSok,        
+                        nvl(sum(case when a.km_list in ('1','3','4') then a.p_box_cnt end),0) as panBox,        
+                        nvl(sum(case when a.km_list in ('1','3','4') then a.p_sok_cnt end),0) as panSok,        
+                        nvl(sum(case when a.km_list in ('2','8','9') then a.p_box_cnt end),0) as uchalBox,        
+                        nvl(sum(case when a.km_list in ('2','8','9') then a.p_sok_cnt end),0) as uchalSok,        
+                        nvl(sum(a.pan_price),0) as panPrice,        
+                        nvl(sum(a.pan_price) - sum(a.chain),0) as gongJe,        
+                        nvl(sum(a.chain),0) as chain,
+                        to_char(sysdate,'yyyy-mm-dd') as toDay
+                        ,(select name from a_chul_info@flower where code = #chulCode# ) as name
+                        ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+                        ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+                  FROM  v_sang_pan_list@flower a, 
+                        a_day_magam@flower b 
+                 WHERE  a.p_bun_chk  = b.bun_chk  
+                   AND  a.pan_day    = b.magam_ilja   
+                   AND  a.p_bun_chk  = (select bun_chk from a_chul_info@flower where code = #chulCode#) 
+                   AND  a.pan_day between #startDate# and  #endDate#
+                   AND  a.chul_code  = #chulCode#
+                 GROUP  BY a.pan_day
+                 ORDER  BY pan_day desc
+         ]]>
+    </select>
+
+    <select id="KmManMenu.login" resultMap="KmManMenu.loginMap">
+    <![CDATA[
+            select cd_gubun,cd1,cd2,cd_name,cd_explain from 
+            wb_cm_로그인ID a,
+            a_public_info@flower b
+            where
+            a.로그인ID=#loginID# and
+            b.cd_explain = a.로그인ID
+            ]]>
+    </select>
+  
+</sqlMap>

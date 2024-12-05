@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.StatFourthMapper">
+
+	<select id="sangJangCntList" resultType="egovMap">
+		SELECT
+			TO_CHAR(TO_DATE(a.UP_DAY,'YYYYMMDD'),'YYYY-MM-DD') as UP_DAY,
+			a.UP_NO,
+			a.CHUL_CODE,
+			b.NAME as CHUL_NAME,
+			d.P_MOK_NAME,
+			c.P_JONG_NAME,
+			a.BOX_CNT,
+			a.SOK_CNT
+			FROM FLOMEJANG.A_SANG_JANG a,
+			FLOMEJANG.A_CHUL_INFO b,
+			FLOMEJANG.A_PUM_JONG_INFO c,
+			FLOMEJANG.A_PUM_MOK_INFO d
+		WHERE a.PUM_CODE = c.PUM_CODE
+			AND a.BUN_CHK = 'N'
+			AND a.CHUL_CODE = b.CODE
+			AND c.flower_code = d.FLOWER_CODE
+			AND c.P_MOK_CODE = d.P_MOK_CODE
+			AND a.UP_DAY BETWEEN REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+			<if test="searchChul != null and searchChul != '' ">
+			AND ( a.CHUL_CODE LIKE '%'||#{searchChul}||'%' OR b.NAME LIKE '%'||#{searchChul}||'%' )  
+			</if>
+			<if test="mokCode != null and mokCode != '' ">
+			AND SUBSTR(a.PUM_CODE,0,4) = #{mokCode}
+			</if>
+			<if test="pumCode != null and pumCode != '' ">
+			AND a.PUM_CODE = #{pumCode}
+			</if>
+			AND SUBSTR(a.UP_NO,0,1) != 'C'
+		ORDER BY a.UP_DAY ASC, a.UP_NO ASC
+	</select>
+	
+</mapper>

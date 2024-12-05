@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.banner.service.impl.BannerMapper">
+
+	<resultMap id="boardArticle" type="egovframework.cms.board.vo.BoardArticleVO">
+		<result property="articleId" column="ARTICLE_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="groupNo" column="GROUP_NO"/>
+		<result property="depthNo" column="DEPTH_NO"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="viewStartDt" column="VIEW_START_DT"/>
+		<result property="viewEndDt" column="VIEW_END_DT"/>
+		<result property="categoryId" column="CATEGORY_ID"/>
+		<result property="progressCd" column="PROGRESS_CD"/>
+		<result property="subject" column="SUBJECT"/>
+		<result property="email" column="EMAIL"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="hpNo" column="HP_NO"/>
+		<result property="adres" column="ADRES"/>
+		<result property="detailAdres" column="DETAIL_ADRES"/>
+		<result property="zip" column="ZIP"/>
+		<result property="homepage" column="HOMEPAGE"/>
+		<result property="writerId" column="WRITER_ID"/>
+		<result property="writerNm" column="WRITER_NM"/>
+		<result property="password" column="PASSWORD"/>
+		<result property="content" column="CONTENT"/>
+		<result property="listThumbFile" column="LIST_THUMB_FILE"/>
+		<result property="uploadCnt" column="UPLOAD_CNT"/>
+		<result property="rcvSmsAt" column="RCV_SMS_AT"/>
+		<result property="sendSmsAt" column="SEND_SMS_AT"/>
+		<result property="rcvEmailAt" column="RCV_EMAIL_AT"/>
+		<result property="sendEmailAt" column="SEND_EMAIL_AT"/>
+		<result property="mainAt" column="MAIN_AT"/>
+		<result property="noticeAt" column="NOTICE_AT"/>
+		<result property="htmlAt" column="HTML_AT"/>
+		<result property="secretAt" column="SECRET_AT"/>
+		<result property="deletedAt" column="DELETED_AT"/>
+		<result property="commentCnt" column="COMMENT_CNT"/>
+		<result property="hits" column="HITS"/>
+		<result property="data01" column="DATA01"/>
+		<result property="data02" column="DATA02"/>
+		<result property="data03" column="DATA03"/>
+		<result property="data04" column="DATA04"/>
+		<result property="data05" column="DATA05"/>
+		<result property="data06" column="DATA06"/>
+		<result property="data07" column="DATA07"/>
+		<result property="data08" column="DATA08"/>
+		<result property="data09" column="DATA09"/>
+		<result property="data10" column="DATA10"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registIp" column="REGIST_IP"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateIp" column="UPDATE_IP"/>
+		<result property="deleteDttm" column="DELETE_DTTM"/>
+		<result property="deleteIp" column="DELETE_IP"/>
+		<result property="deleteId" column="DELETE_ID"/>
+		<result property="deleteMemo" column="DELETE_MEMO"/>
+		<result property="realnameId" column="REALNAME_ID"/>
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="state" column="STATE"/>
+	</resultMap>
+	
+	<select id="selectBoardArticleList" parameterType="boardArticleVO" resultMap="boardArticle">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.ARTICLE_ID
+			 ,  A.GROUP_NO
+			 ,  A.DEPTH_NO
+			 ,  A.ORDER_NO
+			 ,  A.CATEGORY_ID
+			 ,  A.PROGRESS_CD
+			 ,  A.SUBJECT
+			 ,  A.WRITER_ID
+			 ,  A.WRITER_NM
+			 ,  A.PASSWORD
+			 ,  A.CONTENT
+			 ,  A.LIST_THUMB_FILE
+			 ,  A.NOTICE_AT
+			 ,  A.SECRET_AT
+			 ,  A.DELETED_AT
+			 ,  A.UPLOAD_CNT
+			 ,  A.COMMENT_CNT
+			 ,  A.HITS
+			 ,  A.DATA01
+			 ,  A.DATA02
+			 ,  A.DATA03
+			 ,  A.DATA04
+			 ,  A.DATA05
+			 ,  A.DATA06
+			 ,  A.DATA07
+			 ,  A.DATA08
+			 ,  A.DATA09
+			 ,  A.DATA10
+			 ,  A.REGIST_DTTM
+		  FROM  WMS_BOARD_ARTICLE A
+		 WHERE  A.ARTICLE_ID &gt; 0
+		<if test='boardId != null and boardId != ""'>
+		   AND  A.BOARD_ID = #{boardId}
+		</if>
+		<if test='noticeAt != null and noticeAt != ""'>
+		   AND  A.NOTICE_AT	= #{noticeAt}
+		</if>
+		<if test='secretAt != null and secretAt != ""'>
+		   AND  A.SECRET_AT	= #{secretAt}
+		</if>
+		<if test='mainAt != null and mainAt != ""'>
+		   AND  A.MAIN_AT = #{mainAt}
+		</if>
+		<if test='categoryId > 0'>
+		   AND  A.CATEGORY_ID = #{categoryId}
+		</if>
+		<if test='deletedAt != null and deletedAt != ""'>
+		   AND  A.DELETED_AT = #{deletedAt}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_MEMBER"'>
+		   AND  A.WRITER_ID = #{writerId}
+		</if>
+		<if test='searchMode != null and searchMode == "SELF_REALNAME"'>
+		   AND  A.REALNAME_ID = #{realnameId}
+		</if>
+		<if test='data01 != null and data01 != ""'>AND A.DATA01 = #{data01}</if>
+		<if test='data02 != null and data02 != ""'>AND A.DATA02 = #{data02}</if>
+		<if test='data03 != null and data03 != ""'>AND A.DATA03 = #{data03}</if>
+		<if test='data04 != null and data04 != ""'>AND A.DATA04 = #{data04}</if>
+		<if test='data05 != null and data05 != ""'>AND A.DATA05 = #{data05}</if>
+		<if test='data06 != null and data06 != ""'>AND A.DATA06 = #{data06}</if>
+		<if test='data07 != null and data07 != ""'>AND A.DATA07 = #{data07}</if>
+		<if test='data08 != null and data08 != ""'>AND A.DATA08 = #{data08}</if>
+		<if test='data09 != null and data09 != ""'>AND A.DATA09 = #{data09}</if>
+		<if test='data10 != null and data10 != ""'>AND A.DATA10 = #{data10}</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "subject"'>
+		   AND  A.SUBJECT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND  A.CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "writerNm"'>
+		   AND  A.WRITER_NM LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "writerId"'>
+		   AND  A.WRITER_ID LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+		<if test='searchStartDt != null and searchStartDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &gt;= #{searchStartDt}
+		</if>
+		<if test='searchEndDt != null and searchEndDt != ""'>
+		   AND  TO_CHAR(A.REGIST_DTTM, 'yyyy-mm-dd') &lt;= #{searchEndDt}
+		</if>
+	<choose>
+	   	<when test='orderby == "rand"'>
+	  ORDER BY  DBMS_RANDOM.RANDOM
+	   	</when>
+	   	<otherwise>
+	  ORDER BY  A.ORDER_NO ASC
+	   	</otherwise>
+	</choose>
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+	
+	<update id="updateBoardArticle">
+		UPDATE  WMS_BOARD_ARTICLE
+		   SET  CATEGORY_ID = #{categoryId, jdbcType=VARCHAR}
+		     ,  ORDER_NO = #{orderNo}
+			 ,  SUBJECT = #{subject, jdbcType=VARCHAR}
+			 ,  EMAIL = #{email, jdbcType=VARCHAR}
+			 ,  TEL_NO = #{telNo, jdbcType=VARCHAR}
+			 ,  HP_NO = #{hpNo, jdbcType=VARCHAR}
+			 ,  ADRES = #{adres, jdbcType=VARCHAR}
+			 ,  DETAIL_ADRES = #{detailAdres, jdbcType=VARCHAR}
+			 ,  ZIP = #{zip, jdbcType=VARCHAR}
+			 ,  HOMEPAGE = #{homepage, jdbcType=VARCHAR}
+			 ,  WRITER_NM = #{writerNm, jdbcType=VARCHAR}
+			<if test='password != null and password != ""'>
+			 ,  PASSWORD = #{password, jdbcType=VARCHAR}
+			</if>
+			 ,  CONTENT = #{content, jdbcType=VARCHAR}
+			<if test='listThumbFile != null'>
+			 ,  LIST_THUMB_FILE = #{listThumbFile, jdbcType=VARCHAR}
+			</if>
+			<if test='deletedAt != null and !deletedAt == ""'>
+			 , DELETED_AT = #{deletedAt, jdbcType=VARCHAR}
+			</if>
+			 ,  MAIN_AT = #{mainAt, jdbcType=VARCHAR}
+			 ,  NOTICE_AT = #{noticeAt, jdbcType=VARCHAR}
+			 ,  HTML_AT = #{htmlAt, jdbcType=VARCHAR}
+			 ,  SECRET_AT = #{secretAt, jdbcType=VARCHAR}
+			<if test='hits != null and !hits == ""'>
+			 ,  HITS = #{hits, jdbcType=VARCHAR}
+			</if>
+			 ,  DATA01 = #{data01, jdbcType=VARCHAR}
+			 ,  DATA02 = #{data02, jdbcType=VARCHAR}
+			 ,  DATA03 = #{data03, jdbcType=VARCHAR}
+			 ,  DATA04 = #{data04, jdbcType=VARCHAR}
+			 ,  DATA05 = #{data05, jdbcType=VARCHAR}
+			 ,  DATA06 = #{data06, jdbcType=VARCHAR}
+			 ,  DATA07 = #{data07, jdbcType=VARCHAR}
+			 ,  DATA08 = #{data08, jdbcType=VARCHAR}
+			 ,  DATA09 = #{data09, jdbcType=VARCHAR}
+			 ,  DATA10 = #{data10, jdbcType=VARCHAR}
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_IP = #{updateIp, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+		   AND  ARTICLE_ID = #{articleId, jdbcType=VARCHAR}
+	</update>
+    
+    <select id="chkOrderNo" parameterType="boardArticleVO" resultMap="boardArticle">
+		SELECT * 
+		  FROM (
+		  	SELECT ARTICLE_ID
+				 , ORDER_NO
+			  FROM WMS_BOARD_ARTICLE
+			 WHERE BOARD_ID = #{boardId}
+			   AND ORDER_NO = #{orderNo}
+		  )
+		 WHERE ROWNUM &lt;= 2
+	</select>
+    
+    <update id="insOrderNo">
+		UPDATE WMS_BOARD_ARTICLE
+		   SET ORDER_NO = ORDER_NO + 1
+		 WHERE BOARD_ID = #{boardId}
+		   AND ORDER_NO &gt;= #{orderNo}
+	</update>
+	
+	<update id="uptOrderNo">
+		UPDATE WMS_BOARD_ARTICLE
+		   SET ORDER_NO = ORDER_NO + 1
+		 WHERE BOARD_ID = #{boardId}
+		   AND ORDER_NO &gt; #{orderNo}
+	</update>
+	
+	<update id="decOrderNo">
+		UPDATE WMS_BOARD_ARTICLE 
+		   SET ORDER_NO = ORDER_NO - 1
+		 WHERE BOARD_ID = #{boardId}
+		   AND ORDER_NO &lt;= #{orderNo}
+		   AND ORDER_NO &gt;= 1
+	</update>
+    
+    <update id="sortOrderNo">
+		UPDATE WMS_BOARD_ARTICLE A
+		   SET ORDER_NO = (
+		       SELECT ROW_NUMBER
+		         FROM (
+		                   SELECT ORDER_NO
+		                         , ROW_NUMBER() OVER(ORDER BY ORDER_NO) AS ROW_NUMBER
+		                     FROM WMS_BOARD_ARTICLE
+		                    WHERE BOARD_ID = #{boardId}
+		                   ORDER BY ORDER_NO ASC
+	   	         )
+		        WHERE BOARD_ID = #{boardId}
+		          AND ORDER_NO = A.ORDER_NO
+		   )
+	</update>
+
+</mapper>
+

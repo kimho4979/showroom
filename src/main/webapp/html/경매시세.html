@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="Author" content="">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>경매시세</title>
+
+<!-- CSS(S) -->
+<link rel="stylesheet" type="text/css" href="/yfmc/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/yfmc/css/common.css">
+<link rel="stylesheet" type="text/css" href="/yfmc/css/sub.css">
+<link rel="stylesheet" type="text/css" href="/yfmc/css/jquery-ui.css"> <!-- datepicker style -->
+<link rel="stylesheet" type="text/css" href="/yfmc/css/timepicker.css"> <!-- timepicker style -->
+<!-- CSS(E) -->
+
+<!-- SCRIPT(S) -->
+<script type="text/javascript" src="/yfmc/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/yfmc/js/jquery-ui.js"></script> <!-- datepicker js -->
+<script type="text/javascript" src="/yfmc/js/timepicker.min.js"></script> <!-- timepicker js -->
+<script type="text/javascript" src="/yfmc/js/script.js"></script> 
+<script type="text/javascript" src="/yfmc/js/jquery.cycle.all.js"></script> <!-- slider -->
+<!-- SCRIPT(E) -->
+
+</head>
+
+<body> 
+	<!-- warp(S) -->
+	<div class="wrap">
+		<!-- header(S) -->
+		<div class="header">
+			<div class="header_in">
+				<a href="#!" class="h_logo"><img src="/yfmc/img/h_logo.png" alt="헤더로고"></a>
+				<div class="menu_box">
+					<ul>
+						<li>
+							<a href="#!" class="btn_m m1">점포소개</a>
+							<!-- 점포소개(S)-->
+							<div class="gnb_box gb_1">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_01.png" alt="점포소개이미지">
+										</span>
+										<p class="menu_title">점포소개</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">전체점포</a>
+												<a href="#!">분화온실점포(가동)</a>
+												<a href="#!">분화온실점포(나동)</a>
+											</li>
+											<li>
+												<a href="#!">생화꽃 도매시장점포(1층)</a>
+												<a href="#!">생화꽃 도매시장점포(2층)</a>
+												<a href="#!">화환점포</a>
+											</li>
+											<li>
+												<a href="#!">본관입주점포(지하1층)</a>
+												<a href="#!">본관입주점포(2층)</a>
+												<a href="#!">기타점포</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 점포소개(E)-->
+						</li>
+						<li>
+							<a href="#!" class="btn_m m2">알림마당</a>
+							<!-- 알림마당(S)-->
+							<div class="gnb_box gb_2">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_02.png" alt="알림마당이미지">
+										</span>
+										<p class="menu_title">알림마당</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+											</li>
+											<li>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+											</li>
+											<li>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+												<a href="#!">sample-02</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 알림마당(E)-->
+						</li>
+						<li>
+							<a href="#!" class="btn_m m3">화훼유통정보</a>
+							<!-- 화훼유통정보(S)-->
+							<div class="gnb_box gb_3">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_03.png" alt="화훼유통정보이미지">
+										</span>
+										<p class="menu_title">화훼유통정보</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+											</li>
+											<li>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+											</li>
+											<li>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+												<a href="#!">sample-03</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 화훼유통정보(E)-->
+						</li>
+						<li>
+							<a href="#!" class="btn_m m4">서식자료실</a>
+							<!-- 서식자료실(S)-->
+							<div class="gnb_box gb_4">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_04.png" alt="서식자료실이미지">
+										</span>
+										<p class="menu_title">서식자료실</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+											</li>
+											<li>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+											</li>
+											<li>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+												<a href="#!">sample-04</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 서식자료실(E)-->
+						</li>
+						<li>
+							<a href="#!" class="btn_m m5">센터소개</a>
+							<!-- 센터소개(S)-->
+							<div class="gnb_box gb_5">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_05.png" alt="센터소개이미지">
+										</span>
+										<p class="menu_title">센터소개</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+											</li>
+											<li>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+											</li>
+											<li>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+												<a href="#!">sample-05</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 센터소개(E)-->
+						</li>
+						<li>
+							<a href="#!" class="btn_m m6 on">온라인매매</a>
+							<!-- 온라인매매(S)-->
+							<div class="gnb_box gb_6">
+								<div class="border_gradient"></div>
+								<div class="gb_in">
+									<div class="ico_box">
+										<span class="gb_img">
+											<img src="/yfmc/img/ico_menu_06.png" alt="온라인매매이미지">
+										</span>
+										<p class="menu_title">온라인매매</p>
+									</div>
+									<div class="menu_list">
+										<ul>
+											<li>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+											</li>
+											<li>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+											</li>
+											<li>
+												<a href="#!">sample-06</a>
+												<a href="#!">sample-06</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- 온라인매매(E)-->
+						</li>
+					</ul>
+				</div>
+				<div class="mypage">
+					<a href="#!" class="btn_p login"><span><img src="/yfmc/img/icon_login.png" alt="로그인아이콘"></span>로그인</a>
+					<a href="#!" class="btn_p sign"><span><img src="/yfmc/img/icon_sign.png" alt="회원가입아이콘"></span>회원가입</a>
+				</div>
+				<a href="#!" class="btn_lnb"><img src="/yfmc/img/btn_lnb_mobile.png" alt="모바일lnb버튼"></a>
+			</div>
+		</div>
+		<div class="border_gradient"></div>
+		<!-- header(E) -->
+
+		<!-- sub-conts(S) -->
+		<div class="sub_conts bgw">
+
+			<!-- sub상단(S) -->
+			<div class="sub_top">
+				<h2 class="sub_title">·경매시세·</h2>
+
+				<!-- 네비게이션(S) -->
+				<div class="nav_box">
+					<div class="nav_in">
+						<a href="#!" class="btn_home"><img src="/yfmc/img/btn_home.png" alt="네비게이션홈버튼"></a>
+						<ul class="nav_depth_box">
+							<li class="btn_nav_depth_01">
+								<a href="#!">depth-01<span class="nav_arrow"><img src="/yfmc/img/nav_arrow.png" alt="네비화살표"></span></a>
+								<ul class="nav_depth_box_02">
+									<li class="btn_nav_depth_02"><a href="#!">depth_01-01</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_01-02</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_01-03</a></li>
+								</ul>
+							</li>
+							<li class="btn_nav_depth_01">
+								<a href="#!">depth-02<span class="nav_arrow"><img src="/yfmc/img/nav_arrow.png" alt="네비화살표"></span></a>
+								<ul class="nav_depth_box_02">
+									<li class="btn_nav_depth_02"><a href="#!">depth_02-01</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_02-02</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_02-03</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_02-04</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_02-05</a></li>
+								</ul>
+							</li>
+							<li class="btn_nav_depth_01">
+								<a href="#!">depth-03<span class="nav_arrow"><img src="/yfmc/img/nav_arrow.png" alt="네비화살표"></span></a>
+								<ul class="nav_depth_box_02">
+									<li class="btn_nav_depth_02"><a href="#!">depth_03-01</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_03-02</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_03-03</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_03-04</a></li>
+									<li class="btn_nav_depth_02"><a href="#!">depth_03-05</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- 네비게이션(E) -->
+			</div>
+			<!-- sub상단(E) -->
+			
+			<!-- sub내용(S) -->
+			<div class="sub_conts_in">
+
+					
+				<div class="info_box">
+					<div class="title_box">
+						<div class="fl">
+							<h4 class="sub_tit_02">조건검색</h4>
+							<p class="txt_w mt5"><span class="number">·</span>최근경매일자 : 절화 2020-08-24 (월) , 난 2020-08-20 (목) , 관엽 2020-08-21 (금) , 춘란 2020-01-15 (수)</p>
+						</div>
+					</div>
+					<!-- 검색조건창(S) -->
+					<div class="condition_box bdtg2 mt10">
+						<div class="search_box">
+							<ul class="sb_line">
+								<li>
+									<p class="sb_title bold">화훼구분</p>
+									<div class="sb_data">
+										<label class="radio mr10">
+											<input type="radio" name="rr">
+											<i class="rdo"></i>
+											<em class="label-title">절화</em>
+										</label>
+										<label class="radio mr10">
+											<input type="radio" name="rr">
+											<i class="rdo"></i>
+											<em class="label-title">관</em>
+										</label>
+										<label class="radio mr10">
+											<input type="radio" name="rr">
+											<i class="rdo"></i>
+											<em class="label-title">낙엽</em>
+										</label>
+										<label class="radio mr10">
+											<input type="radio" name="rr" checked="checked">
+											<i class="rdo"></i>
+											<em class="label-title">춘란</em>
+										</label>
+									</div>
+								</li>
+							</ul>
+							<ul class="sb_line">
+								<li>
+									<p class="sb_title bold">품목</p>
+									<div class="sb_data">
+										<div class="table_search_btn">
+											<div class="ip_type_02 dib">
+												<input type="text" id="kind">
+												<label for="kind"></label>
+											</div>
+											<a href="#layerSample" class="btn_type_01 btn-popup ml10 dib vm">코드검색</a>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<ul class="sb_line">
+								<li>
+									<p class="sb_title bold">경매일자</p>
+									<div class="sb_data">
+										<div class="table_devide">
+											<label class="radio">
+												<input type="radio" name="rr" checked="checked">
+												<i class="rdo"></i>
+												<em class="label-title">최근 7일</em>
+											</label>
+											<label class="radio">
+												<input type="radio" name="rr">
+												<i class="rdo"></i>
+												<em class="label-title">최근 10일</em>
+											</label>
+											<label class="radio">
+												<input type="radio" name="rr">
+												<i class="rdo"></i>
+												<em class="label-title">최근 15일</em>
+											</label>
+											<label class="radio">
+												<input type="radio" name="rr">
+												<i class="rdo"></i>
+												<em class="label-title">최근 1개월</em>
+											</label>
+											<label class="radio">
+												<input type="radio" name="rr">
+												<i class="rdo"></i>
+												<em class="label-title">직접입력&nbsp;&nbsp;( *시작일로부터 6개월이내 )</em>
+											</label>
+										</div>
+										<div class="table_devide">
+											<div class="date_from_to">
+												<div class="date_box">
+													<input type="text" class="datepicker">
+												</div>
+												<span class="hyphen">~</span>
+												<div class="date_box">
+													<input type="text" class="datepicker">
+												</div>												
+											</div>
+											<p class="txt_01 dib"></p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<a href="#!" class="btn_search">조회</a>
+						</div>
+						<p class="txt_w mt10">* 해당 기간내의 품목별 거래량과 시세(최고가, 최저가, 평균가)를 나타냅니다.</p>
+						<p class="txt_w">화훼유통정보시스템(https://flower.at.or.kr/)에서 더 자세한 정보를 조회하실 수 있습니다.(등급별 시세, 유찰물량 등)</p>
+					</div>
+					<!-- 검색조건창(E) -->
+
+				</div>
+
+				
+				<!-- 타이틀(S) -->
+				<div class="title_box mt30">
+					<div class="fl">
+						<h4 class="sub_tit_02">자료갱신 일시</h4>
+					</div>
+				</div>
+				<!-- 타이틀(E) -->
+					
+				<!-- 테이블(S) -->
+				<div class="table_type_01 mt10">
+					<table>
+						<caption>자료갱신 일시</caption>
+						<colgroup>
+							<col width="25%">
+							<col width="25%">
+							<col width="25%">
+							<col width="25%">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">구분</th>
+								<th scope="col">경매일</th>
+								<th scope="col">자료제공일시</th>
+								<th scope="col">평균제공시간</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><p class="txt_03">절화</p></td>
+								<td><p class="txt_03">매주 월~토요일 (주6일)</p></td>
+								<td><p class="txt_03">경매 일마감과 동시</p></td>
+								<td><p class="txt_03">당일 7~8시</p></td>
+							</tr>
+							<tr>
+								<td><p class="txt_03">난</p></td>
+								<td><p class="txt_03">매주 월, 목요일 (주2일)</p></td>
+								<td><p class="txt_03">경매 일마감과 동시</p></td>
+								<td><p class="txt_03">익일 오전 10~11시</p></td>
+							</tr>
+							<tr>
+								<td><p class="txt_03">관엽</p></td>
+								<td><p class="txt_03">매주 화, 금요일 (주2일)</p></td>
+								<td><p class="txt_03">경매 일마감과 동시</p></td>
+								<td><p class="txt_03">익일 오전 10~11시</p></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- 테이블(E) -->
+
+				<p class="txt_w mt10">* 휴일 안내 : 매주 일요일, 신정(1월 1일), 설날 및 추석연휴</p>
+				<p class="txt_w">* 월간, 연간 자료는 회원 가입후 검색 가능 합니다.</p>
+
+				<!-- 타이틀(S) -->
+				<div class="title_box mt30">
+					<div class="fl">
+						<h4 class="sub_tit_02">보는 방법</h4>
+					</div>
+				</div>
+				<!-- 타이틀(E) -->
+				
+				<!-- 내용(S) -->
+				<div class="warn_box mt10">
+					<p class="txt_w"><span class="number">·</span>위 조건식의 화훼구분, 품목코드, 경매일자를 선택하시고 "조회" 버튼을 누르세요.</p>
+					<p class="txt_w mt20"><span class="number">·</span> 경매 단위 및 시세</p>
+					<p class="txt_w pdl20">(1) 절화(생화)는 1속당 경매를 하며, 시세는 1속당 가격임.</p>
+					<p class="txt_w pdl20">- 품목별 1속당 송이수는 국립농산물품질관리원 사이트의 농산물표준규격을 참고하세요.</p>
+					<p class="txt_w mt10 pdl20">(2) 분화는(난,관엽) 1분당 경매를 하며, 시세는 1분당 가격임.</p>
+					<p class="txt_w pdl20">- 난의 품종명 뒤의 숫자는 꽃대의 수임</p>
+					<p class="txt_w pdl20">- 분화(관엽) 품종명 뒤의 숫자는 분의 지름 크기를 말합니다.</p>
+				</div>
+				<!-- 내용(E) -->
+
+				<!-- 타이틀(S) -->
+				<div class="title_box mt30">
+					<div class="fl">
+						<h4 class="sub_tit_02">주의사항</h4>
+					</div>
+				</div>
+				<!-- 타이틀(E) -->
+
+				<!-- 내용(S) -->
+				<div class="warn_box mt10">
+					<p class="txt_w"><span class="number">·</span>화훼류경매시세는 양재동 화훼공판장 중도매인들이 전자식 경매를 통하여 낙찰받은 물량의 가격이며, 중도매인들의 제비용 등이 전혀 포함되어 있지 않으므로 도소매 구입금액과 차이가 있을 수 있습니다.</p>
+					<p class="txt_w mt10"><span class="number">·</span><span class="color_o">절화류 화목토 요일은 작은 장인</span> 관계로 거래량이 저조하기 때문에 적정 가격형성이 되지 않습니다.
+						따라서 화,목,토요일 경매시세는 제공되지 않으며 시세자료 비교시는 거래량이 많은 <span class="color_o">큰 장인 월,수,금요일</span> 자료를 참조하시기 바랍니다.</p>
+				</div>
+				<!-- 내용(E) -->
+
+
+				<!-- 조회결과(S) -->
+				<form>
+					<!-- 타이틀(S) -->
+					<div class="title_box mt30">
+						<div class="fl">
+							<h4 class="sub_tit_04">부류 : 절화</h4>
+						</div>
+					</div>
+					<div class="title_box">
+						<div class="fl">
+							<h4 class="sub_tit_04">조회일자 :20200825 ~ 20200825</h4>
+						</div>
+						<div class="fr">
+							<h4 class="txt_unit">(단위 : 속(분), 원/속(분))</h4>
+						</div>
+					</div>
+					<!-- 타이틀(E) -->
+
+					<!-- 테이블(S) -->
+					<div class="table_type_01 mt10 overflow_a">
+						<table>
+							<caption>조회결과</caption>
+							<colgroup>
+								<col width="80px;">
+								<col width="100px;">
+								<col width="100px;">
+								<col width="100px;">
+								<col width="100px;">
+								<col width="100px;">
+								<col width="100px;">
+							</colgroup>
+							<thead>
+								<tr>
+									<th scope="col">품종코드</th>
+									<th scope="col">품목명</th>
+									<th scope="col">품종명</th>
+									<th scope="col">거래량</th>
+									<th scope="col">최고가</th>
+									<th scope="col">최저가</th>
+									<th scope="col">평균가</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+								<tr>
+									<td class="tc"><p class="txt_03">10010615</p></td>
+									<td><p class="txt_03">국화</p></td>
+									<td><p class="txt_03">금수</p></td>
+									<td class="tr"><p class="txt_03">30</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+									<td class="tr"><p class="txt_03">630</p></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</form>
+				<!-- 조회결과(E) -->
+			</div>
+			<!-- sub내용(E) -->
+		</div>
+		<!-- sub-conts(E) -->
+
+		<!-- footer(S) -->
+		<div class="footer">
+			<div class="f_top">
+				<div class="ft_in">
+					<div class="fl">
+						<a href="#!" class="btn_f">홈페이지이용안내</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">개인정보처리방침</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">개인정보침해신고</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">전자우편주소수집거부</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">뷰어다운로드</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">찾아오시는길</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">사이트맵</a>
+					</div>
+					<div class="fr">
+						<div class="foot_sel">
+							<select id="footerSel">
+								<option>FAMILY SITE</option>
+							</select>
+							<label for="footerSel"></label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="f_bottom">
+				<div class="fb_in">
+					<div class="fl">
+						<p class="f_tit_01"><span class="color_p">주소</span>[06774]서울특별시 서초구 강남대로 27 화훼공판장</p>
+						<p class="f_tit_01"><span class="color_p">전화</span>02-579-8100</p>
+						<p class="f_tit_01"><span class="color_p">팩스</span>02-579-8100  </p>
+					</div>
+					<div class="fr">
+						<p class="f_tit_02"><span>Copyright(c) 2010 BY Korea Agro-Fisheries & Food Trade Coporation</span> <span>  ALL RIGHTS RESERVED.</span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- footer(E) -->
+
+		
+		<!-- LNB(S) -->
+		<div id="lnb">
+			<div class="dim"></div>
+			<a href="#!" class="m_btn_close"><img src="/yfmc/img/m_lnb_close.png" alt="모바일lnb닫기버튼"></a>
+			<div class="m_mypage">
+				<a href="#!" class="m_btn login"><span><img src="/yfmc/img/m_icon_login.png" alt="모바일로그인아이콘"></span>로그인</a>
+				<a href="#!" class="m_btn sign"><span><img src="/yfmc/img/m_icon_sign.png" alt="모바일회원가입아이콘"></span>회원가입</a>
+			</div>
+			<ul class="lnb_box">
+			  <li><a href="#none">점포소개</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  
+			  <li><a href="#none">알림마당</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">화훼유통정보</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				</ul>
+			  </li>
+			  <li><a href="#none">서식자료실</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  <li><a href="#none">센터소개</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  <li class="noDepth"><a href="#none">온라인매매</a></li>
+			</ul>
+		  </div>
+		  <!-- LNB(E) -->
+
+	</div>
+	<!-- warp(E) -->	
+	
+	<!-- 팝업(S) -->
+
+	<!-- 품목검색(S) -->
+	<div class="dim-layer" id="layerSample" style="z-index:1;">
+		<div class="dimBg"></div>
+		<div class="pop-layer popbox pop_type_02">
+			<div class="pop-container">
+				<a href="#!" class="btn-layerClose pop_btn_close_02 close_B" alt="닫기 버튼"></a>
+				<div class="pop-conts_00">
+					<!-- 팝업 타이틀 박스(S) -->
+					<div class="pop_title_box">
+						<div class="fl">
+							<p class="pop_title">품목검색</p>
+						</div>
+					</div>
+					<!-- 팝업 타이틀 박스(E) -->
+
+					<!-- 팝업 컨텐츠(S) -->
+					<div class="choice_box">
+						<div class="popup_search">
+							<div class="mb10">
+								<label class="radio mr10">
+									<input type="radio" name="rr">
+									<i class="rdo"></i>
+									<em class="label-title">절화</em>
+								</label>
+								<label class="radio mr10">
+									<input type="radio" name="rr">
+									<i class="rdo"></i>
+									<em class="label-title">관</em>
+								</label>
+								<label class="radio mr10">
+									<input type="radio" name="rr">
+									<i class="rdo"></i>
+									<em class="label-title">낙엽</em>
+								</label>
+								<label class="radio mr10">
+									<input type="radio" name="rr" checked="checked">
+									<i class="rdo"></i>
+									<em class="label-title">춘란</em>
+								</label>
+							</div>
+							<div class="ip_type_02 dib">
+								<input type="text" class="tr" id="grade">
+								<label for="grade"></label>
+							</div>
+							<a href="#layerSample" class="btn_search_03 btn-popup ml10 vb">검색</a>
+						</div>
+
+						<div class="table_type_04 mt10 overflow_a mh300">
+							<table>
+								<caption>구매정보</caption>
+								<colgroup>
+									<col style="width:100%">
+								</colgroup>
+								<thead>
+									<tr>
+										<th>품목</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="tl"><a href="#!" class="txt_01">홍길동</a></td>
+									</tr>																																																					
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- 팝업 컨텐츠(E) -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 품목검색(E) -->	
+	<!-- 팝업(E) -->
+</body>
+</html>
+
+

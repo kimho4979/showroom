@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="Author" content="">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>로그인</title>
+
+<!-- CSS(S) -->
+<link rel="stylesheet" type="text/css" href="/yfmc/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/yfmc/css/common.css">
+<link rel="stylesheet" type="text/css" href="/yfmc/css/sub.css">
+<!-- CSS(E) -->
+
+<!-- SCRIPT(S) -->
+<script type="text/javascript" src="/yfmc/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/yfmc/js/script.js"></script> 
+<script type="text/javascript" src="/yfmc/js/jquery.cycle.all.js"></script> <!-- slider -->
+<script type="text/javascript" src="/yfmc/js/jquery-ui.js"></script> <!-- datepicker js -->
+
+<!-- SCRIPT(E) -->
+
+</head>
+
+<body> 
+	<!-- warp(S) -->
+	<div class="wrap">
+		<!-- header(S) -->
+		<div class="header">
+			<div class="header_in">
+				<a href="#!" class="h_logo"><img src="/yfmc/img/h_logo.png" alt="헤더로고"></a>
+				<div class="menu_box">
+					<a href="#!" class="btn_m">점포소개</a>
+					<a href="#!" class="btn_m">알림마당</a>
+					<a href="#!" class="btn_m">화훼유통정보</a>
+					<a href="#!" class="btn_m">서식자료실</a>
+					<a href="#!" class="btn_m">센터소개</a>
+					<a href="#!" class="btn_m on">온라인매매</a>
+				</div>
+				<div class="mypage">
+					<a href="#!" class="btn_p login"><span><img src="/yfmc/img/icon_login.png" alt="로그인아이콘"></span>로그인</a>
+					<a href="#!" class="btn_p sign"><span><img src="/yfmc/img/icon_sign.png" alt="회원가입아이콘"></span>회원가입</a>
+				</div>
+				<a href="#!" class="btn_lnb"><img src="/yfmc/img/btn_lnb_mobile.png" alt="모바일lnb버튼"></a>
+			</div>
+		</div>
+		<div class="border_gradient"></div>
+		<!-- header(E) -->
+
+		<!-- main-conts(S) -->
+		<div class="sub_conts">
+			<div class="sub_conts_in">
+				<div class="log_box">
+					<h2 class="log_tit">회원 로그인</h2>
+					<span class="log_line"></span>
+					<p class="log_tit_sub">AT홈페이지 가입자는 통합 아이디로 로그인이 가능합니다.</p>
+					<p class="log_tit_sub">중도매인, 출하자, 경매사는 통합회원 회원가입 후 이용가능합니다.</p>
+
+					<h4 class="log_tit_02 mt40">아이디</h4>
+					<div class="log_ip mt10">
+						<input type="text" id="logId" placeholder="아이디를 입력해주세요."><label for="logId"></label>
+					</div>
+					<h4 class="log_tit_02 mt30">비밀번호</h4>
+					<div class="log_ip mt10">
+						<input type="password" id="logPw" placeholder="비밀번호를 입력해주세요."><label for="logPw"></label>
+					</div>
+					<a href="#!" class="btn_login mt25">로그인</a>
+
+					<div class="btn_log_box mt20">
+						<a href="#!">회원가입</a>
+						<a href="#!">아이디 찾기</a>
+						<a href="#!">비밀번호 찾기</a>
+					</div>
+
+					<h2 class="log_tit mt60">SNS 간편인증</h2>
+					<span class="log_line"></span>
+
+					<div class="btn_sns_box">
+						<a href="#!" class="btn_sns naver"><img src="/yfmc/img/icon_logo_naver.png" alt="네이버로그인"></a>
+						<a href="#!" class="btn_sns kakao"><img src="/yfmc/img/icon_logo_kakao.png" alt="카카오로그인"></a>
+						<a href="#!" class="btn_sns fb"><img src="/yfmc/img/icon_logo_fb.png" alt="페이스북로그인"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- main-conts(E) -->
+
+		<!-- header(S) -->
+		<div class="footer">
+			<div class="f_top">
+				<div class="ft_in">
+					<div class="fl">
+						<a href="#!" class="btn_f">홈페이지이용안내</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">개인정보처리방침</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">개인정보침해신고</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">전자우편주소수집거부</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">뷰어다운로드</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">찾아오시는길</a>
+						<span class="f_bar">|</span>
+						<a href="#!" class="btn_f">사이트맵</a>
+					</div>
+					<div class="fr">
+						<div class="foot_sel">
+							<select id="footerSel">
+								<option>FAMILY SITE</option>
+							</select>
+							<label for="footerSel"></label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="f_bottom">
+				<div class="fb_in">
+					<div class="fl">
+						<p class="f_tit_01"><span class="color_p">주소</span>[06774]서울특별시 서초구 강남대로 27 화훼공판장</p>
+						<p class="f_tit_01"><span class="color_p">전화</span>02-579-8100</p>
+						<p class="f_tit_01"><span class="color_p">팩스</span>02-579-8100  </p>
+					</div>
+					<div class="fr">
+						<p class="f_tit_02"><span>Copyright(c) 2010 BY Korea Agro-Fisheries & Food Trade Coporation</span> <span>  ALL RIGHTS RESERVED.</span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- header(E) -->
+
+		
+		<!-- LNB(S) -->
+		<div id="lnb">
+			<div class="dim"></div>
+			<a href="#!" class="m_btn_close"><img src="/yfmc/img/m_lnb_close.png" alt="모바일lnb닫기버튼"></a>
+			<div class="m_mypage">
+				<a href="#!" class="m_btn login"><span><img src="/yfmc/img/m_icon_login.png" alt="모바일로그인아이콘"></span>로그인</a>
+				<a href="#!" class="m_btn sign"><span><img src="/yfmc/img/m_icon_sign.png" alt="모바일회원가입아이콘"></span>회원가입</a>
+			</div>
+			<ul class="lnb_box">
+			  <li><a href="#none">점포소개</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  
+			  <li><a href="#none">알림마당</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				  <li><a href="#none">화훼유통정보</a>
+					<ul>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					  <li><a href="#none">- 3Depth</a></li>
+					</ul>
+				  </li>
+				</ul>
+			  </li>
+			  <li><a href="#none">서식자료실</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  <li><a href="#none">센터소개</a>
+				<ul>
+				  <li><a href="#none">- 2Depth</a></li>
+				  <li><a href="#none">- 2Depth</a></li>
+				</ul>
+			  </li>
+			  <li class="noDepth"><a href="#none">온라인매매</a></li>
+			</ul>
+		  </div>
+		  <!-- LNB(E) -->
+
+	</div>
+	<!-- warp(E) -->		
+</body>
+</html>
+
+

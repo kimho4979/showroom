@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.system.organization.service.impl.OrganizationDeptMapper">
+
+	<resultMap id="organizationDept" type="egovframework.cms.system.organization.vo.OrganizationDeptVO">
+		<result property="deptId" column="DEPT_ID"/>
+		<result property="parntsDeptId" column="PARNTS_DEPT_ID"/>
+		<result property="deptNm" column="DEPT_NM"/>
+		<result property="deptDc" column="DEPT_DC"/>
+		<result property="loginId" column="LOGIN_ID"/>
+		<result property="loginPassword" column="LOGIN_PASSWORD"/>
+		<result property="loginGroupIds" column="LOGIN_GROUP_IDS"/>
+		<result property="loginLevelId" column="LOGIN_LEVEL_ID"/>
+		<result property="telNo" column="TEL_NO"/>
+		<result property="faxNo" column="FAX_NO"/>
+		<result property="lft" column="LFT"/>
+		<result property="rgt" column="RGT"/>
+		<result property="lvl" column="LVL"/>
+		<result property="useAt" column="USE_AT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectOrganizationDeptList" parameterType="organizationDeptVO" resultMap="organizationDept">
+		SELECT  DEPT_ID
+			 ,  PARNTS_DEPT_ID
+			 ,  DEPT_NM
+			 ,  TEL_NO
+			 ,  FAX_NO
+			 ,  USE_AT
+			 ,  LFT
+			 ,  RGT
+			 ,  LVL
+		  FROM  WMS_ORGNZT_DEPT
+		 WHERE  1=1
+			<if test='useAt != null and useAt != ""'>
+				AND USE_AT = #{useAt}
+			</if>
+	  ORDER BY  LFT ASC
+	</select>
+
+	<select id="selectParntsOrganizationDeptList" parameterType="organizationDeptVO" resultMap="organizationDept">
+		SELECT  PARENT.DEPT_ID
+			 ,  PARENT.PARNTS_DEPT_ID
+			 ,  PARENT.DEPT_NM
+			 ,  PARENT.TEL_NO
+			 ,  PARENT.FAX_NO
+			 ,  PARENT.USE_AT
+			 ,  PARENT.LFT
+			 ,  PARENT.RGT
+			 ,  PARENT.LVL
+		  FROM  WMS_ORGNZT_DEPT NODE
+		     ,  WMS_ORGNZT_DEPT PARENT
+		 WHERE  NODE.LFT BETWEEN PARENT.LFT
+		   AND  PARENT.RGT
+		   AND  PARENT.DEPT_ID != #{deptId}
+		   AND  NODE.DEPT_ID = #{deptId}
+			<if test='useAt != null and useAt != ""'>
+				AND PARENT.USE_AT = #{useAt}
+				AND NODE.USE_AT = #{useAt}
+			</if>
+	  ORDER BY  PARENT.LFT ASC
+	</select>
+
+	<select id="selectChldrnOrganizationDeptList" parameterType="organizationDeptVO" resultMap="organizationDept">
+		SELECT  NODE.DEPT_ID
+			 ,  NODE.PARNTS_DEPT_ID
+			 ,  NODE.DEPT_NM
+			 ,  NODE.TEL_NO
+			 ,  NODE.FAX_NO
+			 ,  NODE.USE_AT
+			 ,  NODE.LFT
+			 ,  NODE.RGT
+			 ,  NODE.LVL
+		  FROM  WMS_ORGNZT_DEPT NODE
+		     ,  WMS_ORGNZT_DEPT PARENT
+		 WHERE  NODE.LFT BETWEEN PARENT.LFT
+		   AND  PARENT.RGT
+		   AND  NODE.DEPT_ID != #{deptId}
+		   AND  PARENT.DEPT_ID = #{deptId}
+			<if test='useAt != null and useAt != ""'>
+				AND PARENT.USE_AT = #{useAt}
+				AND NODE.USE_AT = #{useAt}
+			</if>
+	  ORDER BY  NODE.LFT ASC
+	</select>
+
+	<select id="selectOrganizationDept" parameterType="organizationDeptVO" resultMap="organizationDept">
+		SELECT	DEPT_ID
+			 ,  PARNTS_DEPT_ID
+			 ,  DEPT_NM
+			 ,  DEPT_DC
+			 ,  LOGIN_ID
+			 ,  LOGIN_PASSWORD
+			 ,  LOGIN_GROUP_IDS
+			 ,  LOGIN_LEVEL_ID
+			 ,  TEL_NO
+			 ,  FAX_NO
+			 ,  USE_AT
+			 ,  LFT
+			 ,  RGT
+			 ,  LVL
+		  FROM  WMS_ORGNZT_DEPT
+		 WHERE  DEPT_ID = #{deptId}
+			<if test='useAt != null and useAt != ""'>
+				AND USE_AT = #{useAt}
+			</if>
+	</select>
+
+	<select id="selectOrganizationRootDeptId" parameterType="organizationDeptVO" resultType="string">
+		SELECT  DEPT_ID
+		  FROM  WMS_ORGNZT_DEPT
+		 WHERE  PARNTS_DEPT_ID IS NULL
+	</select>
+
+
+	<insert id="insertOrganizationDept">
+		INSERT
+		  INTO  WMS_ORGNZT_DEPT
+		     (  DEPT_ID
+			 ,  PARNTS_DEPT_ID
+			 ,  DEPT_NM
+			 ,  DEPT_DC
+			 ,  LOGIN_ID
+			 ,  LOGIN_PASSWORD
+			 ,  LOGIN_GROUP_IDS
+			 ,  LOGIN_LEVEL_ID
+			 ,  TEL_NO
+			 ,  FAX_NO
+			 ,  USE_AT
+			 ,  LFT
+			 ,  RGT
+			 ,  LVL
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  #{deptId}
+			 ,  #{parntsDeptId}
+			 ,  #{deptNm, jdbcType=VARCHAR}
+			 ,  #{deptDc, jdbcType=VARCHAR}
+			 ,  #{loginId, jdbcType=VARCHAR}
+			 ,  #{loginPassword, jdbcType=VARCHAR}
+			 ,  #{loginGroupIds, jdbcType=VARCHAR}
+			 ,  #{loginLevelId}
+			 ,  #{telNo, jdbcType=VARCHAR}
+			 ,  #{faxNo, jdbcType=VARCHAR}
+			 ,  #{useAt, jdbcType=VARCHAR}
+			 ,  #{lft}
+			 ,  #{rgt}
+			 ,  #{lvl}
+			 ,  SYSDATE
+			 ,  #{registId, jdbcType=VARCHAR}
+		     )
+	</insert>
+
+	<update id="updateOrganizationDept">
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  DEPT_NM = #{deptNm, jdbcType=VARCHAR}
+		     ,  DEPT_DC = #{deptDc, jdbcType=VARCHAR}
+		    <if test="loginId != null and loginId != ''">
+		     ,  LOGIN_ID = #{loginId, jdbcType=VARCHAR}
+		    </if>
+			<if test="loginPassword != null and loginPassword != ''">
+		     ,  LOGIN_PASSWORD = #{loginPassword, jdbcType=VARCHAR}
+			</if>
+		     ,  LOGIN_GROUP_IDS = #{loginGroupIds, jdbcType=VARCHAR}
+		     ,  LOGIN_LEVEL_ID = #{loginLevelId}
+			 ,  TEL_NO = #{telNo, jdbcType=VARCHAR}
+			 ,  FAX_NO = #{faxNo, jdbcType=VARCHAR}
+			 ,  USE_AT = #{useAt, jdbcType=VARCHAR}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+		 WHERE  DEPT_ID = #{deptId}
+	</update>
+
+	<update id="updateOrganizationDeptLftForInsert">
+	<![CDATA[
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  LFT = LFT + 2
+		 WHERE  LFT > #{lft}
+	]]>
+	</update>
+
+	<update id="updateOrganizationDeptRgtForInsert">
+	<![CDATA[
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  RGT = RGT + 2
+		 WHERE  RGT > #{rgt}
+	]]>
+	</update>
+
+    <delete id="deleteOrganizationDept">
+		DELETE
+		  FROM  WMS_ORGNZT_DEPT
+		 WHERE  LFT BETWEEN #{lft} AND #{rgt}
+    </delete>
+
+	<update id="updateOrganizationDeptLftForDelete">
+	<![CDATA[
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  LFT = LFT - #{width}
+		 WHERE  LFT > #{lft}
+	]]>
+	</update>
+
+	<update id="updateOrganizationDeptRgtForDelete">
+	<![CDATA[
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  RGT = RGT - #{width}
+		 WHERE  RGT > #{rgt}
+	]]>
+	</update>
+
+	<update id="updateOrganizationDeptMove">
+		UPDATE  WMS_ORGNZT_DEPT
+		   SET  PARNTS_DEPT_ID = #{parntsDeptId}
+			 ,  LVL = #{lvl}
+			 ,  LFT = #{lft}
+			 ,  RGT = #{rgt}
+		 WHERE  DEPT_ID = #{deptId}
+	</update>
+
+</mapper>

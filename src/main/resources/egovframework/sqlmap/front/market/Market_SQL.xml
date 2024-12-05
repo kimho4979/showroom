@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.front.market.service.impl.MarketMapper">
+
+	<resultMap id="marketInfo" type="egovframework.front.market.vo.MarketInfoVO">
+		<result property="marketSeq" column="MARKET_SEQ"/>
+		<result property="marketType" column="MARKET_TYPE"/>
+		<result property="tyGroupCode" column="TY_GROUP_CODE"/>
+		<result property="marketNo" column="MARKET_NO"/>
+		<result property="marketName" column="MARKET_NAME"/>
+		<result property="owner" column="OWNER"/>
+		<result property="tel" column="TEL"/>
+		<result property="items" column="ITEMS"/>  
+		<result property="saleTime" column="SALE_TIME"/>
+		<result property="cloDay" column="CLO_DAY"/>
+		<result property="deliText" column="DELI_TEXT"/>
+		<result property="hashText" column="HASH_TEXT"/>
+		<result property="content" column="CONTENT" jdbcType="CLOB"/>
+		<result property="jCode" column="J_CODE"/>
+		<result property="areaCoords" column="AREA_COORDS"/> 
+		<result property="useYn" column="USE_YN"/>
+		<result property="insertId" column="INSERT_ID"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+	</resultMap>
+	
+	<resultMap id="marketFile" type="egovframework.front.market.vo.MarketFileVO">
+		<result property="fileSeq" column="FILE_SEQ"/>
+		<result property="marketSeq" column="MARKET_SEQ"/>
+		<result property="streFilePath" column="STRE_FILE_PATH"/>
+		<result property="streFileNm" column="STRE_FILE_NM"/>
+		<result property="orignlFileNm" column="Orignl_FILE_NM"/>
+		<result property="thumbStreFileNm" column="THUMB_STRE_FILE_NM"/>
+		<result property="fileExtsn" column="FILE_EXTSN"/>
+		<result property="fileCn" column="FILE_CN"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="insertId" column="INSERT_ID"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+	</resultMap>
+	
+	<resultMap id="marketReview" type="egovframework.front.market.vo.MarketReviewVO">
+		<result property="reviewSeq" column="REVIEW_SEQ"/>
+		<result property="marketSeq" column="MARKET_SEQ"/>
+		<result property="content" column="CONTENT" jdbcType="CLOB"/>
+		<result property="nickName" column="NICKNAME"/>
+		<result property="stPoint" column="ST_POINT"/>
+		<result property="insertId" column="INSERT_ID"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+		<result property="fileCnt" column="FILE_CNT"/>
+		<result property="totCnt" column="totCnt"/>
+		<result property="stAvg" column="stAvg"/>
+		<result property="imgDiv" column="IMG_DIV"/> 
+	</resultMap>
+	 
+	<select id ="getMarketInfoListCnt" parameterType="marketInfoVO" resultType="int">
+		SELECT COUNT(*)
+		  FROM TB_MARKET_INFO
+		  WHERE 1=1
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "marketName"'>
+		   AND MARKET_NAME LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "owner"'>
+		   AND OWNER LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+	
+	</select>
+	 
+	<select id="getMarketInfoList" parameterType="marketInfoVO" resultMap="marketInfo">
+		SELECT  MARKET_SEQ
+			 ,  MARKET_TYPE
+			 ,  TY_GROUP_CODE
+			 ,  MARKET_NO
+			 ,  MARKET_NAME
+			 ,  OWNER
+			 ,  TEL
+			 ,  ITEMS
+			 ,  SALE_TIME
+			 ,  CLO_DAY
+			 ,  DELI_TEXT
+			 ,  HASH_TEXT
+			 ,  CONTENT
+			 ,  J_CODE
+			 ,  USE_YN
+			 ,  INSERT_ID
+			 ,  INSERT_DATE
+			 ,  UPDATE_ID
+			 ,  UPDATE_DATE
+		  FROM  TB_MARKET_INFO
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<choose>
+		    	<when test='searchCondition == "marketName"'>
+		   AND MARKET_NAME LIKE '%' || #{searchKeyword} || '%'
+				</when>
+				<when test='searchCondition == "content"'>
+		   AND CONTENT LIKE '%' || #{searchKeyword} || '%'
+				</when>
+		    	<when test='searchCondition == "owner"'>
+		   AND OWNER LIKE '%' || #{searchKeyword} || '%'
+				</when>
+			</choose>
+		</if>
+
+	</select>
+	 
+	<select id="getMarketInfo" parameterType="marketInfoVO" resultMap="marketInfo">
+		SELECT T1.MARKET_SEQ 
+			, T1.MARKET_TYPE 
+			, T1.TY_GROUP_CODE 
+			, T1.MARKET_NO 
+			, T1.MARKET_NAME 
+			, T1.OWNER 
+			, T1.TEL 
+			, T1.ITEMS 
+			, T1.SALE_TIME 
+			, T1.CLO_DAY 
+			, T1.DELI_TEXT 
+			, T1.HASH_TEXT 
+			, T1.CONTENT 
+			, T1.J_CODE 
+			, T1.AREA_COORDS 
+			, T1.USE_YN 
+			, T1.INSERT_ID 
+			, T1.INSERT_DATE 
+			, T1.UPDATE_ID 
+			, T1.UPDATE_DATE 
+		 FROM TB_MARKET_INFO T1
+		 WHERE 1=1 
+		 AND T1.MARKET_SEQ = #{marketSeq} 
+	</select>
+	
+	<insert id="regMarketReview">
+		INSERT INTO TB_MARKET_REVIEW(
+			REVIEW_SEQ
+		  , MARKET_SEQ
+		  , CONTENT
+		  , USER_ID
+		  , ST_POINT
+		  , NICKNAME
+		  , INSERT_DATE
+		  , UPDATE_ID
+		  , UPDATE_DATE
+		  , FILE_CNT
+		  , IMG_DIV)
+		VALUES(#{reviewSeq, jdbcType=VARCHAR}
+		  , #{marketSeq, jdbcType=VARCHAR}
+		  , #{content,jdbcType=CLOB}
+		  , #{userId, jdbcType=VARCHAR}
+		  , #{stPoint,jdbcType=VARCHAR}
+		  , #{nickName, jdbcType=VARCHAR}
+		  , SYSDATE
+		  , #{updateId, jdbcType=VARCHAR}
+		  , SYSDATE
+		  , #{fileCnt, jdbcType=VARCHAR}
+		  , #{imgDiv, jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<select id="getMarketReviewInfo" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		SELECT COUNT(REVIEW_SEQ)
+		FROM TB_MARKET_REVIEW
+		WHERE MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+		AND USER_ID = #{userId, jdbcType=VARCHAR}
+	</select>
+	
+	
+
+	<select id="getMarketReviewList" parameterType="marketReviewVO" resultMap="marketReview">
+	    SELECT REVIEW_SEQ
+		     , MARKET_SEQ
+		     , CONTENT
+		     , USER_ID
+		     , ST_POINT
+		     , NICKNAME
+		     , TO_CHAR(INSERT_DATE, 'yyyy-mm-dd')AS INSERT_DATE
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , FILE_CNT
+		     , IMG_DIV
+		FROM TB_MARKET_REVIEW
+		WHERE MARKET_SEQ=#{marketSeq}
+		ORDER BY REVIEW_SEQ DESC
+	</select>
+	
+	<select id="getMarketReviewListCnt" parameterType="marketReviewVO" resultType="egovMap">
+		SELECT COUNT(REVIEW_SEQ) AS totCnt
+		     , TRUNC(NVL(AVG(ST_POINT),0),2) AS stAvg
+		  FROM TB_MARKET_REVIEW
+		  WHERE MARKET_SEQ=#{marketSeq}	
+	</select>
+	
+	<select id="getMarketFileList" parameterType="java.util.HashMap" resultType="egovMap">
+		SELECT FILE_SEQ
+		     , MARKET_SEQ
+		     , STRE_FILE_PATH
+		     , STRE_FILE_NM
+		     , ORIGNL_FILE_NM
+		     , THUMB_STRE_FILE_NM
+		     , FILE_EXTSN
+		     , FILE_CN
+		     , FILE_SIZE
+		     , INSERT_ID
+		     , INSERT_DATE
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		FROM TB_MARKET_FILE
+		WHERE MARKET_SEQ = #{marketSeq}	
+		ORDER BY FILE_SEQ ASC
+	</select>
+	
+	
+
+</mapper> 

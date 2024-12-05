@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :maffreport.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 농림부자료 도매가격 동향.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="MaffReport">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="pmDay"	column="PM_DAY"		columnIndex="1" />  <!-- -->
+	    <result property="price1"	column="PRICE_1"	columnIndex="2" />  <!-- -->
+	    <result property="price2"	column="PRICE_2"	columnIndex="3" />  <!-- -->
+	    <result property="price3"	column="PRICE_3"	columnIndex="4" />  <!-- -->
+	    <result property="price4"	column="PRICE_4"	columnIndex="5" />  <!-- -->
+	    <result property="price5"	column="PRICE_5"	columnIndex="6" />  <!-- -->
+	    <result property="price6"	column="PRICE_6"	columnIndex="7" />  <!-- -->
+	    <result property="sokCnt1"	column="SOKCNT_1"	columnIndex="8" />  <!-- -->
+	    <result property="sokCnt2"	column="SOKCNT_2"	columnIndex="9" />  <!-- -->
+	    <result property="sokCnt3"	column="SOKCNT_3"	columnIndex="10" />  <!-- -->
+	    <result property="sokCnt4"	column="SOKCNT_4"	columnIndex="11" />  <!-- -->
+	    <result property="sokCnt5"	column="SOKCNT_5"	columnIndex="12" />  <!-- -->
+	    <result property="sokCnt6"	column="SOKCNT_6"	columnIndex="13" />  <!-- -->
+	    <result property="amount1"	column="AMOUNT_1"	columnIndex="14" />  <!-- -->
+	    <result property="amount2"	column="AMOUNT_2"	columnIndex="15" />  <!-- -->
+	    <result property="amount3"	column="AMOUNT_3"	columnIndex="16" />  <!-- -->
+	    <result property="amount4"	column="AMOUNT_4"	columnIndex="17" />  <!-- -->
+	    <result property="amount5"	column="AMOUNT_5"	columnIndex="18" />  <!-- -->
+	    <result property="amount6"	column="AMOUNT_6"	columnIndex="19" />  <!-- -->
+	</resultMap>
+	
+	<select id="MaffReport.selectList" resultMap="SelectListMap">
+		<![CDATA[
+			WITH TMP AS (
+			    SELECT
+			        NVL(LVL.PM_DAY, 0) AS PM_DAY
+			        ,NVL(SUBSTR(LVL.PM_CODE, 1, 4), 0) AS PM_CODE
+			        ,NVL(SUM(LVL.SOK_CNT), 0) AS SOKCNT
+			        ,NVL(ROUND(SUM(LVL.P_PRICE) / SUM(LVL.SOK_CNT), 0), 0) AS PRICE
+			        ,NVL(SUM(LVL.P_PRICE), 0) AS AMOUNT
+			    FROM A_LEVEL_PRICE@FLOWER LVL
+			    WHERE 1 = 1
+			        AND SUBSTR(LVL.PM_CODE, 1, 4) IN (#pmCode1#, #pmCode2#, #pmCode3#)
+			        AND ((LVL.PM_DAY BETWEEN #startPreDate# AND #endPreDate# ) OR (LVL.PM_DAY BETWEEN #startDate# AND #endDate# ))
+			    GROUP BY LVL.PM_DAY, SUBSTR(LVL.PM_CODE, 1, 4)
+			)
+			SELECT 
+			    SUBSTR(PM_DAY, 7, 2) AS PM_DAY
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode1# THEN PRICE ELSE 0 END), 0) AS PRICE_1
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode1# THEN PRICE ELSE 0 END), 0) AS PRICE_2
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode2# THEN PRICE ELSE 0 END), 0) AS PRICE_3
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode2# THEN PRICE ELSE 0 END), 0) AS PRICE_4
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode3# THEN PRICE ELSE 0 END), 0) AS PRICE_5
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode3# THEN PRICE ELSE 0 END), 0) AS PRICE_6
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode1# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_1
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode1# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_2
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode2# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_3
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode2# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_4
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode3# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_5
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode3# THEN SOKCNT ELSE 0 END), 0) AS SOKCNT_6
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode1# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_1
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode1# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_2
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode2# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_3
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode2# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_4
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #preYear# AND PM_CODE=#pmCode3# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_5
+			    ,NVL(MAX(CASE WHEN SUBSTR(PM_DAY, 1, 4) = #curYear# AND PM_CODE=#pmCode3# THEN AMOUNT ELSE 0 END), 0) AS AMOUNT_6
+			FROM TMP
+			GROUP BY SUBSTR(PM_DAY, 7, 2)
+		]]>
+	</select>
+</sqlMap>

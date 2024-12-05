@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.content.service.impl.FrontContentMapper">
+	
+	<resultMap id="frontContentMap" type="egovframework.front.content.service.FrontContentVO">
+		<result property="contentId" column="CONTENT_ID"/>
+		<result property="title" column="TITLE"/>
+		<result property="content" column="CONTENT" jdbcType="CLOB"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="getFrontContent" resultMap="frontContentMap">
+		SELECT
+			CONTENT_ID
+			, TITLE
+			, CONTENT
+			, TO_CHAR(REGIST_DTTM, 'YYYY-MM-DD') AS REGIST_DTTM
+			, REGIST_ID
+			, TO_CHAR(UPDATE_DTTM, 'YYYY-MM-DD') AS UPDATE_DTTM 
+			, UPDATE_ID
+		FROM WMS_SITE_CONTENT
+		WHERE CONTENT_ID=#{contentId}
+	</select>
+</mapper>

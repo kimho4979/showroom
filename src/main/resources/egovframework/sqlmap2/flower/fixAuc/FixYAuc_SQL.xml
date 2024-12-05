@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.flower.FixYAucMapper">
+	
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		
+	</resultMap>
+	
+	<select id="getMokList" resultMap="egovResultMap">
+		SELECT FLOWER_CODE || P_MOK_CODE AS ID
+			 , P_MOK_NAME AS TEXT
+			 , PAN_UNIT
+			 , F_I_ID
+			 , F_I_DT
+			 , L_U_ID
+			 , L_U_DT
+			 , STD_CHK
+			 , P_MOK_ENG
+        FROM FLOMEJANG.A_PUM_MOK_INFO
+		WHERE FLOWER_CODE IN ('6')
+		AND P_MOK_NAME LIKE #{searchKeyWord, jdbcType=VARCHAR} || '%'
+		AND P_MOK_CODE NOT IN ('047')
+		ORDER BY TEXT
+	</select>
+	
+	<select id="getPumList" resultMap="egovResultMap">
+		SELECT PUM_CODE AS ID
+			 , FLOWER_CODE
+			 , FLOWER_CODE || P_MOK_CODE AS P_MOK_CODE
+			 , (SELECT MAX(P_MOK_NAME) FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE = T1.FLOWER_CODE AND P_MOK_CODE = T1.P_MOK_CODE) AS P_MOK_NAME
+			 , P_JONG_CODE
+			 , P_JONG_NAME AS TEXT
+			 , U_UNIT
+			 , P_UNIT1
+			 , P_UNIT2
+			 , D_COUNT
+			 , FLW_TYPE
+			 , F_I_ID
+			 , F_I_DT
+			 , L_U_ID
+			 , L_U_DT
+			 , P_JONG_ENG
+			 , S_NAME
+			 , BON_CODE
+		FROM FLOMEJANG.A_PUM_JONG_INFO T1
+		WHERE FLOWER_CODE IN ('6')
+		<choose>
+           	<when test='pMokCodeArr != null and pMokCodeArr != ""'>
+           	AND SUBSTR(FLOWER_CODE || P_MOK_CODE,0,4) in 
+           		<foreach item="item" index="index" collection="pMokCodeArr" open="(" separator="," close=")">
+           		 	#{item}
+           		</foreach>
+           	</when>
+			<when test='pMokCode != null and pMokCode != ""'>
+           	 AND FLOWER_CODE || P_MOK_CODE = #{pMokCode}
+           	</when>
+           	<otherwise>
+           	</otherwise>
+        </choose>	              
+		AND P_JONG_NAME LIKE #{searchKeyWord, jdbcType=VARCHAR} || '%'
+		AND P_JONG_NAME NOT LIKE '%[본]'
+		ORDER BY P_MOK_CODE, P_JONG_CODE
+	</select>
+	 
+	<select id="getPrePrice" resultMap="egovResultMap">
+	<![CDATA[
+	select TO_CHAR(TO_DATE(h.magam_ilja,'YYYYMMDD'),'YYYY-MM-DD') as SALE_DATE, 
+          decode(h.rk, '1', '전장', '2', '전전장') as GUBN_NM, 
+          case 
+            when g.평균가>0 then ''||g.평균가 
+            else '경매없음' 
+          end as AVG_PRICE
+          , h.rk AS GUBN 
+     from (select c.pan_day, 
+                  round(sum(c.PAN_PRICE)/sum(sok_cnt)) as 평균가 
+             FROM FLOMEJANG.a_pan_mae c, 
+                  (select up_day, 
+                          up_no 
+                     FROM FLOMEJANG.a_sang_jang a, 
+                          (select PUM_CODE 
+                             FROM FLOMEJANG.A_PUM_JONG_INFO 
+                            where P_JONG_NAME=#{pJongName}) b 
+                    where a.pum_code=b.pum_code 
+                      and a.bun_chk='Y' 
+                      and a.up_day in (select MAGAM_ILJA 
+                             from (select MAGAM_ILJA , 
+                                          rank() over ( 
+                                            order by magam_ilja desc) as rk 
+                                     FROM FLOMEJANG.A_DAY_MAGAM 
+                                    where bun_chk='Y' 
+                                      and MAGAM_ILJA between to_char(to_date(TO_CHAR(SYSDATE,'YYYYMMDD'), 'yyyymmdd')-90, 'yyyymmdd') and TO_CHAR(SYSDATE,'YYYYMMDD') 
+                                      and ((bun_chk = 'N' 
+                                                      and to_char(to_date(magam_ilja, 'yyyymmdd'), 'd') in ('2', 
+                                                                  '4', 
+                                                                  '6')) 
+                                               or (bun_chk = 'Y' 
+                                                      and to_char(to_date(MAGAM_ILJA, 'yyyymmdd'), 'd') in ('2', 
+                                                                  '5')) 
+                                               or (bun_chk = 'C' 
+                                                      and to_char(to_date(MAGAM_ILJA, 'yyyymmdd'), 'd') in ('3', 
+                                                                  '6')))) 
+                            where rk <= 2)) d 
+            where c.bun_chk='Y' 
+              and c.pan_day=d.up_day 
+              and c.pan_no=d.up_no 
+              and c.km_list in ('1', 
+                          '3', 
+                          '4') 
+            group by pan_day)g, 
+          ((select MAGAM_ILJA, 
+                          rk 
+                     from (select MAGAM_ILJA , 
+                                  rank() over ( 
+                                    order by magam_ilja desc) as rk 
+                             FROM FLOMEJANG.A_DAY_MAGAM 
+                            where bun_chk='Y' 
+                              and MAGAM_ILJA between to_char(to_date(TO_CHAR(SYSDATE,'YYYYMMDD'), 'yyyymmdd')-90, 'yyyymmdd') and TO_CHAR(SYSDATE,'YYYYMMDD') 
+                              and ((bun_chk = 'N' 
+                                              and to_char(to_date(magam_ilja, 'yyyymmdd'), 'd') in ('2', 
+                                                          '4', 
+                                                          '6')) 
+                                       or (bun_chk = 'Y' 
+                                              and to_char(to_date(MAGAM_ILJA, 'yyyymmdd'), 'd') in ('2', 
+                                                          '5')) 
+                                       or (bun_chk = 'C' 
+                                              and to_char(to_date(MAGAM_ILJA, 'yyyymmdd'), 'd') in ('3', 
+                                                          '6')))) 
+                    where rk <= 2) ) h 
+    where h.magam_ilja=g.pan_day(+) 
+    ]]>
+	</select> 
+	
+	<select id="getLevelList" resultMap="egovResultMap">
+	<![CDATA[
+		SELECT CODE
+		     , BUN_CHK
+		     , NAME
+		     , BO_SANG
+		     , DEUNG
+		     , F_I_ID
+		     , F_I_DT
+		     , L_U_ID
+		     , L_U_DT
+		FROM FLOMEJANG.A_LEVEL
+		WHERE 1=1
+		AND BUN_CHK = #{bunChk}
+		ORDER BY CODE ASC	
+	]]>
+	</select> 
+	
+	<select id="getChulCodeToChulInfo" resultMap="egovResultMap">
+	<![CDATA[
+		SELECT T1.CODE
+		     , T1.NAME
+		     , T1.BUN_CHK
+		     , T1.GWANRI_ZONE
+		     , T2.NAME AS CHUL_AREA
+		     , T2.CITY_GUBUN
+		     , TRIM(REPLACE(REPLACE(T1.HANDY_PHONE_NO,'-',''),' ','')) AS PHONE_NO 
+		FROM FLOMEJANG.A_CHUL_INFO T1
+		   , FLOMEJANG.A_GWANRI_CODE T2
+		WHERE 1=1
+		AND T1.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+		AND T1.CODE = #{chulCode}
+		ORDER BY CODE ASC	
+	]]>
+	</select>
+	 
+	<select id="getJCodeToJInfo" resultMap="egovResultMap">
+	<![CDATA[
+		SELECT T1.CODE
+		     , T1.NAME
+		     , T1.BUN_CHK
+		     , T1.GWANRI_ZONE
+		     , T2.NAME AS CHUL_AREA
+		     , T2.CITY_GUBUN
+		     , TRIM(REPLACE(REPLACE(T1.HANDY_TEL_NO,'-',''),' ','')) AS PHONE_NO
+		FROM FLOMEJANG.A_DOME_INFO T1
+		   , FLOMEJANG.A_GWANRI_CODE T2
+		WHERE 1=1
+		AND T1.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+		AND T1.CODE = #{jCode}
+		ORDER BY CODE ASC	
+	]]>
+	</select>
+	
+	<select id="getRecentList" resultMap="egovResultMap">
+	
+		<![CDATA[
+		SELECT *
+        FROM (
+            SELECT BUN_CHK
+                 , TO_CHAR(TO_DATE(CHUL_DATE,'YYYYMMDD'),'YYYY-MM-DD') AS CHUL_DATE
+                 , UP_NO
+                 , CHUL_CODE
+                 , MOK_CODE
+                 , FLOWER_CODE
+                 , NVL(MOK_NAME,'품목미등록') AS MOK_NAME
+		         , PUM_CODE
+		         , NVL(PUM_NAME,'품종미등록') AS PUM_NAME
+                 , F_SONGE_CNT
+                 , CHUL_LEVEL
+                 , BOX_CNT
+                 , SOK_CNT
+                 , AVG(KM_P_NEW) AS UNIT_PRICE
+            FROM (
+                SELECT T1.BUN_CHK
+                     , T1.UP_DAY AS CHUL_DATE
+                     , T1.UP_NO
+                     , T1.CHUL_CODE
+                     , SUBSTR(T1.PUM_CODE, 0, 4) AS MOK_CODE
+                     , SUBSTR(T1.PUM_CODE, 0, 1) AS FLOWER_CODE
+                     , (SELECT P_MOK_NAME FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE = SUBSTR(T1.PUM_CODE, 0, 1) AND P_MOK_CODE = SUBSTR(T1.PUM_CODE, 2, 3)) AS  MOK_NAME
+                     , T1.PUM_CODE
+                     , (SELECT P_JONG_NAME FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS  PUM_NAME
+                     , T1.CHUL_LEVEL
+                     , T1.BOX_CNT
+                     , T1.SOK_CNT
+                     , T2.KM_P_NEW
+                     , T1.F_SONGE_CNT
+                FROM FLOMEJANG.A_SANG_JANG T1
+                   , FLOMEJANG.A_PAN_MAE T2
+                WHERE T1.BUN_CHK = T2.BUN_CHK
+                AND T1.UP_DAY = T2.PAN_DAY
+                AND T1.UP_NO = T2.PAN_NO
+                AND T1.CHUL_CODE = #{chulCode}
+                AND T2.KM_LIST IN ('1','3','4')
+                AND T1.BUN_CHK = 'Y'
+                AND T1.UP_DAY BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD') AND TO_CHAR(SYSDATE,'YYYYMMDD')
+                AND T1.UP_DAY <= (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = 'Y')
+            )
+            GROUP BY BUN_CHK, CHUL_DATE, UP_NO, CHUL_CODE, MOK_CODE, FLOWER_CODE, MOK_NAME, PUM_CODE, PUM_NAME, CHUL_LEVEL, BOX_CNT, SOK_CNT, F_SONGE_CNT
+            ORDER BY  CHUL_DATE DESC
+        )
+        WHERE ROWNUM <= 20
+		]]>
+	</select>
+	
+	<select id="getJRecentList" resultMap="egovResultMap">
+	
+		SELECT BUN_CHK
+		     , CHUL_DATE
+		     , UP_NO
+		     , CHUL_CODE
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE),'정보없음') AS CHUL_NAME
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_GWANRI_CODE WHERE GWANRI_ZONE = (SELECT MAX(GWANRI_ZONE) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE)),'정보없음') AS CHUL_AREA
+		     , MOK_CODE
+		     , FLOWER_CODE
+		     , NVL(MOK_NAME,'품목미등록') AS MOK_NAME
+	         , PUM_CODE
+	         , NVL(PUM_NAME,'품종미등록') AS PUM_NAME
+	         , F_SONGE_CNT
+	         , CHUL_LEVEL
+	         , BOX_CNT
+	         , SOK_CNT
+	         , UNIT_PRICE
+		FROM (
+		    SELECT BUN_CHK
+		         , TO_CHAR(TO_DATE(CHUL_DATE,'YYYYMMDD'),'YYYY-MM-DD') AS CHUL_DATE
+		         , UP_NO
+		         , CHUL_CODE
+		         , MOK_CODE
+		         , FLOWER_CODE
+		         , MOK_NAME
+		         , PUM_CODE
+		         , PUM_NAME
+		         , F_SONGE_CNT
+		         , CHUL_LEVEL
+		         , BOX_CNT
+		         , SOK_CNT
+		         , AVG(KM_P_NEW) AS UNIT_PRICE
+		    FROM (
+		        SELECT T1.BUN_CHK
+		             , T1.UP_DAY AS CHUL_DATE
+		             , T1.UP_NO
+		             , T1.CHUL_CODE 
+		             , SUBSTR(T1.PUM_CODE, 0, 4) AS MOK_CODE
+		             , SUBSTR(T1.PUM_CODE, 0, 1) AS FLOWER_CODE
+		             , (SELECT P_MOK_NAME FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE = SUBSTR(T1.PUM_CODE, 0, 1) AND P_MOK_CODE = SUBSTR(T1.PUM_CODE, 2, 3)) AS  MOK_NAME
+		             , T1.PUM_CODE
+		             , (SELECT P_JONG_NAME FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS  PUM_NAME
+		             , T1.CHUL_LEVEL
+		             , T1.BOX_CNT
+		             , T1.SOK_CNT
+		             , T2.KM_P_NEW
+		             , T1.F_SONGE_CNT
+		        FROM FLOMEJANG.A_SANG_JANG T1
+		           , FLOMEJANG.A_PAN_MAE T2
+		        WHERE T1.BUN_CHK = T2.BUN_CHK
+		        AND T1.UP_DAY = T2.PAN_DAY
+		        AND T1.UP_NO = T2.PAN_NO
+		        AND T2.J_DOME_CODE = #{jCode}
+		        AND T2.KM_LIST IN ('1','3','4')
+		        AND T1.BUN_CHK = 'Y'
+		        AND T1.UP_DAY <![CDATA[<=]]> (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = 'Y')
+		        <if test='upDay != null and upDay != ""'>
+					AND T1.UP_DAY = REPLACE(#{upDay, jdbcType = VARCHAR},'-','')
+				</if>
+				<if test='upDay == null or upDay == ""'>
+					AND T1.UP_DAY BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD') AND TO_CHAR(SYSDATE,'YYYYMMDD')
+				</if>
+		    )
+		    GROUP BY BUN_CHK, CHUL_DATE, UP_NO, CHUL_CODE, MOK_CODE, FLOWER_CODE, MOK_NAME, PUM_CODE, PUM_NAME, CHUL_LEVEL, BOX_CNT, SOK_CNT, F_SONGE_CNT
+		    ORDER BY  CHUL_DATE DESC
+		) T3
+		<if test='upDay == null or upDay == ""'>
+		WHERE ROWNUM <![CDATA[<=]]> 20
+		</if>
+	</select>
+	
+	
+	<select id="getCRecentList" resultMap="egovResultMap">
+	
+		SELECT BUN_CHK
+		     , CHUL_CODE
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE),'정보없음') AS CHUL_NAME
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_GWANRI_CODE WHERE GWANRI_ZONE = (SELECT MAX(GWANRI_ZONE) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE)),'정보없음') AS CHUL_AREA
+		     , MOK_CODE
+		     , FLOWER_CODE
+		     , NVL(MOK_NAME,'품목미등록') AS MOK_NAME
+	         , PUM_CODE
+	         , NVL(PUM_NAME,'품종미등록') AS PUM_NAME
+		FROM (
+		    SELECT BUN_CHK
+		    	 , CHUL_DATE
+		         , CHUL_CODE
+		         , MOK_CODE
+		         , FLOWER_CODE
+		         , MOK_NAME
+		         , PUM_CODE
+		         , PUM_NAME
+		    FROM (
+		        SELECT T1.BUN_CHK
+		             , T1.UP_DAY AS CHUL_DATE
+		             , T1.CHUL_CODE 
+		             , SUBSTR(T1.PUM_CODE, 0, 4) AS MOK_CODE
+		             , SUBSTR(T1.PUM_CODE, 0, 1) AS FLOWER_CODE
+		             , (SELECT P_MOK_NAME FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE = SUBSTR(T1.PUM_CODE, 0, 1) AND P_MOK_CODE = SUBSTR(T1.PUM_CODE, 2, 3)) AS  MOK_NAME
+		             , T1.PUM_CODE
+		             , (SELECT P_JONG_NAME FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS  PUM_NAME
+		        FROM FLOMEJANG.A_SANG_JANG T1
+		           , FLOMEJANG.A_PAN_MAE T2
+		        WHERE T1.BUN_CHK = T2.BUN_CHK
+		        AND T1.UP_DAY = T2.PAN_DAY
+		        AND T1.UP_NO = T2.PAN_NO
+		        AND T1.CHUL_CODE = #{chulCode}
+		        AND T2.KM_LIST IN ('1','3','4')
+		        AND T1.BUN_CHK = 'Y'
+		        AND T1.UP_DAY <![CDATA[<=]]> (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = 'Y')
+		        <if test='upDay != null and upDay != ""'>
+					AND T1.UP_DAY = REPLACE(#{upDay, jdbcType = VARCHAR},'-','')
+				</if>
+				<if test='upDay == null or upDay == ""'>
+					AND T1.UP_DAY BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE, -3),'YYYYMMDD') AND TO_CHAR(SYSDATE,'YYYYMMDD')
+				</if>
+		    )
+		    GROUP BY BUN_CHK, CHUL_DATE, CHUL_CODE, MOK_CODE, FLOWER_CODE, MOK_NAME, PUM_CODE, PUM_NAME
+		    ORDER BY CHUL_DATE DESC
+		) T3
+		<if test='upDay == null or upDay == ""'>
+		WHERE ROWNUM <![CDATA[<=]]> 20
+		</if>
+		GROUP BY BUN_CHK, CHUL_DATE, CHUL_CODE, MOK_CODE, FLOWER_CODE, MOK_NAME, PUM_CODE, PUM_NAME
+	</select>
+	
+	
+	<select id="getAdmJRecentList" resultMap="egovResultMap">
+		
+		SELECT BUN_CHK
+		     , CHUL_DATE
+		     , UP_NO
+		     , CHUL_CODE
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE),'정보없음') AS CHUL_NAME
+		     , NVL((SELECT MAX(NAME) FROM FLOMEJANG.A_GWANRI_CODE WHERE GWANRI_ZONE = (SELECT MAX(GWANRI_ZONE) FROM FLOMEJANG.A_CHUL_INFO WHERE CODE = T3.CHUL_CODE)),'정보없음') AS CHUL_AREA
+		     , MOK_CODE
+		     , FLOWER_CODE
+		     , NVL(MOK_NAME,'품목미등록') AS MOK_NAME
+	         , PUM_CODE
+	         , NVL(PUM_NAME,'품종미등록') AS PUM_NAME
+	         , F_SONGE_CNT
+	         , CHUL_LEVEL
+	         , BOX_CNT
+	         , SOK_CNT
+	         , UNIT_PRICE
+		FROM (
+		    SELECT BUN_CHK
+		         , TO_CHAR(TO_DATE(CHUL_DATE,'YYYYMMDD'),'YYYY-MM-DD') AS CHUL_DATE
+		         , UP_NO
+		         , CHUL_CODE
+		         , MOK_CODE
+		         , FLOWER_CODE
+		         , MOK_NAME
+		         , PUM_CODE
+		         , PUM_NAME
+		         , F_SONGE_CNT
+		         , CHUL_LEVEL
+		         , BOX_CNT
+		         , SOK_CNT
+		         , AVG(KM_P_NEW) AS UNIT_PRICE
+		    FROM (
+		        SELECT T1.BUN_CHK
+		             , T1.UP_DAY AS CHUL_DATE
+		             , T1.UP_NO
+		             , T1.CHUL_CODE 
+		             , SUBSTR(T1.PUM_CODE, 0, 4) AS MOK_CODE
+		             , SUBSTR(T1.PUM_CODE, 0, 1) AS FLOWER_CODE
+		             , (SELECT P_MOK_NAME FROM FLOMEJANG.A_PUM_MOK_INFO WHERE FLOWER_CODE = SUBSTR(T1.PUM_CODE, 0, 1) AND P_MOK_CODE = SUBSTR(T1.PUM_CODE, 2, 3)) AS  MOK_NAME
+		             , T1.PUM_CODE
+		             , (SELECT P_JONG_NAME FROM FLOMEJANG.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS  PUM_NAME
+		             , T1.CHUL_LEVEL
+		             , T1.BOX_CNT
+		             , T1.SOK_CNT
+		             , T2.KM_P_NEW
+		             , T1.F_SONGE_CNT
+		        FROM FLOMEJANG.A_SANG_JANG T1
+		           , FLOMEJANG.A_PAN_MAE T2
+		        WHERE T1.BUN_CHK = T2.BUN_CHK
+		        AND T1.UP_DAY = T2.PAN_DAY
+		        AND T1.UP_NO = T2.PAN_NO
+		        AND T2.J_DOME_CODE = #{jCode}
+		        AND T2.KM_LIST IN ('1','3','4')
+		        AND T1.BUN_CHK = 'Y'
+		        AND T1.UP_DAY <![CDATA[<=]]> (SELECT MAX(MAGAM_ILJA) FROM FLOMEJANG.A_DAY_MAGAM WHERE BUN_CHK = 'Y')
+		        <if test='upDay != null and upDay != ""'>
+					AND T1.UP_DAY = REPLACE(#{upDay, jdbcType = VARCHAR},'-','')	
+				</if>
+				<if test='upDay == null or upDay == ""'>
+					AND T1.UP_DAY BETWEEN TO_CHAR(SYSDATE-2,'YYYYMMDD') AND TO_CHAR(SYSDATE,'YYYYMMDD')
+				</if>
+		    )
+		    GROUP BY BUN_CHK, CHUL_DATE, UP_NO, CHUL_CODE, MOK_CODE, FLOWER_CODE, MOK_NAME, PUM_CODE, PUM_NAME, CHUL_LEVEL, BOX_CNT, SOK_CNT, F_SONGE_CNT
+		    ORDER BY  CHUL_DATE DESC
+		) T3
+	</select>
+	
+	<select id="getChulList" resultMap="egovResultMap">
+		SELECT T1.CODE
+		     , T1.NAME
+		     , T1.BUN_CHK
+		     , T1.GWANRI_ZONE
+		     , T2.NAME AS CHUL_AREA
+		     , T2.CITY_GUBUN 
+		FROM FLOMEJANG.A_CHUL_INFO T1
+		   , FLOMEJANG.A_GWANRI_CODE T2
+		WHERE 1=1
+		AND T1.GWANRI_ZONE = T2.GWANRI_ZONE
+		AND T1.BUN_CHK = 'Y'
+		<if test='searchChulCode != null and searchChulCode != ""'>
+			AND (
+				T1.CODE LIKE '%'||#{searchChulCode}||'%'
+				OR
+				T1.NAME LIKE '%'||#{searchChulCode}||'%'
+			)
+		</if>
+		ORDER BY CODE ASC	
+		
+	</select>
+	
+	
+	<select id="getJList" resultMap="egovResultMap">
+		SELECT T1.CODE
+		     , T1.NAME
+		     , T1.BUN_CHK
+		     , T1.GWANRI_ZONE
+		     , T2.NAME AS CHUL_AREA
+		     , T2.CITY_GUBUN 
+		FROM FLOMEJANG.A_DOME_INFO T1
+		   , FLOMEJANG.A_GWANRI_CODE T2
+		WHERE 1=1
+		AND T1.GWANRI_ZONE = T2.GWANRI_ZONE(+)
+		AND T1.BUN_CHK = 'Y'
+		AND T1.P_END_DAY <![CDATA[>=]]> TO_CHAR(SYSDATE,'YYYYMMDD')
+		<if test='searchJCode != null and searchJCode != ""'>
+			AND (
+				T1.CODE LIKE '%'||#{searchJCode}||'%'
+				OR
+				T1.NAME LIKE '%'||#{searchJCode}||'%'
+			)
+		</if>
+		ORDER BY CODE ASC	
+		
+	</select>
+	
+	<select id="messageBiteLength" resultType="java.lang.Integer">
+		SELECT NVL(LENGTHB(#{message}),0) AS MSG_BITE FROM DUAL
+	</select>
+	
+	<insert id="sendSms">
+		INSERT INTO DB_SMS.SMS_QUEUE (
+               SMS_SEQ
+             , RECV_NUMBER
+             , SEND_NUMBER
+             , SEND_REQ_DATE
+             , MSG_TYPE
+             , MESSAGE
+             , STATUS
+             , COL01
+             , COL02
+             , SESSION_ID
+             , LAST_MODIFIED
+        )VALUES(
+	           DB_SMS.SMS_SEQ.NEXTVAL
+	         , TRIM(REPLACE(REPLACE(#{phoneNo},'-',''),' ',''))
+	         , TRIM(REPLACE(REPLACE(#{sendPhoneNo},'-',''),' ',''))
+	         , SYSDATE
+	         , 0
+	         , #{message}
+	         , 0
+	         , 'Y'
+             , #{code}
+	         , 'SM141022_001'
+	         , SYSDATE
+        )
+	</insert>
+	
+	<insert id="sendMms">
+		INSERT INTO DB_SMS.MMS_QUEUE (
+        	  MMS_SEQ
+            , RECV_NUMBER
+            , SEND_NUMBER
+            , SEND_REQ_DATE
+            , MSG_TYPE
+            , SUBJECT
+            , MESSAGE
+            , STATUS
+            , COL01
+            , COL02
+            , SESSION_ID
+            , LAST_MODIFIED
+          )VALUES(
+              DB_SMS.MMS_SEQ.NEXTVAL
+            , TRIM(REPLACE(REPLACE(#{phoneNo},'-',''),' ',''))
+            , TRIM(REPLACE(REPLACE(#{sendPhoneNo},'-',''),' ',''))
+            , SYSDATE
+            , 0
+            , '화훼 정가수의매매 알림'
+            , #{message}
+            , 0
+            , 'Y'
+            , #{code}
+            , 'SM141022_001'
+            , SYSDATE
+          )
+	</insert>
+	
+	
+	
+	
+</mapper>

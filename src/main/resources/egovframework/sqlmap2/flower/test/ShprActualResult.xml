@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :ShprActualResult.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 실적확인서 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="ShprActualResult">
+	<resultMap id="SelectListMap" class="java.util.HashMap">
+	    <result property="name"      column="name"       columnIndex="1" />  
+	    <result property="juminNo1"  column="juminNo1"   columnIndex="2" />  
+	    <result property="juminNo2"  column="juminNo2"   columnIndex="3" />  
+	    <result property="code1"     column="code1"      columnIndex="4" />  
+	    <result property="code2"     column="code2"      columnIndex="5" />  
+	    <result property="addr"      column="addr"       columnIndex="6" />  
+	    <result property="pMokName"  column="pMokName"   columnIndex="7" />  
+	    <result property="pumCode"   column="pumCode"    columnIndex="8" />  
+	    <result property="sokCnt"    column="sokCnt"     columnIndex="9" />  
+	    <result property="panPrice"  column="panPrice"   columnIndex="10" />  
+	    <result property="boxCnt"    column="boxCnt"     columnIndex="11" /> 
+	    <result property="startDate" column="startDate"  columnIndex="12" /> 
+	    <result property="endDate"   column="endDate"    columnIndex="13" /> 
+	    <result property="bunChkNm"  column="bunChkNm"   columnIndex="14" /> 
+	    <result property="sYear"     column="sYear"      columnIndex="15" />  
+	    <result property="sMonth"    column="sMonth"     columnIndex="16" />  
+	    <result property="sDay"      column="sDay"       columnIndex="17" />  
+	</resultMap>
+	
+	<resultMap id="ShprActualResult.SumListMap" class="java.util.HashMap">
+	    <result property="sumBoxCnt"    column="sumBoxCnt"       columnIndex="1" />
+	    <result property="sumSokCnt"    column="sumSokCnt"       columnIndex="2" />
+	    <result property="sumPanPrice"  column="sumPanPrice"     columnIndex="3" />
+	</resultMap>
+	
+	<select id="ShprActualResult.selectList" resultMap="SelectListMap">
+		<![CDATA[
+				  SELECT  a.name  as name,    
+				          substr(a.jumin_no,0,6)  as juminNo1, 
+				          substr(a.jumin_no,7,13) as juminNo2, 
+				          substr(a.code,0,4)  as code1, 
+				          substr(a.code,5,8)  as code2, 
+				          Max(NVL(
+						        CASE
+						            WHEN a.bun_chk = 'N'
+						            THEN a.addr_ln
+						            ELSE a.f_addr_ln
+						        END, CASE
+						            WHEN a.bun_chk = 'N'
+						            THEN a.addr_en
+						            ELSE a.f_addr_en
+						        END)) as addr, 
+				          c.p_mok_name as pMokName, 
+				          substr(b.pum_code, 1, 4) as pumCode, 
+				          sum(b.p_sok_cnt) as sokCnt, 
+				          sum(b.pan_price) as panPrice, 
+				          sum(b.p_box_cnt) as boxCnt
+				          ,decode(b.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+				          ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				          ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				          ,to_char(sysdate,'yyyy') as sYear
+				          ,to_char(sysdate,'mm') as sMonth
+				          ,to_char(sysdate,'dd') as sDay
+				    FROM  view_e_zip_no@flower f, 
+				          view_e_zip_no@flower e, 
+				          a_chul_info@flower a, 
+				          v_sang_pan_list@flower b, 
+				          v_mok_jong_list@flower c, 
+				          a_day_magam@flower g 
+				   WHERE  b.chul_code = a.code 
+				     AND  b.pum_code  = c.pum_code 
+				     AND  a.h_zip_pk  = f.zip_pk 
+				     AND  a.f_zip_pk  = e.zip_pk 
+				     AND  b.p_bun_chk = g.bun_chk 
+				     AND  b.pan_day   = g.magam_ilja 
+				     AND  b.p_bun_chk = #bunChk# 
+				     AND  b.pan_day between #startDate# and #endDate#
+				     AND  b.km_list in ('1', '3', '4') 
+				     AND  b.chul_code = #chulCode# 
+				   GROUP  BY a.name, 
+				             a.jumin_no, a.code,  b.p_bun_chk,  
+				             c.p_mok_name, 
+				             substr(b.pum_code, 1, 4) 
+				   ORDER BY 4 ASC 
+		 ]]>
+	</select>
+	
+	<select id="ShprActualResult.sumList" resultMap="ShprActualResult.SumListMap">
+		<![CDATA[
+				select  sum(boxCnt) as sumBoxCnt,
+				        sum(sokCnt) as sumSokCnt,
+				        sum(panPrice) as sumPanPrice
+				   from (
+				          SELECT  a.name  as name,    
+				                  substr(a.jumin_no,0,6)  as juminNo1, 
+				                  substr(a.jumin_no,7,13) as juminNo2, 
+				                  Max(case when #bunChk# = 'N' then f.addr||' '||a.h_addr else e.addr||' '||a.f_addr end) as addr, 
+				                  c.p_mok_name as pMokName, 
+				                  substr(b.pum_code, 1, 4) as pumCode, 
+				                  sum(b.p_sok_cnt) as sokCnt, 
+				                  sum(b.pan_price) as panPrice, 
+				                  sum(b.p_box_cnt) as boxCnt
+				                  ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+				                  ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				            FROM  view_e_zip_no@flower f, 
+				                  view_e_zip_no@flower e, 
+				                  a_chul_info@flower a, 
+				                  v_sang_pan_list@flower b, 
+				                  v_mok_jong_list@flower c, 
+				                  a_day_magam@flower g 
+				           WHERE  b.chul_code = a.code 
+				             AND  b.pum_code  = c.pum_code 
+				             AND  a.h_zip_pk  = f.zip_pk 
+				             AND  a.f_zip_pk  = e.zip_pk 
+				             AND  b.p_bun_chk = g.bun_chk 
+				             AND  b.pan_day   = g.magam_ilja 
+				             AND  b.p_bun_chk = #bunChk# 
+				             AND  b.pan_day between #startDate# and #endDate#
+				             AND  b.km_list in ('1', '3', '4') 
+				             AND  b.chul_code = #chulCode# 
+				           GROUP  BY a.name, 
+				                     a.jumin_no,    
+				                     c.p_mok_name, 
+				                     substr(b.pum_code, 1, 4) 
+				        )
+		 ]]>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.content.service.impl.ContentMapper">
+
+	<resultMap id="contentMap" type="egovframework.cms.content.service.ContentVO">
+		<result property="contentId" column="CONTENT_ID"/>
+		<result property="title" column="TITLE"/>
+		<result property="content" column="CONTENT" jdbcType="CLOB"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+	
+	
+	<sql id="where">
+		<if test="searchWord != null and searchWord != ''">
+			AND UPPER(TITLE) LIKE '%' || UPPER(#{searchWord}) || '%'
+		</if>
+	</sql>
+
+	
+    <select id="getContentList" resultMap="contentMap">
+        
+        SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+            SELECT CONTENT_ID
+			     , TITLE
+			     , CONTENT
+			     , TO_CHAR(REGIST_DTTM, 'YYYY-MM-DD') AS REGIST_DTTM 
+			     , REGIST_ID
+			     , REGIST_DTTM AS REGIST_DTTM_SORT
+			     , TO_CHAR(UPDATE_DTTM, 'YYYY-MM-DD') AS UPDATE_DTTM
+			     , UPDATE_ID
+			FROM WMS_SITE_CONTENT
+			WHERE 1=1
+			<include refid="where"/>
+			ORDER BY REGIST_DTTM_SORT DESC
+		) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}            
+        
+    </select>
+    
+    <select id="getContentListCnt" resultType="java.lang.Integer">
+            SELECT COUNT(CONTENT_ID)
+			FROM WMS_SITE_CONTENT
+			WHERE 1=1
+			<include refid="where"/>
+    </select>
+    
+    <select id="getContent" resultMap="contentMap">
+        <![CDATA[
+            SELECT CONTENT_ID
+			     , TITLE
+			     , CONTENT
+			     , TO_CHAR(REGIST_DTTM, 'YYYY-MM-DD') AS REGIST_DTTM 
+			     , REGIST_ID
+			     , TO_CHAR(UPDATE_DTTM, 'YYYY-MM-DD') AS UPDATE_DTTM
+			     , UPDATE_ID
+			FROM WMS_SITE_CONTENT  
+			WHERE CONTENT_ID = #{contentId}        
+        ]]>
+    </select>
+    
+    <update id="save" >
+        <![CDATA[
+            MERGE INTO WMS_SITE_CONTENT
+                 USING DUAL
+                    ON (CONTENT_ID = #{contentId})
+            WHEN MATCHED
+            THEN
+               UPDATE SET TITLE = #{title, jdbcType=VARCHAR}
+                        , CONTENT = #{content, jdbcType=VARCHAR}
+                        , UPDATE_DTTM = SYSDATE
+                        , UPDATE_ID = #{userId, jdbcType=VARCHAR}
+            WHEN NOT MATCHED
+            THEN
+               INSERT     (CONTENT_ID ,TITLE, CONTENT,  REGIST_DTTM, REGIST_ID)
+                   VALUES 
+                   (
+                   		#{contentId, jdbcType=VARCHAR}
+                   	  , #{title, jdbcType=VARCHAR}
+                   	  , #{content, jdbcType=VARCHAR}
+                   	  , SYSDATE
+                   	  , #{userId, jdbcType=VARCHAR}	
+                   )       
+        ]]>
+    </update>
+    
+    <insert id="insert" >
+        <![CDATA[
+            
+               INSERT INTO WMS_SITE_CONTENT 
+               (CONTENT_ID ,TITLE, CONTENT,  REGIST_DTTM, REGIST_ID)
+               VALUES 
+               (
+               		#{contentId, jdbcType=VARCHAR}
+               	  , #{title, jdbcType=VARCHAR}
+               	  , #{content, jdbcType=VARCHAR}
+               	  , SYSDATE
+               	  , #{userId, jdbcType=VARCHAR}	
+               )       
+        ]]>
+    </insert>
+    
+    <update id="update" >
+        <![CDATA[
+            
+               UPDATE WMS_SITE_CONTENT 
+                      SET TITLE = #{title, jdbcType=VARCHAR}
+                        , CONTENT = #{content, jdbcType=VARCHAR}
+                        , UPDATE_DTTM = SYSDATE
+                        , UPDATE_ID = #{userId, jdbcType=VARCHAR}
+               WHERE CONTENT_ID = #{contentId}      
+        ]]>
+    </update>
+    
+    <delete id="delete">
+	     <![CDATA[
+	     	DELETE FROM WMS_SITE_CONTENT
+	     	WHERE CONTENT_ID = #{contentId}
+	     ]]>
+    </delete>
+    
+    
+    
+    
+    
+
+</mapper>
+

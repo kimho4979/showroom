@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--*************************************************************************
+    * Copyright 2010 aT ALL RIGHTS RESERVED
+    * 파  일  명    :WhslDealCalc.xml
+    * 작  성  일    :2010.06.28 16:02:07
+    * 작  성  자    :
+    * 프로그램 용도 : iBatisXML object for 거래정산내역 조회.
+    * <수 정 내 역>
+    * 수  정  일    :
+    * 수  정  자    :
+    * 수 정 내 용   :
+    *************************************************************************-->
+    
+<sqlMap namespace="WhslDealCalc">
+	<!-- 거래정산내역  resutlMap -->
+	<resultMap id="WhslDealCalc.selectListMap" class="java.util.HashMap">
+	    <result property="panDay"           column="panDay"           columnIndex="1" /> 
+	    <result property="formattedDay"     column="formattedDay"     columnIndex="2" /> 
+	    <result property="jDomeCode"        column="jDomeCode"        columnIndex="3" /> 
+	    <result property="domeName"         column="domeName"         columnIndex="4" /> 
+	    <result property="pMokName"         column="pMokName"         columnIndex="5" /> 
+	    <result property="pJongName"        column="pJongName"        columnIndex="6" /> 
+	    <result property="pumCode"          column="pumCode"          columnIndex="7" /> 
+	    <result property="levelName"        column="levelName"        columnIndex="8" /> 
+	    <result property="pBoxCnt"          column="pBoxCnt"          columnIndex="9" /> 
+	    <result property="pSokCnt"          column="pSokCnt"          columnIndex="10" />
+	    <result property="kmPNew"           column="kmPNew"           columnIndex="11" />
+	    <result property="panPrice"         column="panPrice"         columnIndex="12" />
+	    <result property="panNo"            column="panNo"            columnIndex="13" />
+	    <result property="chulName"         column="chulName"         columnIndex="14" />
+	    <result property="toDay"            column="toDay"            columnIndex="15" /> <!-- sysdate --> 
+	    <result property="startDate"        column="startDate"        columnIndex="16" /> 
+	    <result property="endDate"          column="endDate"          columnIndex="17" /> 
+	    <result property="bunChkNm"         column="bunChkNm"         columnIndex="18" /> 
+	</resultMap>
+	
+	<resultMap id="WhslDealCalc.SumListMap" class="java.util.HashMap">
+	    <result property="pMokName"         column="pMokName"         columnIndex="5" /> 
+	    <result property="pBoxCntSum"       column="pBoxCntSum"       columnIndex="1" /> 
+	    <result property="pSokCntSum"       column="pSokCntSum"       columnIndex="2" /> 
+	    <result property="panPriceSum"      column="panPriceSum"      columnIndex="3" /> 
+	</resultMap>
+	
+	<resultMap id="WhslDealCalc.TotListMap" class="java.util.HashMap">
+	    <result property="pBoxCntTot"       column="pBoxCntTot"       columnIndex="1" /> 
+	    <result property="pSokCntTot"       column="pSokCntTot"       columnIndex="2" /> 
+	    <result property="panPriceTot"      column="panPriceTot"      columnIndex="3" /> 
+	</resultMap>
+	
+	<!-- 엑셀 출력 목록 resutlMap -->
+	<resultMap id="WhslDealCalc.selectListForExcelMap" class="java.util.HashMap">
+	    <result property="panDay"           column="panDay"           columnIndex="1" /> 
+	    <result property="formattedDay"     column="formattedDay"     columnIndex="2" /> 
+	    <result property="jDomeCode"        column="jDomeCode"        columnIndex="3" /> 
+	    <result property="domeName"         column="domeName"         columnIndex="4" /> 
+	    <result property="pMokName"         column="pMokName"         columnIndex="5" /> 
+	    <result property="pJongName"        column="pJongName"        columnIndex="6" /> 
+	    <result property="pumCode"          column="pumCode"          columnIndex="7" /> 
+	    <result property="levelName"        column="levelName"        columnIndex="8" /> 
+	    <result property="pBoxCnt"          column="pBoxCnt"          columnIndex="9" /> 
+	    <result property="pSokCnt"          column="pSokCnt"          columnIndex="10" />
+	    <result property="kmPNew"           column="kmPNew"           columnIndex="11" />
+	    <result property="panPrice"         column="panPrice"         columnIndex="12" />
+	    <result property="panNo"            column="panNo"            columnIndex="13" />
+	    <result property="chulName"         column="chulName"         columnIndex="14" />
+	    <result property="toDay"            column="toDay"            columnIndex="15" /> <!-- sysdate --> 
+	</resultMap>
+	
+	<select id="WhslDealCalc.SelectList" resultMap="WhslDealCalc.selectListMap">
+		<![CDATA[
+				select a.pan_day as panDay,
+				       to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+				       a.j_dome_code as jDomeCode,
+				       c.name as domeName,
+				       b.p_mok_name as pMokName,
+				       b.p_jong_name as pJongName,
+				       a.pum_code as pumCode,
+				       e.name as levelName,
+				       a.p_box_cnt as pBoxCnt,
+				       a.p_sok_cnt as pSokCnt,
+				       a.km_p_new as kmPNew,
+				       a.pan_price as panPrice,
+				       a.pan_no||'-'||a.serial_no as panNo,
+				       d.name as chulName 
+			           ,to_char(sysdate,'yyyy-mm-dd') as toDay
+			           ,decode(a.p_bun_chk,'N','절화','Y','난','C','관엽') as bunChkNm
+			           ,to_char(to_date(#startDate#),'yyyy-mm-dd') as startDate
+			           ,to_char(to_date(#endDate#),'yyyy-mm-dd') as endDate
+				  from v_sang_pan_list@flower a,
+				       v_mok_jong_list@flower b,
+				       a_dome_info@flower c,
+				       a_chul_info@flower d,
+				       a_level@flower e 
+				 where a.pum_code = b.pum_code 
+				   and a.j_dome_code = c.code 
+				   and a.chul_code   = d.code 
+				   and a.bun_chk     = e.bun_chk 
+				   and a.acc_level   = e.code 
+				   and a.pan_day     = #panDate#
+				   and a.km_list    in ('1','3','4') 
+				   and a.j_dome_code = #domeCode#
+				   and a.p_bun_chk   = #bunChk#
+				 order by 7, 13 
+		 ]]>
+	</select>
+	
+	<select id="WhslDealCalc.sumList" resultMap="WhslDealCalc.SumListMap">
+		<![CDATA[
+				select pMokName,
+				       sum(pBoxCnt)  as pBoxCntSum,
+				       sum(pSokCnt)  as pSokCntSum,
+				       sum(panPrice) as panPriceSum
+				  from (
+					    select a.pan_day as panDay,
+					           to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+					           a.j_dome_code as jDomeCode,
+					           c.name as domeName,
+					           b.p_mok_name as pMokName,
+					           b.p_jong_name as pJongName,
+					           a.pum_code as pumCode,
+					           e.name as levelName,
+					           a.p_box_cnt as pBoxCnt,
+					           a.p_sok_cnt as pSokCnt,
+					           a.km_p_new as kmPNew,
+					           a.pan_price as panPrice,
+					           a.pan_no||'-'||a.serial_no as panNo,
+					           d.name as chulName 
+					      from v_sang_pan_list@flower a,
+					           v_mok_jong_list@flower b,
+					           a_dome_info@flower c,
+					           a_chul_info@flower d,
+					           a_level@flower e 
+					     where a.pum_code = b.pum_code 
+					       and a.j_dome_code = c.code 
+					       and a.chul_code   = d.code 
+					       and a.bun_chk     = e.bun_chk 
+					       and a.acc_level   = e.code 
+					       and a.pan_day     = #panDate#
+					       and a.km_list    in ('1','3','4') 
+					       and a.j_dome_code = #domeCode#
+					       and a.p_bun_chk   = #bunChk#
+				       )
+				 group by  pMokName
+		 ]]>
+	</select>
+	
+	<select id="WhslDealCalc.totList" resultMap="WhslDealCalc.TotListMap">
+		<![CDATA[
+				select sum(pBoxCnt)  as pBoxCntTot,
+				       sum(pSokCnt)  as pSokCntTot,
+				       sum(panPrice) as panPriceTot
+				  from (
+					    select a.pan_day as panDay,
+					           to_char(to_date(substr(pan_day,3,2)||'-'||substr(pan_day,5,2)||'-'||substr(pan_day,7,2)),'DY') as formattedDay,
+					           a.j_dome_code as jDomeCode,
+					           c.name as domeName,
+					           b.p_mok_name as pMokName,
+					           b.p_jong_name as pJongName,
+					           a.pum_code as pumCode,
+					           e.name as levelName,
+					           a.p_box_cnt as pBoxCnt,
+					           a.p_sok_cnt as pSokCnt,
+					           a.km_p_new as kmPNew,
+					           a.pan_price as panPrice,
+					           a.pan_no||'-'||a.serial_no as panNo,
+					           d.name as chulName 
+					      from v_sang_pan_list@flower a,
+					           v_mok_jong_list@flower b,
+					           a_dome_info@flower c,
+					           a_chul_info@flower d,
+					           a_level@flower e 
+					     where a.pum_code = b.pum_code 
+					       and a.j_dome_code = c.code 
+					       and a.chul_code   = d.code 
+					       and a.bun_chk     = e.bun_chk 
+					       and a.acc_level   = e.code 
+					       and a.pan_day     = #panDate#
+					       and a.km_list     in ('1','3','4') 
+					       and a.j_dome_code = #domeCode#
+					       and a.p_bun_chk   = #bunChk#
+				       )
+		 ]]>
+	</select>
+	
+	
+</sqlMap>

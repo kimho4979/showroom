@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.auctioneer.service.impl.AuctioneerMapper">
+
+	<select id="getAuctioneerList" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+ 		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT MEMBER_ID
+				 , LOGIN_ID
+				 , PASSWORD_SHA2
+				 , MEMBER_TYPE
+				 , AUC_TYPE
+				 , FLO_UNIT_CD
+				 , FLO_MOK_CD
+				 , CHUL_CD
+				 , AUC_CD
+				 , AUC_PW
+				 , AUC_REG_NM
+				 , LAST_UPT_ID
+				 , LAST_UPT_DATE
+				 , NAME
+			FROM WMS_AUCTIONEER
+			ORDER BY MEMBER_ID ASC
+		) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+	
+	<select id="getAuctioneerListCnt" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM (
+			SELECT MEMBER_ID
+				 , LOGIN_ID
+				 , PASSWORD_SHA2
+				 , MEMBER_TYPE
+				 , AUC_TYPE
+				 , FLO_UNIT_CD
+				 , FLO_MOK_CD
+				 , CHUL_CD
+				 , AUC_CD
+				 , AUC_PW
+				 , AUC_REG_NM
+				 , LAST_UPT_ID
+				 , LAST_UPT_DATE
+				 , NAME
+			FROM WMS_AUCTIONEER
+			ORDER BY MEMBER_ID ASC
+		)
+	</select>
+	
+	<select id="idValidCheck" parameterType="String" resultType="java.lang.Integer">
+		SELECT COUNT(LOGIN_ID)
+		FROM WMS_AUCTIONEER
+		WHERE LOGIN_ID = #{value}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO WMS_AUCTIONEER VALUES(
+			MEMBER_ID_SEQ.NEXTVAL
+		  , #{loginId, jdbcType=VARCHAR}
+		  , #{passwordSha2, jdbcType=VARCHAR}
+		  , #{memberType, jdbcType=VARCHAR}
+		  , #{aucType, jdbcType=VARCHAR}
+		  , #{floUnitCd, jdbcType=VARCHAR}
+		  , #{floMokCd, jdbcType=VARCHAR}
+		  , #{chulCd, jdbcType=VARCHAR}
+		  , #{aucCd, jdbcType=VARCHAR}
+		  , #{aucPw, jdbcType=VARCHAR}
+		  , #{aucRegNm, jdbcType=VARCHAR}
+		  , NULL
+		  , NULL
+		  , #{name, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="getAuctioneer" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+		SELECT MEMBER_ID
+			 , LOGIN_ID
+			 , PASSWORD_SHA2
+			 , MEMBER_TYPE
+			 , AUC_TYPE
+			 , FLO_UNIT_CD
+			 , FLO_MOK_CD
+			 , CHUL_CD
+			 , AUC_CD
+			 , AUC_PW
+			 , AUC_REG_NM
+			 , LAST_UPT_ID
+			 , LAST_UPT_DATE
+			 , NAME
+		FROM WMS_AUCTIONEER
+		WHERE MEMBER_ID = #{memberId, jdbcType=NUMERIC}
+	</select>
+	
+	<update id="update">
+		UPDATE WMS_AUCTIONEER
+		SET MEMBER_TYPE = #{memberType, jdbcType=VARCHAR}
+		  , AUC_TYPE = #{aucType, jdbcType=VARCHAR}
+		  , FLO_UNIT_CD = #{floUnitCd, jdbcType=VARCHAR}
+		  , FLO_MOK_CD = #{floMokCd, jdbcType=VARCHAR}
+		  , CHUL_CD = #{chulCd, jdbcType=VARCHAR}
+		  , AUC_CD = #{aucCd, jdbcType=VARCHAR}
+		  , AUC_PW = #{aucPw, jdbcType=VARCHAR}
+		  , AUC_REG_NM = #{aucRegNm, jdbcType=VARCHAR}
+		  , LAST_UPT_ID = #{userId, jdbcType=VARCHAR}
+		  , LAST_UPT_DATE = SYSDATE
+		  , NAME = #{name, jdbcType=VARCHAR}
+		  <if test="passwordSha2 != null and passwordSha2 != ''">
+		  , PASSWORD_SHA2 = #{passwordSha2, jdbcType=VARCHAR}
+		  </if>
+		WHERE MEMBER_ID = #{memberId, jdbcType=NUMERIC}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM WMS_AUCTIONEER
+		WHERE MEMBER_ID = #{memberId}
+	</delete>
+
+
+	<select id="getAucMember" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+       	    SELECT MEMBER_ID
+				 , LOGIN_ID
+				 , PASSWORD_SHA2
+				 , MEMBER_TYPE
+				 , AUC_TYPE
+				 , FLO_UNIT_CD
+				 , FLO_MOK_CD
+				 , CHUL_CD
+				 , AUC_CD
+				 , AUC_PW
+				 , AUC_REG_NM
+				 , LAST_UPT_ID
+				 , LAST_UPT_DATE
+				 , NAME
+			FROM WMS_AUCTIONEER
+            WHERE LOGIN_ID = #{id, jdbcType=VARCHAR}
+            AND PASSWORD_SHA2 = #{pw, jdbcType=VARCHAR}
+    </select>
+</mapper>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.marketrent.AtFrontMarketRentMapper">
+
+    <select id="selectMarketInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        
+        	SELECT T2.rc_seq AS MARKET_SEQ
+        	     , T2.ty_code
+			     , T2.ro_code
+			     , T2.rc_name
+			     , T2.rc_comp_name
+			     , T2.rc_business
+			     , T2.rc_event
+			     , T2.rc_tel
+			     , T2.rc_intro
+			     , T2.rc_hash_tag
+			     , T2.rc_img1_base64 AS rc_img1
+			     , T2.rc_img2_base64 AS rc_img2
+			     , T2.rc_img3_base64 AS rc_img3
+			FROM (
+					SELECT ty_code
+					     , ro_code 
+					FROM tb_object_room 
+					WHERE IS_RENTAL = 'Y' 
+					AND IS_DEL = 'N' 
+					AND ty_code = #{tyCode}
+					AND ro_code = #{roCode}
+			) T1
+			JOIN (
+				SELECT T4.rc_seq
+				     , T3.ty_code
+				     , T3.ro_code
+				     , T4.rc_name
+				     , T4.rc_comp_name
+				     , T4.rc_business
+				     , T4.rc_event
+				     , T4.rc_tel
+				     , T4.rc_intro
+				     , T4.rc_hash_tag
+				     , T4.rc_img1_base64
+				     , T4.rc_img2_base64
+				     , T4.rc_img3_base64
+				FROM tb_object_lease T3
+				JOIN tb_rent_comp T4
+				ON T3.rc_seq = T4.rc_seq
+				WHERE T3.ol_status = '1'
+			) T2
+			ON T1.ty_code = T2.ty_code 
+			AND T1.ro_code = T2.ro_code
+    </select>
+</mapper>

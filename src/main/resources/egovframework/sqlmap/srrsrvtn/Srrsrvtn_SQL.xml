@@ -1,0 +1,863 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.srrsrvtn.service.impl.SrrsrvtnMapper">
+<select id="selectRsrvSeq" resultType="java.lang.Integer">
+    SELECT SR_RSRV_SEQ.NEXTVAL FROM DUAL
+</select>
+<insert id="insertSrrsrvtn">
+    <![CDATA[
+        INSERT INTO TB_SR_RSRVTN (
+            EVNT_NM,
+            EVNT_DESC,
+            ORG_NM,
+            COM_RGST_NO,
+            RPRSNTR_NM,
+            MNGR_NM,
+            BIZ_TYPE,
+            BIZ_TYPE2,
+            TEL_NO,
+            FAX_NO,
+            ADDRESS,
+            ADDRESS_DTL,
+            EMAIL,
+            EVNT_DT,
+            IS_TEMP,
+            HALL_TYPE,
+            SEQ,
+            RENT_PAY,
+            MNG_PAY,
+            EQPMNT_PAY,
+            TOTAL_PAY,
+            RSRV_DT_START,
+            STATUS,
+            USER_ID,
+            IN_DT,
+            MODI_DT,
+            ISCORRDR,
+            WLS_MIC,
+            W_MIC,
+            B_AMP,
+            PRJCTR,
+            TBL,
+            CHR,
+            GRBG_PCK,
+            BTCH_STYL,
+            RSRV_DT_END,
+            ETC,
+            GRP_ID,
+            IN_DT2
+    ) VALUES (
+             #{evntNm},
+             #{evntDesc},
+             #{orgNm},
+             #{comRgstNo},
+             #{rprsntrNm},
+             NULL,
+             #{bizType},
+             #{bizType2},
+             NULL,
+             #{faxNo},
+             #{address},
+             #{addressDtl},
+             NULL,
+             #{evntDt},
+             #{isTemp},
+             #{hallType},
+             #{seq},
+             #{rentPay},
+             #{mngPay},
+             #{eqpmntPay},
+             #{totalPay},
+             #{rsrvDtStart},
+             #{status},
+             #{userId},
+             #{inDt},
+             COALESCE(#{modiDt}, NULL),
+             #{iscorrdr},
+             #{wlsMic},
+             #{wMic},
+             #{bAmp},
+             #{prjctr},
+             #{tbl},
+             #{chr},
+             #{grbgPck},
+             #{btchStyl},
+             #{rsrvDtEnd},
+             #{etc},
+             #{grpId},
+             SYSDATE
+            )
+        ]]>
+</insert>
+<!-- 기준가격표  -->
+<select id="getPrcRfrnc" resultType="java.util.HashMap">
+    SELECT GBN
+    ,SHW_RM
+    ,AM
+    ,PM
+    ,ALL_DAY
+    FROM TB_SR_PRC_RFRNC
+    WHERE 1=1
+    ORDER BY "ORDER"
+</select>
+<!-- 기준장비사용료 -->
+<select id="getEqpmntRfrnc" resultType="java.util.HashMap">
+    SELECT EQPMNT_NM
+    ,DAY_PAY
+    ,HALF_PAY
+    ,AMOUNT
+    ,ETC
+    ,STNDRD
+    ,HALL_TYPE
+    ,MAX_AMOUNT
+    FROM TB_SR_EQPMNT_PAY_RFRNC
+    WHERE 1=1
+    ORDER BY "ORDER", "HALL_TYPE"
+</select>
+<!-- 전시실 예약 현황  -->
+<select id="getSrRsrvtnList" parameterType="egovframework.srrsrvtn.vo.SrrsrvtnVO" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO">
+    
+    SELECT EVNT_NM 		as evntNm
+    ,EVNT_DESC 			as evntDesc
+    ,ORG_NM 			as orgNm
+    ,COM_RGST_NO 		as comRgstNo
+    ,RPRSNTR_NM 		as rprsntrNm
+    ,MNGR_NM 			as mngrNm
+    ,BIZ_TYPE 			as bizType
+    ,BIZ_TYPE2 			as bizType2
+    ,TEL_NO 			as telNo
+    ,FAX_NO 			as faxNo
+    ,ADDRESS 			as address
+    ,EMAIL 				as email
+    ,EVNT_DT 			as evntDtCd
+    ,IS_TEMP 			as isTemp
+    ,HALL_TYPE 			as hallTypeCd
+    ,SEQ 				as seq
+    ,RENT_PAY 			as rentPay
+    ,MNG_PAY 			as mngPay
+    ,EQPMNT_PAY 		as eqpmntPay
+    ,TOTAL_PAY 			as totalPay
+    ,RSRV_DT_START 		as rsrvDtStart
+    ,RSRV_DT_END 		as rsrvDtEnd
+    ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_GP' AND CD_ID = HALL_TYPE) AS hallType
+    ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_TM_GP' AND CD_ID = EVNT_DT) AS evntDt
+    ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_STS_GP' AND CD_ID = STATUS) AS STATUS
+    ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_BTCH_GP' AND CD_ID = BTCH_STYL) AS btchStyl
+    ,STATUS 			as statusCd
+    ,USER_ID 			as userId
+    ,IN_DT 				as inDt
+    ,MODI_DT 			as modiDt
+    ,ISCORRDR 			as iscorrdr
+    ,WLS_MIC 			as wlsMic
+    ,W_MIC 				as wMic
+    ,B_AMP 				as bAmp
+    ,PRJCTR 			as prjctr
+    ,TBL 				as tbl
+    ,CHR 				as chr
+    ,GRBG_PCK 			as grbgPck
+    ,BTCH_STYL 			as btchStylCd
+    ,ETC 				as etc
+    ,ADDRESS_DTL 		as addressDtl
+    ,GRP_ID				as grpId
+    ,DISCOUNT			as discount
+    FROM TB_SR_RSRVTN
+    WHERE 1=1
+	<if test='rsrvDtFrom != null and rsrvDtFrom != ""'>
+    AND RSRV_DT_START = TO_DATE(#{rsrvDtFrom}, 'YYYYMMDD') 
+	</if>
+	<if test='rsrvDtTo != null and rsrvDtTo != ""'>
+    AND RSRV_DT_END = TO_DATE(#{rsrvDtTo}, 'YYYYMMDD') 
+	</if>
+	<if test='rsrvDtStart != null and rsrvDtStart != "" and rsrvDtEnd != null and rsrvDtEnd != ""'>
+	AND ((RSRV_DT_START <![CDATA[>=]]> (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart}, 'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart}, 'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+			AND RSRV_DT_START <![CDATA[<=]]> (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd}, 'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd}, 'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+		OR (RSRV_DT_END <![CDATA[>=]]> (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart}, 'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart}, 'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+			AND RSRV_DT_END <![CDATA[<=]]> (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd}, 'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd}, 'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+	</if>
+	<if test='userId != null and userId != ""'>
+    AND USER_ID = #{userId}
+	</if>
+  <if test='grpId != null and grpId != ""'>
+    AND GRP_ID = #{grpId}
+	</if>
+	ORDER BY "IN_DT", "GRP_ID", "SEQ"
+  
+</select>
+
+<select id="getCmmnCode" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+    SELECT * FROM TB_GEN_CODE tgc WHERE GP_ID LIKE '%SR_%' ORDER BY GP_ID, SEQ
+</select>
+<select id="getAdminList" resultType="egovframework.rte.psl.dataaccess.util.EgovMap" parameterType="java.util.HashMap" >
+    SELECT /* resources getAdminList */
+          tsr.IN_DT AS IN_DT
+         ,tsr.RSRV_DT_START AS RSRV_DT_START
+         ,tsr.RSRV_DT_END AS RSRV_DT_END
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_GP' AND CD_ID = HALL_TYPE) AS HALL_TYPE
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_TM_GP' AND CD_ID = EVNT_DT) AS EVNT_DT
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_STS_GP' AND CD_ID = STATUS) AS STATUS
+         ,tsr.STATUS AS STATUS_CD
+         ,tsr.SEQ AS SEQ
+         ,tsr.EVNT_NM AS EVNT_NM
+         ,tsr.RPRSNTR_NM AS RPRSNTR_NM
+         ,tsr.EVNT_DT AS EVNT_DT_CD
+         ,tsr.IS_TEMP AS IS_TEMP
+         ,tsr.HALL_TYPE AS HALL_TYPE_CD
+         ,tsr.EVNT_DESC AS EVNT_DESC
+         ,tsr.ORG_NM AS ORG_NM
+         ,tsr.RPRSNTR_NM AS RPRSNTR_NM
+         ,tsr.MNGR_NM AS MNGR_NM
+         ,tsr.COM_RGST_NO AS COM_RGST_NO
+         ,tsr.BIZ_TYPE AS BIZ_TYPE
+         ,tsr.BIZ_TYPE2 AS BIZ_TYPE2
+         ,REPLACE(tsr.TEL_NO,'-','') AS TEL_NO
+         ,REPLACE(tsr.FAX_NO,'-','') AS FAX_NO
+         ,tsr.EMAIL AS EMAIL
+         ,tsr.ADDRESS AS ADDRESS
+         ,tsr.ADDRESS_DTL AS ADDRESS_DTL
+         ,(SELECT FILE_PATH||'/'||FILE_NM FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='CMPNY') AS COM_RGST_NO_FILE
+         ,(SELECT FILE_PATH||'/'||FILE_NM FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='BTCH') AS BTCH_STYL_FILE
+         ,tsr.WLS_MIC AS WLS_MIC
+         ,tsr.W_MIC AS W_MIC
+         ,tsr.B_AMP AS B_AMP
+         ,tsr.PRJCTR AS PRJCTR
+         ,tsr.TBL AS TBL
+         ,tsr.CHR AS CHR
+         ,tsr.GRBG_PCK AS GRBG_PCK
+         ,tsr.BTCH_STYL AS BTCH_STYL
+         ,DECODE(tsr.BTCH_STYL, 'A', '교실형태', 'B', '사각회의형', 'C', '고객선택형', '없음') AS BTCH_STYL_NM
+         ,tsr.ETC AS ETC     ,RENT_PAY AS RENT_PAY
+         ,tsr.MNG_PAY AS MNG_PAY
+         ,tsr.EQPMNT_PAY AS EQPMNT_PAY
+         ,tsr.TOTAL_PAY AS TOTAL_PAY
+         ,tsr.ISCORRDR AS ISCORRDR
+         ,tsr.USER_ID AS USER_ID
+         ,(SELECT FILE_PATH FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='BTCH') || '/' AS FILE_PATH
+         ,(SELECT FILE_NM FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='BTCH') AS FILE_NM
+         ,(SELECT FILE_TYPE FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='BTCH') AS FILE_TYPE
+         ,(SELECT FILE_PATH FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='CMPNY') || '/' AS FILE_PATH_CMPNY
+         ,(SELECT FILE_NM FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='CMPNY') AS FILE_NM_CMPNY
+         ,(SELECT FILE_TYPE FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='CMPNY') AS FILE_TYPE_CMPNY
+         ,(SELECT FILE_SEQ FROM TB_SR_RSRVTN_ATTCH X WHERE X.SEQ=tsr.SEQ AND X.USER_ID = tsr.USER_ID AND X.GBN='CMPNY') AS FILE_SEQ_CMPNY
+         , tsr.GRP_ID
+         , DISCOUNT AS DISCOUNT
+     FROM TB_SR_RSRVTN tsr
+    WHERE 1=1
+    <if test='inDt1 != null and inDt1 !=""' >
+      AND TO_DATE(tsr.IN_DT ,'yyyy-mm-dd') BETWEEN TO_DATE(#{inDt1} ,'yyyy-mm-dd')  AND  TO_DATE(#{inDt2} ,'yyyy-mm-dd')
+    </if>
+    <if test='rsrvDt1 != null and rsrvDt1 !=""' >
+      AND TO_DATE(tsr.RSRV_DT_START ,'yyyy-mm-dd') <![CDATA[>=]]> TO_DATE(#{rsrvDt1},'yyyy-mm-dd')
+    </if>
+    <if test='rsrvDt2 != null and rsrvDt2 !=""' >
+      AND TO_DATE(tsr.RSRV_DT_END ,'yyyy-mm-dd') <![CDATA[<=]]> TO_DATE(#{rsrvDt2},'yyyy-mm-dd')
+    </if>
+    <if test='evntNm != null and evntNm !=""' >
+      AND tsr.EVNT_NM like '%' || #{evntNm} || '%'
+    </if>
+    <if test='rprsntrNm != null and rprsntrNm !=""' >
+      AND tsr.RPRSNTR_NM like '%' || #{rprsntrNm} || '%'
+    </if>
+    <if test='hallType != null and hallType !="" and hallType != "전체"' >
+      AND tsr.HALL_TYPE like '%' || #{hallType} || '%'
+    </if>
+    <if test='status != null and status !="" and status != "전체"' >
+      AND STATUS like '%' || #{status} || '%'
+    </if>
+    <if test='seq != null and seq !=""' >
+      AND tsr.SEQ = #{seq}
+    </if>
+    <if test='userId != null and userId !=""' >
+      AND tsr.USER_ID = #{userId}
+    </if>
+    <if test='grpId != null and grpId !=""' >
+      AND tsr.GRP_ID = #{grpId}
+    </if>
+
+    ORDER BY tsr.RSRV_DT_START
+</select>
+
+
+<!-- 전시실 예약정보 세션에서 불러오기  -->
+<select id="getRsrvSessionInfo" parameterType="egovframework.srrsrvtn.vo.SrrsrvtnVO" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO">
+    SELECT *
+    FROM (SELECT EVNT_NM 	as evntNm
+	      ,EVNT_DESC 		as evntDesc
+	      ,ORG_NM 			as orgNm
+	      ,COM_RGST_NO 		as comRgstNo
+	      ,(SELECT *
+	        FROM (SELECT X.ORGN_NM
+		          FROM TB_SR_RSRVTN_ATTCH X
+		          WHERE X.USER_ID = #{userId}
+		          AND X.GBN='CMPNY'
+		          ORDER BY X.FILE_SEQ DESC)
+	        WHERE ROWNUM <![CDATA[<=]]> 1)	as comRgstNoFileNm
+	      ,RPRSNTR_NM 		as rprsntrNm
+	      ,MNGR_NM 			as mngrNm
+	      ,BIZ_TYPE 		as bizType
+	      ,BIZ_TYPE2 		as bizType2
+	      ,TEL_NO 			as telNo
+	      ,FAX_NO 			as faxNo
+	      ,ADDRESS 			as address
+	      ,ADDRESS_DTL 		as addressDtl
+	      ,EMAIL 			as email
+	      ,USER_ID 			as userId
+	      FROM TB_SR_RSRVTN
+	      WHERE USER_ID = #{userId}
+    	  ORDER BY SEQ DESC)
+	WHERE ROWNUM <![CDATA[<=]]> 1
+  
+</select>
+
+<select id="getRsrvYn" parameterType="egovframework.srrsrvtn.vo.SrrsrvtnVO" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO">
+	<![CDATA[
+SELECT
+       CASE WHEN S.HALL_TYPE_1_CTN = 'Y' AND S.CTN = -1 THEN 'Y'
+       		WHEN S.HALL_TYPE_1_CTN = 'Y' AND S.CTN != -1 THEN 'N'
+       		WHEN S.HALL_TYPE_2_CTN = 'Y' OR S.HALL_TYPE_3_CTN = 'Y' THEN 'N' ELSE 'Y' END AS hallType1Yn
+     , CASE WHEN S.HALL_TYPE_1_CTN = 'N' AND S.HALL_TYPE_2_CTN = 'Y' AND S.HALL_TYPE = 'N' THEN 'N'
+     		WHEN S.HALL_TYPE_1_CTN = 'N' AND S.HALL_TYPE_2_CTN = 'N' AND S.HALL_TYPE = 'N' THEN 'Y'
+	     	WHEN S.CTN = 1 THEN 'N'
+     		WHEN S.HALL_TYPE = '2' AND S.CTN = -1 THEN 'Y'
+     		WHEN S.HALL_TYPE = '3' AND S.CTN = 0 THEN 'Y' ELSE 'N' END AS hallType2Yn
+     , CASE WHEN S.HALL_TYPE_1_CTN = 'N' AND S.HALL_TYPE_3_CTN = 'Y' AND S.HALL_TYPE = 'N' THEN 'N'
+     		WHEN S.HALL_TYPE_1_CTN = 'N' AND S.HALL_TYPE_3_CTN = 'N' AND S.HALL_TYPE = 'N' THEN 'Y'
+	     	WHEN S.CTN = 1 THEN 'N'
+     		WHEN S.HALL_TYPE = '3' AND S.CTN = -1 THEN 'Y'
+     		WHEN S.HALL_TYPE = '2' AND S.CTN = 0 THEN 'Y' ELSE 'N' END AS hallType3Yn
+     , S.CTN AS ETC1
+  FROM (SELECT
+			   (SELECT NVL(MAX(Z.HALL_TYPE_1_CTN), 'N')
+			 	  FROM (
+					 	SELECT CASE WHEN Y.HALL_TYPE = '1' AND COUNT(Y.HALL_TYPE) > 0 THEN 'Y' END HALL_TYPE_1_CTN
+						  FROM (
+								SELECT X.HALL_TYPE AS HALL_TYPE
+								  FROM TB_SR_RSRVTN X
+								 WHERE ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+								    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+								   AND X.STATUS != 'R'
+					   		   ) Y
+					  GROUP BY Y.HALL_TYPE
+					   ) Z
+			   ) HALL_TYPE_1_CTN
+			 , (SELECT NVL(MAX(Z.HALL_TYPE_2_CTN), 'N')
+			 	  FROM (
+					 	SELECT CASE WHEN Y.HALL_TYPE = '2' AND COUNT(Y.HALL_TYPE) > 0 THEN 'Y' END HALL_TYPE_2_CTN
+						  FROM (
+								SELECT X.HALL_TYPE AS HALL_TYPE
+								  FROM TB_SR_RSRVTN X
+								 WHERE ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+								    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+								   AND X.STATUS != 'R'
+					   		   ) Y
+					  GROUP BY Y.HALL_TYPE
+					   ) Z
+			   ) HALL_TYPE_2_CTN
+			 , (SELECT NVL(MAX(Z.HALL_TYPE_3_CTN), 'N')
+			 	  FROM (
+					 	SELECT CASE WHEN Y.HALL_TYPE = '3' AND COUNT(Y.HALL_TYPE) > 0 THEN 'Y' END HALL_TYPE_3_CTN
+						  FROM (
+								SELECT X.HALL_TYPE AS HALL_TYPE
+								  FROM TB_SR_RSRVTN X
+								 WHERE ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+								    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+								         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+								   AND X.STATUS != 'R'
+					   		   ) Y
+					  GROUP BY Y.HALL_TYPE
+					   ) Z
+			   ) HALL_TYPE_3_CTN
+			 , (SELECT NVL(MAX(Y.HALL_TYPE), 'N')
+			   	  FROM (
+			   	  		SELECT X.HALL_TYPE
+					      FROM TB_SR_RSRVTN X
+						 WHERE X.USER_ID = #{userId}
+						   AND ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+						         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+						    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+						         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+						   AND X.STATUS != 'R'
+					   ) Y
+			   ) HALL_TYPE
+			 , (SELECT CASE WHEN Z.IS_RSRV = Z.WEEKEND_OTH AND Z.IS_RSRV = 'N' THEN 0
+			 				WHEN Z.IS_RSRV = 'N' AND Z.WEEKEND_OTH = 'Y' THEN -1 ELSE 1 END
+				  FROM (SELECT 
+							   (SELECT NVL(MAX(Y.RSRV), 'N')
+								  FROM (
+										SELECT CASE WHEN X.USER_ID = #{userId} AND X.RSRV_DT_START = #{rsrvDtStart} THEN 'Y' END RSRV
+										  FROM TB_SR_RSRVTN X
+										 WHERE ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+										         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+										    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+										         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+										   AND X.STATUS != 'R'
+							   		   ) Y
+							   ) IS_RSRV
+							 , (SELECT NVL(MAX(Y.WEEKEND_RSRV), 'N')
+								  FROM (
+										SELECT CASE WHEN X.USER_ID = #{userId} AND X.RSRV_DT_START != #{rsrvDtStart} AND TO_CHAR(TO_DATE(X.RSRV_DT_START,'YYYYMMDD'), 'D') IN ('1', '7') THEN 'Y' END WEEKEND_RSRV
+										  FROM TB_SR_RSRVTN X
+										 WHERE ((X.RSRV_DT_START >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+										         AND X.RSRV_DT_START <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL))
+										    OR (X.RSRV_DT_END >= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') = '1' THEN TO_CHAR((TO_DATE(#{rsrvDtStart},'YYYYMMDD') - 1), 'YYYYMMDD') ELSE (#{rsrvDtStart}) END WEEK FROM DUAL) 
+										         AND X.RSRV_DT_END <= (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtEnd},'YYYYMMDD'), 'D') = '7' THEN TO_CHAR((TO_DATE(#{rsrvDtEnd},'YYYYMMDD') + 1), 'YYYYMMDD') ELSE (#{rsrvDtEnd}) END WEEK FROM DUAL)))
+										   AND X.STATUS != 'R'
+							   		   ) Y
+							   ) WEEKEND_OTH
+							 , (SELECT CASE WHEN TO_CHAR(TO_DATE(#{rsrvDtStart},'YYYYMMDD'), 'D') IN ('1', '7') THEN 'Y' ELSE 'N' END
+								  FROM DUAL
+							   ) IS_WEEKEND
+		  				  FROM DUAL
+		  			   ) Z
+		  	   ) CTN
+		  FROM DUAL
+	   ) S
+GROUP BY S.HALL_TYPE_1_CTN, S.HALL_TYPE_2_CTN, S.HALL_TYPE_3_CTN, S.CTN, S.HALL_TYPE
+]]>
+</select>
+
+<!-- MMS문자발송 테스트불가 <운영만 가능>  -->
+<insert id="sendMMS" parameterType="java.util.HashMap">
+  <![CDATA[
+  INSERT INTO DB_SMS.MMS_QUEUE (
+    MMS_SEQ
+    , RECV_NUMBER -- 수신전화번호 
+    , SEND_NUMBER -- 발신번호 고정값 
+    , SEND_REQ_DATE -- 발송시간 (년월일시분초)까지 미래시간이면 예약발송으로
+    , COL01 -- KEY값   
+    , MSG_TYPE -- 메세지종류 0 : MMS
+    , SUBJECT -- 제목 : 40byte 까지만 사용해야 함, 한글/영어/숫자/()[] 문자만 사용하기를 권고함 (기타 특수기호 사용 시 전송이 실패할 수 있음)
+    , MESSAGE -- 본문내용 
+    , STATUS -- 발송대기 0 
+    )VALUES(
+    DB_SMS.MMS_SEQ.NEXTVAL
+    , TRIM(REPLACE(REPLACE(#{telNo},'-',''),' ',''))
+    , '025798100'
+  ]]>
+  <if test='sendDt != null and sendDt !="" and sendDt != "SYSDATE"' >
+      , TO_DATE(#{sendDt}, 'YYYY-MM-DD HH24:MI:SS') 
+  </if>
+  <if test='sendDt != null and sendDt !="" and sendDt eq "SYSDATE"' >
+      , SYSDATE
+  </if>
+  <if test='seq != null and seq !=""'>
+      , 'showroom_' || #{seq}
+  </if>
+    <![CDATA[
+    , 7
+    , #{subject}
+    , REPLACE(#{body},CHR(38)||'amp'||CHR(59)||'quot'||CHR(59),CHR(34))
+    , 0
+    )
+    ]]>
+</insert>
+
+<update id="updateMMSStatus" parameterType="java.util.HashMap">
+    <![CDATA[
+    UPDATE DB_SMS.MMS_QUEUE
+       SET STATUS = #{status}
+     WHERE COL01 = 'showroom_' || #{seq}
+    ]]>
+</update>
+
+
+<select id="getAdminListExcel" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO" parameterType="java.util.HashMap" >
+    SELECT /* resources getAdminListExcel */
+           IN_DT AS "inDt"
+         ,RSRV_DT_START AS "rsrvDtStart"
+         ,RSRV_DT_END AS "rsrvDtEnd"
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_GP' AND CD_ID = HALL_TYPE) AS "hallType"
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_TM_GP' AND CD_ID = EVNT_DT) AS "evntDt"
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_STS_GP' AND CD_ID = STATUS) AS "status"
+         ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_BTCH_GP' AND CD_ID = BTCH_STYL) AS btchStyl
+         ,STATUS AS "statusCd"
+         ,SEQ AS "seq"
+         ,EVNT_NM AS "evntNm"
+         ,RPRSNTR_NM AS "rprsntrNm"
+         ,EVNT_DT AS "evntDtCd"
+         ,IS_TEMP AS "isTemp"
+         ,HALL_TYPE AS "hallTypeCd"
+         ,EVNT_DESC AS "evntDesc"
+         ,ORG_NM as "orgNm"
+         ,RPRSNTR_NM as "rprsntrNm"
+         ,MNGR_NM as "mngrNm"
+         ,COM_RGST_NO as "comRgstNo"
+         ,BIZ_TYPE as "bizType"
+         ,BIZ_TYPE2 as "bizType2"
+         ,REPLACE(TEL_NO,'-','') as "telNo"
+         ,REPLACE(FAX_NO,'-','') as "faxNo"
+         ,EMAIL as "email"
+         ,ADDRESS as "address"
+         ,ADDRESS_DTL as "addressDtl"
+         ,WLS_MIC as "wlsMic"
+         ,W_MIC as "wMic"
+         ,B_AMP as "bAmp"
+         ,PRJCTR as "prjctr"
+         ,TBL as "tbl"
+         ,CHR as "chr"
+         ,GRBG_PCK as "grbgPck"
+         ,BTCH_STYL as "btchStylCd"
+         ,ETC as "etc"
+         ,RENT_PAY as "rentPay"
+         ,MNG_PAY as "mngPay"
+         ,EQPMNT_PAY as "eqpmntPay"
+         ,TOTAL_PAY as "totalPay"
+         ,ISCORRDR as "iscorrdr"
+         ,USER_ID as "userId"
+         ,DISCOUNT as "discount"
+     FROM TB_SR_RSRVTN tsr
+    WHERE 1=1
+   <if test='inDt1 != null and inDt1 !=""' >
+      AND TO_DATE(IN_DT ,'yyyy-mm-dd') BETWEEN TO_DATE(#{inDt1} ,'yyyy-mm-dd')  AND  TO_DATE(#{inDt2} ,'yyyy-mm-dd')
+    </if>
+    <if test='rsrvDt1 != null and rsrvDt1 !=""' >
+      AND TO_DATE(RSRV_DT_START ,'yyyy-mm-dd') <![CDATA[>=]]> TO_DATE(#{rsrvDt1},'yyyy-mm-dd')
+    </if>
+    <if test='rsrvDt2 != null and rsrvDt2 !=""' >
+      AND TO_DATE(RSRV_DT_END ,'yyyy-mm-dd') <![CDATA[<=]]> TO_DATE(#{rsrvDt2},'yyyy-mm-dd')
+    </if>
+    <if test='evntNm != null and evntNm !=""' >
+      AND EVNT_NM like '%' || #{evntNm} || '%'
+    </if>
+    <if test='rprsntrNm != null and rprsntrNm !=""' >
+      AND RPRSNTR_NM like '%' || #{rprsntrNm} || '%'
+    </if>
+    <if test='status != null and status !="" and status != "전체"' >
+      AND STATUS like '%' || #{status} || '%'
+    </if>
+    <if test='hallType != null and hallType !="" and hallType != "전체"' >
+      AND HALL_TYPE like '%' || #{hallType} || '%'
+    </if>
+    <if test='seq != null and seq !=""' >
+      AND SEQ = #{seq}
+    </if>
+    ORDER BY tsr.RSRV_DT_START
+
+    </select>
+
+
+    <update id="updateRsrvList">
+       <![CDATA[
+            UPDATE TB_SR_RSRVTN
+               SET IN_DT = #{inDt},
+                   RSRV_DT_START = #{rsrvDtStart},
+                   RSRV_DT_END = #{rsrvDtEnd},
+                   HALL_TYPE = #{hallType},
+                   EVNT_DESC = #{evntDesc},
+                   EVNT_DT = #{evntDt},
+                   IS_TEMP = #{isTemp},
+                   EVNT_NM = #{evntNm},
+                   ORG_NM = #{orgNm},
+                   RPRSNTR_NM = #{rprsntrNm},
+                   MNGR_NM = NULL,
+                   COM_RGST_NO = #{comRgstNo},
+                   BIZ_TYPE = #{bizType},
+                   BIZ_TYPE2 = #{bizType2},
+                   TEL_NO = NULL,
+                   EMAIL = NULL,
+                   ADDRESS = #{address},
+                   ADDRESS_DTL = #{addressDtl},
+                   WLS_MIC = #{wlsMic},
+                   W_MIC = #{wMic},
+                   B_AMP = #{bAmp},
+                   ETC = #{etc},
+                   PRJCTR = #{prjctr},
+                   TBL = #{tbl},
+                   CHR = #{chr},
+                   GRBG_PCK = #{grbgPck},
+                   BTCH_STYL = #{btchStyl},
+                   RENT_PAY = #{rentPay},
+                   MNG_PAY = #{mngPay},
+                   EQPMNT_PAY = #{eqpmntPay},
+                   TOTAL_PAY = #{totalPay},
+                   STATUS = #{status},
+                   ISCORRDR = #{iscorrdr},
+                   FAX_NO = #{faxNo},
+                   MODI_DT = TO_CHAR(SYSDATE, 'yyyymmdd'),
+                   MODI_DT2 = SYSDATE,
+                   DISCOUNT = #{discount}
+             WHERE SEQ     = #{seq}
+               AND USER_ID = #{userId}
+        ]]>
+    </update>
+
+    <insert id="insertHistory">
+        <![CDATA[
+        INSERT INTO TB_SR_RSRVTN_HIS (
+            EVNT_NM,
+            EVNT_DESC,
+            ORG_NM,
+            COM_RGST_NO,
+            RPRSNTR_NM,
+            MNGR_NM,
+            BIZ_TYPE,
+            BIZ_TYPE2,
+            TEL_NO,
+            FAX_NO,
+            ADDRESS,
+            ADDRESS_DTL,
+            EMAIL,
+            EVNT_DT,
+            IS_TEMP,
+            HALL_TYPE,
+            SEQ,
+            RENT_PAY,
+            MNG_PAY,
+            EQPMNT_PAY,
+            TOTAL_PAY,
+            RSRV_DT_START,
+            STATUS,
+            USER_ID,
+            IN_DT,
+            MODI_DT,
+            ISCORRDR,
+            WLS_MIC,
+            W_MIC,
+            B_AMP,
+            PRJCTR,
+            TBL,
+            CHR,
+            GRBG_PCK,
+            BTCH_STYL,
+            RSRV_DT_END,
+            ETC,
+            IN_DT2
+    ) VALUES (
+             #{evntNm},
+             #{evntDesc},
+             #{orgNm},
+             #{comRgstNo},
+             #{rprsntrNm},
+             NULL,
+             #{bizType},
+             #{bizType2},
+             NULL,
+             #{faxNo},
+             #{address},
+             #{addressDtl},
+             NULL,
+             #{evntDt},
+             #{isTemp},
+             #{hallType},
+             #{seq},
+             #{rentPay},
+             #{mngPay},
+             #{eqpmntPay},
+             #{totalPay},
+             #{rsrvDtStart},
+             #{status},
+             #{userId},
+             #{inDt},
+             COALESCE(#{modiDt}, NULL),
+             #{iscorrdr},
+             #{wlsMic},
+             #{wMic},
+             #{bAmp},
+             #{prjctr},
+             #{tbl},
+             #{chr},
+             #{grbgPck},
+             #{btchStyl},
+             #{rsrvDtEnd},
+             #{etc},
+              SYSDATE
+            )
+        ]]>
+    </insert>
+    <insert id="saveAgree" parameterType="java.util.HashMap" >
+      INSERT INTO TB_SR_USER_INFO
+      (
+        USER_ID
+        ,AGREE_YN
+      )
+      VALUES
+      (
+        #{userId}
+        ,#{agree}
+      )
+    </insert>
+
+    <select id="checkAgree" parameterType="java.util.HashMap" resultType="int" >
+      SELECT COUNT(*) FROM TB_SR_USER_INFO WHERE USER_ID = #{userId}
+    </select>
+    
+    <select id="getLastAttchFile" parameterType="String" resultType="egovframework.srrsrvtn.vo.SrrsrvtnAttchVO" >
+        <![CDATA[
+		  SELECT *
+			FROM (SELECT X.FILE_NM			AS "fileNm"
+					   , X.FILE_PATH		AS "filePath"
+					   , X.FILE_SEQ			AS "fileSeq"
+					   , X.FILE_SIZE		AS "fileSize"
+					   , X.FILE_TYPE		AS "fileType"
+					   , X.GBN				AS "gbn"
+					   , X.ORGN_NM			AS "orgnNm"
+					   , X.SEQ				AS "seq"
+					   , X.USER_ID			AS "userId"
+		            FROM TB_SR_RSRVTN_ATTCH X
+		           WHERE X.USER_ID = #{userId}
+		             AND X.GBN='CMPNY'
+		        ORDER BY X.FILE_SEQ DESC)
+	       WHERE ROWNUM <= 1
+        ]]>
+    </select>
+    
+    
+    <insert id="insertSrrsrvtnAttch" parameterType="egovframework.srrsrvtn.vo.SrrsrvtnAttchVO">
+    	<![CDATA[
+    		INSERT 
+    		  INTO TB_SR_RSRVTN_ATTCH
+    		  	 ( SEQ
+    		  	 , USER_ID
+    		  	 , FILE_NM
+    		  	 , FILE_PATH
+    		  	 , GBN
+    		  	 , FILE_SIZE
+    		  	 , ORGN_NM
+    		  	 , FILE_TYPE
+    		  	 , FILE_SEQ
+    		  	 )
+    		VALUES
+    			 (
+    			   #{seq}
+    		  	 , #{userId}
+    		  	 , #{fileNm}
+    		  	 , #{filePath}
+    		  	 , #{gbn}
+    		  	 , #{fileSize}
+    		  	 , #{orgnNm}
+    		  	 , #{fileType}
+    		  	 , FILE_SEQ.NEXTVAL
+    			 ) 
+    	]]>
+    </insert>
+
+    <update id="updateStatus">
+       <![CDATA[
+            UPDATE TB_SR_RSRVTN
+               SET STATUS  = #{status}
+               ,MODI_DT2 = SYSDATE
+             WHERE SEQ     = #{seq}
+               AND USER_ID = #{userId}
+        ]]>
+    </update>
+
+    <select id="getAdmin" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO" parameterType="java.util.HashMap" >
+        <![CDATA[
+        SELECT /* resources getAdmin */
+              IN_DT AS inDt
+             ,RSRV_DT_START AS rsrvDtStart
+             ,RSRV_DT_END AS rsrvDtEnd
+             ,STATUS AS status
+             ,SEQ AS seq
+             ,EVNT_NM AS evntNm
+             ,RPRSNTR_NM AS rprsntrNm
+             ,EVNT_DT AS evntDt
+             ,IS_TEMP AS isTemp
+             ,HALL_TYPE AS hallType
+             ,EVNT_DESC AS evntDesc
+             ,ORG_NM AS orgNm
+             ,RPRSNTR_NM AS rprsntrNm
+             ,MNGR_NM AS mngrNm
+             ,COM_RGST_NO AS comRgstNo
+             ,BIZ_TYPE AS bizType
+             ,BIZ_TYPE2 AS bizType2
+             ,TEL_NO AS telNo
+             ,FAX_NO AS faxNo
+             ,EMAIL AS email
+             ,ADDRESS AS address
+             ,ADDRESS_DTL AS addressDtl
+             ,WLS_MIC AS wlsMic
+             ,W_MIC AS wMic
+             ,B_AMP AS bAmp
+             ,PRJCTR AS prjctr
+             ,TBL AS tbl
+             ,CHR AS chr
+             ,GRBG_PCK AS grbgPck
+             ,BTCH_STYL AS btchStyl
+             ,ETC AS etc
+             ,RENT_PAY AS rentPay
+             ,MNG_PAY AS mngPay
+             ,EQPMNT_PAY AS eqpmntPay
+             ,TOTAL_PAY AS totalPay
+             ,ISCORRDR AS iscorrdr
+             ,USER_ID AS userId
+             ,DISCOUNT AS discount
+        FROM TB_SR_RSRVTN tsr
+        WHERE 1=1
+          AND SEQ = #{seq}
+          AND USER_ID = #{userId}
+        ]]>
+    </select>
+
+    <delete id="deleteUserInfo">
+        DELETE
+          FROM TB_SR_RSRVTN
+         WHERE SEQ = #{seq}
+           AND USER_ID = #{userId}
+    </delete>
+    <!-- 전시실 예약현황에서 그룹별로 가져오기 by GRP_ID  --> 
+    <select id="getSrRsrvtnListGrp" resultType="egovframework.srrsrvtn.vo.SrrsrvtnVO" parameterType="egovframework.srrsrvtn.vo.SrrsrvtnVO" >
+        <![CDATA[
+          SELECT 
+                STATUS AS STATUSCD
+                ,EVNT_DT AS EVNTDTCD
+                ,HALL_TYPE AS HALLTYPECD
+                ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_GP' AND CD_ID = HALL_TYPE) AS HALLTYPE
+                ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_TM_GP' AND CD_ID = EVNT_DT) AS EVNTDT
+                ,(SELECT CD_NM FROM TB_GEN_CODE WHERE GP_ID = 'SR_STS_GP' AND CD_ID = STATUS) AS STATUS
+                  ,A.EVNT_NM AS evntNm
+                  ,A.EVNT_DESC AS evntDesc
+                  ,A.ORG_NM AS orgNm
+                  ,A.COM_RGST_NO AS comRgstNo
+                  ,A.RPRSNTR_NM AS rprsntrNm
+                  ,A.MNGR_NM AS mngrNm
+                  ,A.BIZ_TYPE AS bizType
+                  ,A.BIZ_TYPE2 AS bizType2
+                  ,A.TEL_NO AS telNo
+                  ,A.FAX_NO AS faxNo
+                  ,A.ADDRESS AS address
+                  ,A.EMAIL AS email
+                  ,A.IS_TEMP AS isTemp
+                  ,A.SEQ AS seq
+                  ,A.RENT_PAY AS rentPay
+                  ,A.MNG_PAY AS mngPay
+                  ,A.EQPMNT_PAY AS eqpmntPay
+                  ,A.TOTAL_PAY AS totalPay
+                  ,A.RSRV_DT_START AS rsrvDtStart
+                  ,A.USER_ID AS userId
+                  ,A.IN_DT AS inDt
+                  ,A.MODI_DT AS modiDt
+                  ,A.ISCORRDR AS isCorrdr
+                  ,A.WLS_MIC AS wlsMic
+                  ,A.W_MIC AS wMic
+                  ,A.B_AMP AS bAmp
+                  ,A.PRJCTR AS prjctr
+                  ,A.TBL AS tbl
+                  ,A.CHR AS chr
+                  ,A.GRBG_PCK AS grbgPck
+                  ,A.BTCH_STYL AS btchStyl
+                  ,A.RSRV_DT_END AS rsrvDtEnd
+                  ,A.ETC AS etc
+                  ,A.ADDRESS_DTL AS addressDtl
+                  ,A.GRP_ID AS grpId 
+                FROM TB_SR_RSRVTN A,  
+                (SELECT MIN(SEQ) SEQ, GRP_ID FROM TB_SR_RSRVTN GROUP BY GRP_ID) B
+          WHERE A.SEQ = B.SEQ
+          AND A.GRP_ID = B.GRP_ID
+          AND A.USER_ID = #{userId}
+          ORDER BY A.GRP_ID DESC
+        ]]>
+    </select>
+
+    <update id="updateAttch">
+      UPDATE TB_SR_RSRVTN_ATTCH SET
+        SEQ = #{grpId}
+      WHERE 1=1
+        AND USER_ID = #{userId}
+        AND GBN = #{gbn}
+    </update> 
+</mapper>

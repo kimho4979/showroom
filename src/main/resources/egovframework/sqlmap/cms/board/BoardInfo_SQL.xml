@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.board.service.impl.BoardInfoMapper">
+
+	<resultMap id="boardInfo" type="egovframework.cms.board.vo.BoardInfoVO">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="boardNm" column="BOARD_NM"/>
+		<result property="boardSummary" column="BOARD_SUMMARY"/>
+		<result property="boardTy" column="BOARD_TY"/>
+		<result property="boardAdmin" column="BOARD_ADMIN"/>
+		<result property="boardAdminGroup" column="BOARD_ADMIN_GROUP"/>
+		<result property="useCategoryAt" column="USE_CATEGORY_AT"/>
+		<result property="permitLvlList" column="PERMIT_LVL_LIST"/>
+		<result property="limitGrpList" column="LIMIT_GRP_LIST"/>
+		<result property="permitLvlRead" column="PERMIT_LVL_READ"/>
+		<result property="limitGrpRead" column="LIMIT_GRP_READ"/>
+		<result property="permitLvlWrite" column="PERMIT_LVL_WRITE"/>
+		<result property="limitGrpWrite" column="LIMIT_GRP_WRITE"/>
+		<result property="permitLvlReply" column="PERMIT_LVL_REPLY"/>
+		<result property="limitGrpReply" column="LIMIT_GRP_REPLY"/>
+		<result property="permitLvlAnswer" column="PERMIT_LVL_ANSWER"/>
+		<result property="limitGrpAnswer" column="LIMIT_GRP_ANSWER"/>
+		<result property="permitLvlEditor" column="PERMIT_LVL_EDITOR"/>
+		<result property="limitGrpEditor" column="LIMIT_GRP_EDITOR"/>
+		<result property="permitLvlComment" column="PERMIT_LVL_COMMENT"/>
+		<result property="limitGrpComment" column="LIMIT_GRP_COMMENT"/>
+		<result property="useSecretAt" column="USE_SECRET_AT"/>
+		<result property="perPage" column="PER_PAGE"/>
+		<result property="newIconPeriod" column="NEW_ICON_PERIOD"/>
+		<result property="showDeletedAt" column="SHOW_DELETED_AT"/>
+		<result property="useRealnameAt" column="USE_REALNAME_AT"/>
+		<result property="showSelfAt" column="SHOW_SELF_AT"/>
+		<result property="useProgressAt" column="USE_PROGRESS_AT"/>
+		<result property="useEmailAt" column="USE_EMAIL_AT"/>
+		<result property="useTelNoAt" column="USE_TEL_NO_AT"/>
+		<result property="useHpNoAt" column="USE_HP_NO_AT"/>
+		<result property="useAdresAt" column="USE_ADRES_AT"/>
+		<result property="usePrivacyAt" column="USE_PRIVACY_AT"/>
+		<result property="useThumbAt" column="USE_THUMB_AT"/>
+		<result property="useRssAt" column="USE_RSS_AT"/>
+		<result property="mainAppointAt" column="MAIN_APPOINT_AT"/>
+		<result property="isMinwonAt" column="IS_MINWON_AT"/>
+		<result property="deptAppointAt" column="DEPT_APPOINT_AT"/>
+		<result property="uploadCount" column="UPLOAD_COUNT"/>
+		<result property="uploadSize" column="UPLOAD_SIZE"/>
+		<result property="uploadExt" column="UPLOAD_EXT"/>
+		<result property="headHtml" column="HEAD_HTML"/>
+		<result property="tailHtml" column="TAIL_HTML"/>
+		<result property="limitHtml" column="LIMIT_HTML"/>
+		<result property="limitWord" column="LIMIT_WORD"/>
+		<result property="writeDfltCn" column="WRITE_DFLT_CN"/>
+		<result property="useAt" column="USE_AT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectBoardInfoListCnt"  resultType="int">
+		SELECT  COUNT(*)
+		  FROM  WMS_BOARD_INFO A
+		 WHERE  1=1
+		<if test='searchWord != null and searchWord != ""'>
+		   AND  A.BOARD_NM LIKE '%' || #{searchWord} || '%'
+		</if>
+	</select>
+
+	<select id="selectBoardInfoList" resultMap="boardInfo">
+	SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.BOARD_NM
+			 ,  A.BOARD_TY
+			 ,  A.USE_CATEGORY_AT
+			 ,  A.USE_PROGRESS_AT
+			 ,  A.USE_AT
+			 ,  A.REGIST_ID
+			 ,  TO_CHAR(A.REGIST_DTTM, 'YYYY-MM-DD') AS REGIST_DTTM
+		  FROM  WMS_BOARD_INFO A
+		 WHERE	1=1
+		<if test='searchWord != null and searchWord != ""'>
+		   AND  A.BOARD_NM LIKE '%' || #{searchWord} || '%'
+		</if>
+	  ORDER BY  A.BOARD_ID DESC
+	) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+	</select>
+
+	<select id="selectBoardInfoListAll"  resultMap="boardInfo">
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.BOARD_NM
+		  FROM  WMS_BOARD_INFO A
+		WHERE	1=1
+	  ORDER BY  A.BOARD_ID DESC
+	</select>
+
+	<select id="selectBoardInfo"  resultMap="boardInfo">
+		SELECT  A.BOARD_ID
+			 ,  A.SITE_ID
+			 ,  A.BOARD_NM
+			 ,  A.BOARD_SUMMARY
+			 ,  A.BOARD_ADMIN
+			 ,  A.BOARD_ADMIN_GROUP
+			 ,  A.BOARD_TY
+			 ,  A.USE_CATEGORY_AT
+			 ,  A.PERMIT_LVL_LIST
+			 ,  A.LIMIT_GRP_LIST
+			 ,  A.PERMIT_LVL_READ
+			 ,  A.LIMIT_GRP_READ
+			 ,  A.PERMIT_LVL_WRITE
+			 ,  A.LIMIT_GRP_WRITE
+			 ,  A.PERMIT_LVL_REPLY
+			 ,  A.LIMIT_GRP_REPLY
+			 ,  A.PERMIT_LVL_ANSWER
+			 ,  A.LIMIT_GRP_ANSWER
+			 ,  A.PERMIT_LVL_EDITOR
+			 ,  A.LIMIT_GRP_EDITOR
+			 ,  A.PERMIT_LVL_COMMENT
+			 ,  A.LIMIT_GRP_COMMENT
+			 ,  A.USE_SECRET_AT
+			 ,  A.PER_PAGE
+			 ,  A.NEW_ICON_PERIOD
+			 ,  A.SHOW_DELETED_AT
+			 ,  A.USE_REALNAME_AT
+			 ,  A.SHOW_SELF_AT
+			 ,  A.USE_PROGRESS_AT
+			 ,  A.USE_EMAIL_AT
+			 ,  A.USE_TEL_NO_AT
+			 ,  A.USE_HP_NO_AT
+			 ,  A.USE_ADRES_AT
+			 ,  A.USE_PRIVACY_AT
+			 ,  A.USE_THUMB_AT
+			 ,  A.USE_RSS_AT
+			 ,  A.MAIN_APPOINT_AT
+			 ,  A.IS_MINWON_AT
+			 ,  A.DEPT_APPOINT_AT
+			 ,  A.USE_AT
+			 ,  A.UPLOAD_COUNT
+			 ,  A.UPLOAD_SIZE
+			 ,  A.UPLOAD_EXT
+			 ,  A.HEAD_HTML
+			 ,  A.TAIL_HTML
+			 ,  A.LIMIT_HTML
+			 ,  A.LIMIT_WORD
+			 ,  A.WRITE_DFLT_CN
+			 ,  A.REGIST_ID
+			 ,  TO_CHAR(A.REGIST_DTTM, 'YYYY-MM-DD') AS REGIST_DTTM
+		  FROM  WMS_BOARD_INFO A
+		 WHERE  A.BOARD_ID = #{boardId}
+	</select>
+
+	<insert id="insertBoardInfo">
+		INSERT
+		  INTO  WMS_BOARD_INFO
+		     (  BOARD_ID
+			 ,  SITE_ID
+			 ,  BOARD_NM
+			 ,  BOARD_SUMMARY
+			 ,  BOARD_TY
+			 ,  BOARD_ADMIN
+			 ,  BOARD_ADMIN_GROUP
+			 ,  USE_CATEGORY_AT
+			 ,  PERMIT_LVL_LIST
+			 ,  LIMIT_GRP_LIST
+			 ,  PERMIT_LVL_READ
+			 ,  LIMIT_GRP_READ
+			 ,  PERMIT_LVL_WRITE
+			 ,  LIMIT_GRP_WRITE
+			 ,  PERMIT_LVL_REPLY
+			 ,  LIMIT_GRP_REPLY
+			 ,  PERMIT_LVL_ANSWER
+			 ,  LIMIT_GRP_ANSWER
+			 ,  PERMIT_LVL_EDITOR
+			 ,  LIMIT_GRP_EDITOR
+			 ,  PERMIT_LVL_COMMENT
+			 ,  LIMIT_GRP_COMMENT
+			 ,  USE_SECRET_AT
+			 ,  USE_PROGRESS_AT
+			 ,  USE_EMAIL_AT
+			 ,  USE_TEL_NO_AT
+			 ,  USE_HP_NO_AT
+			 ,  USE_ADRES_AT
+			 ,  USE_PRIVACY_AT
+			 ,  USE_THUMB_AT
+			 ,  USE_RSS_AT
+			 ,  MAIN_APPOINT_AT
+			 ,  IS_MINWON_AT
+			 ,  DEPT_APPOINT_AT
+			 ,  USE_AT
+			 ,  PER_PAGE
+			 ,  NEW_ICON_PERIOD
+			 ,  SHOW_DELETED_AT
+ 			 ,  USE_REALNAME_AT
+			 ,  SHOW_SELF_AT
+			 ,  UPLOAD_COUNT
+			 ,  UPLOAD_SIZE
+			 ,  UPLOAD_EXT
+			 ,  HEAD_HTML
+			 ,  TAIL_HTML
+			 ,	LIMIT_HTML
+			 ,  LIMIT_WORD
+			 ,  WRITE_DFLT_CN
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  #{boardId, jdbcType=VARCHAR}
+			 ,  #{siteId, jdbcType=VARCHAR}
+			 ,  #{boardNm, jdbcType=VARCHAR}
+			 ,  #{boardSummary, jdbcType=VARCHAR}
+			 ,  #{boardTy, jdbcType=VARCHAR}
+			 ,  #{boardAdmin, jdbcType=VARCHAR}
+			 ,  #{boardAdminGroup, jdbcType=VARCHAR}
+			 ,  #{useCategoryAt, jdbcType=VARCHAR}
+			 ,  #{permitLvlList, jdbcType=VARCHAR}
+			 ,  #{limitGrpList, jdbcType=VARCHAR}
+			 ,  #{permitLvlRead, jdbcType=VARCHAR}
+			 ,  #{limitGrpRead, jdbcType=VARCHAR}
+			 ,  #{permitLvlWrite, jdbcType=VARCHAR}
+			 ,  #{limitGrpWrite, jdbcType=VARCHAR}
+			 ,  #{permitLvlReply, jdbcType=VARCHAR}
+			 ,  #{limitGrpReply, jdbcType=VARCHAR}
+			 ,  #{permitLvlAnswer, jdbcType=VARCHAR}
+			 ,  #{limitGrpAnswer, jdbcType=VARCHAR}
+			 ,  #{permitLvlEditor, jdbcType=VARCHAR}
+			 ,  #{limitGrpEditor, jdbcType=VARCHAR}
+			 ,  #{permitLvlComment, jdbcType=VARCHAR}
+			 ,  #{limitGrpComment, jdbcType=VARCHAR}
+			 ,  #{useSecretAt, jdbcType=VARCHAR}
+			 ,  #{useProgressAt, jdbcType=VARCHAR}
+			 ,  #{useEmailAt, jdbcType=VARCHAR}
+			 ,  #{useTelNoAt, jdbcType=VARCHAR}
+			 ,  #{useHpNoAt, jdbcType=VARCHAR}
+			 ,  #{useAdresAt, jdbcType=VARCHAR}
+			 ,  #{usePrivacyAt, jdbcType=VARCHAR}
+			 ,  #{useThumbAt, jdbcType=VARCHAR}
+			 ,  #{useRssAt, jdbcType=VARCHAR}
+			 ,  #{mainAppointAt, jdbcType=VARCHAR}
+			 ,  #{isMinwonAt, jdbcType=VARCHAR}
+			 ,  #{deptAppointAt, jdbcType=VARCHAR}
+			 ,  #{useAt, jdbcType=VARCHAR}
+			 ,  #{perPage, jdbcType=VARCHAR}
+			 ,  #{newIconPeriod, jdbcType=VARCHAR}
+			 ,  #{showDeletedAt, jdbcType=VARCHAR}
+ 			 ,  #{useRealnameAt, jdbcType=VARCHAR}
+			 ,  #{showSelfAt, jdbcType=VARCHAR}
+			 ,  #{uploadCount, jdbcType=VARCHAR}
+			 ,  #{uploadSize, jdbcType=VARCHAR}
+			 ,  #{uploadExt, jdbcType=VARCHAR}
+			 ,  #{headHtml, jdbcType=VARCHAR}
+			 ,  #{tailHtml, jdbcType=VARCHAR}
+			 ,  #{limitHtml, jdbcType=VARCHAR}
+			 ,  #{limitWord, jdbcType=VARCHAR}
+			 ,  #{writeDfltCn, jdbcType=VARCHAR}
+			 ,  SYSDATE
+			 ,  #{registId, jdbcType=VARCHAR}
+		     )
+	</insert>
+
+	<update id="updateBoardInfo">
+		UPDATE  WMS_BOARD_INFO
+		   SET  BOARD_NM = #{boardNm, jdbcType=VARCHAR}
+			 ,  BOARD_SUMMARY = #{boardSummary, jdbcType=VARCHAR}
+			 ,  BOARD_TY = #{boardTy, jdbcType=VARCHAR}
+			 ,  BOARD_ADMIN = #{boardAdmin, jdbcType=VARCHAR}
+			 ,  BOARD_ADMIN_GROUP = #{boardAdminGroup, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_LIST = #{permitLvlList, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_LIST = #{limitGrpList, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_READ = #{permitLvlRead, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_READ = #{limitGrpRead, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_WRITE = #{permitLvlWrite, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_WRITE = #{limitGrpWrite, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_REPLY = #{permitLvlReply, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_REPLY = #{limitGrpReply, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_ANSWER = #{permitLvlAnswer, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_ANSWER = #{limitGrpAnswer, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_EDITOR = #{permitLvlEditor, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_EDITOR = #{limitGrpEditor, jdbcType=VARCHAR}
+			 ,  PERMIT_LVL_COMMENT = #{permitLvlComment, jdbcType=VARCHAR}
+			 ,  LIMIT_GRP_COMMENT = #{limitGrpComment, jdbcType=VARCHAR}
+			 ,  USE_SECRET_AT = #{useSecretAt, jdbcType=VARCHAR}
+			 ,  PER_PAGE = #{perPage, jdbcType=VARCHAR}
+			 ,  NEW_ICON_PERIOD = #{newIconPeriod, jdbcType=VARCHAR}
+			 ,  SHOW_DELETED_AT = #{showDeletedAt, jdbcType=VARCHAR}
+			 ,  USE_REALNAME_AT = #{useRealnameAt, jdbcType=VARCHAR}
+			 ,  USE_CATEGORY_AT = #{useCategoryAt, jdbcType=VARCHAR}
+			 ,  SHOW_SELF_AT = #{showSelfAt, jdbcType=VARCHAR}
+			 ,  USE_PROGRESS_AT = #{useProgressAt, jdbcType=VARCHAR}
+			 ,  USE_EMAIL_AT = #{useEmailAt, jdbcType=VARCHAR}
+			 ,  USE_TEL_NO_AT = #{useTelNoAt, jdbcType=VARCHAR}
+			 ,  USE_HP_NO_AT = #{useHpNoAt, jdbcType=VARCHAR}
+			 ,  USE_ADRES_AT = #{useAdresAt, jdbcType=VARCHAR}
+			 ,  USE_PRIVACY_AT = #{usePrivacyAt, jdbcType=VARCHAR}
+			 ,  USE_THUMB_AT = #{useThumbAt, jdbcType=VARCHAR}
+			 ,  USE_RSS_AT = #{useRssAt, jdbcType=VARCHAR}
+			 ,  MAIN_APPOINT_AT = #{mainAppointAt, jdbcType=VARCHAR}
+			 ,  IS_MINWON_AT = #{isMinwonAt, jdbcType=VARCHAR}
+			 ,  DEPT_APPOINT_AT = #{deptAppointAt, jdbcType=VARCHAR}
+			 ,  USE_AT = #{useAt, jdbcType=VARCHAR}
+			 ,  UPLOAD_COUNT = #{uploadCount, jdbcType=VARCHAR}
+			 ,  UPLOAD_SIZE = #{uploadSize, jdbcType=VARCHAR}
+			 ,  UPLOAD_EXT = #{uploadExt, jdbcType=VARCHAR}
+			 ,  HEAD_HTML = #{headHtml, jdbcType=VARCHAR}
+			 ,  TAIL_HTML = #{tailHtml, jdbcType=VARCHAR}
+			 ,  LIMIT_HTML = #{limitHtml, jdbcType=VARCHAR}
+			 ,  LIMIT_WORD = #{limitWord, jdbcType=VARCHAR}
+			 ,  WRITE_DFLT_CN = #{writeDfltCn, jdbcType=VARCHAR}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+		 WHERE  BOARD_ID = #{boardId}
+	</update>
+
+    <delete id="deleteBoardInfo">
+    	DELETE FROM WMS_BOARD_INFO
+    	WHERE BOARD_ID = #{boardId}
+    </delete>
+    
+    
+    
+    
+    
+
+</mapper>
+

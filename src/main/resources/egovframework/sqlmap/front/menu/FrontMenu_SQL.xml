@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.menu.service.impl.FrontMenuMapper">
+	
+		<resultMap id="clobMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+			<result property="CONTENT" column="CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>
+			<result property="SUMMARY" column="SUMMARY" jdbcType="CLOB" javaType="java.lang.String"/>
+		</resultMap>
+	
+
+		<select id="getMenuList" parameterType="java.util.HashMap" resultType="egovMap">
+		<![CDATA[
+		
+		SELECT SITE_ID
+		     , MENU_ID
+		     , PARNTS_MENU_ID
+		     , MENU_NM
+		     , MENU_GB
+		     , LINK_TARGET
+		     , LINK_MENU_ID
+		     , LINK_BOARD_ID
+		     , LINK_URL
+		     , LINK_PARAM
+		     , POPUP_PARAM
+		     , TEMPLATE
+		     , LAYOUT
+		     , APPOINT_STAFF_AT
+		     , MNG_DEPT_ID
+		     , MNG_STAFF_ID
+		     , MNG_USER_IDS
+		     , SHOW_SATIS_AT
+		     , SHOW_CPYRGT_AT
+		     , SHOW_AT
+		     , SHOW_SNS_AT
+		     , MAIN_MENU_AT
+		     , USE_AT
+		     , LIMIT_GROUP_IDS
+		     , PERMIT_LEVEL_ID
+		     , LFT
+		     , RGT
+		     , LVL
+		     , REGIST_DTTM
+		     , REGIST_ID
+		     , UPDATE_DTTM
+		     , UPDATE_ID
+		     , LEVEL AS LV
+		     , (SELECT LINK_URL||'?'||LINK_PARAM FROM WMS_SITE_MENU WHERE MENU_ID = T1.LINK_MENU_ID) AS LINKED_URL
+		FROM WMS_SITE_MENU T1
+		WHERE 1=1
+		AND SHOW_AT = 'Y'
+		AND USE_AT = 'Y'
+		START WITH MENU_ID = '1'
+		CONNECT BY PRIOR MENU_ID = PARNTS_MENU_ID
+		ORDER BY LFT
+		]]>
+	</select>
+	 
+	<select id="getMenuInfo" parameterType="java.util.HashMap" resultMap="clobMap">
+	
+		SELECT SITE_ID
+             , MENU_ID
+             , PREV_MENU_ID
+             , NEXT_MENU_ID
+             , PARNTS_MENU_ID
+             , PARNTS_MENU_NM
+             , MENU_NM
+             , MENU_GB
+             , LINK_TARGET
+             , LINK_MENU_ID
+             , LINK_BOARD_ID
+             , LINK_URL
+             , LINK_PARAM
+             , POPUP_PARAM
+             , TEMPLATE
+             , LAYOUT
+             , APPOINT_STAFF_AT
+             , MNG_DEPT_ID
+             , MNG_STAFF_ID
+             , MNG_USER_IDS
+             , SHOW_SATIS_AT
+             , SHOW_CPYRGT_AT
+             , SHOW_AT
+             , SHOW_SNS_AT
+             , MAIN_MENU_AT
+             , USE_AT
+             , LIMIT_GROUP_IDS
+             , PERMIT_LEVEL_ID
+             , LFT
+             , RGT
+             , LVL
+             , REGIST_DTTM
+             , REGIST_ID
+             , UPDATE_DTTM
+             , UPDATE_ID
+             , SUMMARY
+             , IMG_URL
+             , IMG_TEXT
+        FROM (
+			SELECT T1.SITE_ID
+	             , T1.MENU_ID
+	             , NVL(LAG(T1.MENU_ID) OVER (ORDER BY T1.LFT ASC), LAST_VALUE(T1.MENU_ID) OVER(ORDER BY T1.LFT ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)) AS PREV_MENU_ID
+	             , NVL(LEAD(T1.MENU_ID) OVER (ORDER BY T1.LFT ASC), FIRST_VALUE(T1.MENU_ID) OVER(ORDER BY T1.LFT ASC)) AS NEXT_MENU_ID
+	             , T1.PARNTS_MENU_ID
+	             , (SELECT MENU_NM FROM WMS_SITE_MENU WHERE MENU_ID = T1.PARNTS_MENU_ID) AS PARNTS_MENU_NM
+	             , T1.MENU_NM
+	             , T1.MENU_GB
+	             , T1.LINK_TARGET
+	             , T1.LINK_MENU_ID
+	             , T1.LINK_BOARD_ID
+	             , T1.LINK_URL
+	             , T1.LINK_PARAM
+	             , T1.POPUP_PARAM
+	             , T1.TEMPLATE
+	             , T1.LAYOUT
+	             , T1.APPOINT_STAFF_AT
+	             , T1.MNG_DEPT_ID
+	             , T1.MNG_STAFF_ID
+	             , T1.MNG_USER_IDS
+	             , T1.SHOW_SATIS_AT
+	             , T1.SHOW_CPYRGT_AT
+	             , T1.SHOW_AT
+	             , T1.SHOW_SNS_AT
+	             , T1.MAIN_MENU_AT
+	             , T1.USE_AT
+	             , T1.LIMIT_GROUP_IDS
+	             , T1.PERMIT_LEVEL_ID
+	             , T1.LFT
+	             , T1.RGT
+	             , T1.LVL
+	             , T1.REGIST_DTTM
+	             , T1.REGIST_ID
+	             , T1.UPDATE_DTTM
+	             , T1.UPDATE_ID
+	             , T1.SUMMARY
+	             , T1.IMG_URL
+	             , T1.IMG_TEXT
+	        FROM WMS_SITE_MENU T1
+	        WHERE 1=1
+	        AND T1.SHOW_AT = 'Y'
+	        AND T1.USE_AT = 'Y'
+	        AND T1.MENU_ID != '1'
+	        AND T1.LVL != '2'
+	        ORDER BY LFT ASC
+        )WHERE MENU_ID = #{menuId, jdbcType=VARCHAR}
+	</select>
+</mapper>

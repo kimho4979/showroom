@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- SqlSession setup for MyBatis Database Layer 
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/egovframework/sqlmap/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/**/*_SQL.xml" />
+	</bean>
+	
+	<bean id="sqlSession1" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource1" />
+		<property name="configLocation" value="classpath:/egovframework/sqlmap1/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap1/**/*_SQL.xml" />
+	</bean>-->
+
+	<!-- MapperConfigurer setup for MyBatis Database Layer with @Mapper("deptMapper") in DeptMapper Interface 
+ 	
+ 	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="egovframework.**.service.impl" />
+	</bean>-->
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  	<property name="dataSource" ref="dataSource"/>
+	  	<property name="configLocation" value="classpath:/egovframework/sqlmap/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/**/*_SQL.xml" />
+	</bean>
+	
+	<bean id="sqlSessionFactory1" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  	<property name="dataSource" ref="dataSource1"/>
+	  	<property name="configLocation" value="classpath:/egovframework/sqlmap1/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap1/**/*_SQL.xml" />
+	</bean>
+	
+	<bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  	<property name="dataSource" ref="dataSource2"/>
+	  	<property name="configLocation" value="classpath:/egovframework/sqlmap2/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap2/**/*_SQL.xml" />
+	</bean>
+	
+	<bean id="sqlSessionFactory3" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  	<property name="dataSource" ref="dataSource3"/>
+	  	<property name="configLocation" value="classpath:/egovframework/sqlmap3/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap3/**/*_SQL.xml" />
+	</bean>
+	
+	
+	<bean id="dicmsMapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="egovframework.**.service.impl" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="dicmsMapper1" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="egovframework.at" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory1" />
+	</bean>
+	
+	<bean id="dicmsMapper2" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="egovframework.flower" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory2" />
+	</bean>
+	
+	<bean id="dicmsMapper3" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="egovframework.marketrent" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory3" />
+	</bean>
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"> 
+		<constructor-arg ref="sqlSessionFactory"/> 
+	</bean> 
+    
+    <bean id="sqlSession1" class="org.mybatis.spring.SqlSessionTemplate"> 
+		<constructor-arg ref="sqlSessionFactory1"/> 
+	</bean> 
+	
+	<bean id="sqlSession2" class="org.mybatis.spring.SqlSessionTemplate"> 
+		<constructor-arg ref="sqlSessionFactory2"/> 
+	</bean> 
+	
+	<bean id="sqlSession3" class="org.mybatis.spring.SqlSessionTemplate"> 
+		<constructor-arg ref="sqlSessionFactory3"/> 
+	</bean> 
+    
+</beans>

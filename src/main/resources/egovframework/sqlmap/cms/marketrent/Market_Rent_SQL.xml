@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.marketrent.service.impl.MarketRentMapper">
+
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="content" column="CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>		
+	</resultMap>
+	
+	
+	<sql id="where">
+		<if test="searchUseYn != null and searchUseYn != ''">
+			AND USE_YN = #{searchUseYn}
+		</if>
+		<if test="searchTyGroupCode != null and searchTyGroupCode != ''">
+			AND TY_GROUP_CODE = #{searchTyGroupCode}
+		</if>
+	</sql>
+
+	
+    <select id="getMarketRent" resultMap="egovResultMap">
+        SELECT T1.MARKET_SEQ
+             , T1.MARKET_TYPE
+             , T1.TY_GROUP_CODE
+             , T1.MARKET_NO
+             , T1.MARKET_NAME
+             , T1.OWNER
+             , T1.TEL
+             , T1.ITEMS
+             , T1.SALE_TIME
+             , T1.CLO_DAY
+             , T1.DELI_TEXT
+             , T1.HASH_TEXT
+             , T1.CONTENT
+             , T1.J_CODE
+             , T1.AREA_COORDS
+             , T1.USE_YN
+             , T1.INSERT_ID
+             , T1.INSERT_DATE
+             , T1.UPDATE_ID
+             , T1.UPDATE_DATE
+		FROM TB_MARKET_INFO T1
+		WHERE 1=1
+        AND T1.MARKET_SEQ = #{marketSeq}
+        
+    </select>
+    <select id="getMarketRentAddInfo" resultMap="egovResultMap">
+       	SELECT T1.MARKET_SEQ
+             , T1.MARKET_TYPE
+             , T1.TY_GROUP_CODE
+             , T1.MARKET_NO
+             , T1.MARKET_NAME
+             , T1.OWNER
+             , T1.TEL
+             , T1.ITEMS
+             , T1.SALE_TIME
+             , T1.CLO_DAY
+             , T1.DELI_TEXT
+             , T1.HASH_TEXT
+             , T1.CONTENT
+             , T1.J_CODE
+             , T1.AREA_COORDS
+             , T1.USE_YN
+             , T1.INSERT_ID
+             , T1.INSERT_DATE
+             , T1.UPDATE_ID
+             , T1.UPDATE_DATE
+		FROM TB_MARKET_INFO T1
+		WHERE 1=1
+		AND T1.MARKET_TYPE = #{marketType}
+		AND T1.MARKET_NO = #{marketNo}
+		
+    </select>
+    
+    <select id="getMarketGroupType" resultType="java.lang.String">
+    	SELECT TY_GROUP_CODE
+    	     , TY_CODE_ARR
+    	     , TY_GROUP_NAME
+    	     , USE_YN
+    	     , INSERT_ID
+    	     , INSERT_DATE
+    	     , UPDATE_ID
+    	     , UPDATE_DATE
+		FROM TB_MARKET_TYPE_GROUP
+    	WHERE TY_GROUP_CODE = #{searchTypeGroupCode}
+    	AND USE_YN = 'Y'
+    </select>
+   
+    <select id="getMarketGroupTypeList" resultMap="egovResultMap">
+    	SELECT TY_GROUP_CODE
+    	     , TY_CODE_ARR
+    	     , TY_GROUP_NAME
+    	     , USE_YN
+    	     , INSERT_ID
+    	     , INSERT_DATE
+    	     , UPDATE_ID
+    	     , UPDATE_DATE
+		FROM TB_MARKET_TYPE_GROUP
+		WHERE USE_YN = 'Y'
+    </select>
+    
+    <update id="save" >
+        <![CDATA[
+              SELECT 1 FROM DUAL
+        ]]>
+    </update>
+    
+    <insert id="insert" >
+        <![CDATA[
+           	INSERT INTO TB_MARKET_INFO (
+			   		MARKET_SEQ
+			   	  , MARKET_TYPE
+			   	  , TY_GROUP_CODE
+			   	  , MARKET_NO
+			   	  , MARKET_NAME
+			   	  , OWNER
+			   	  , TEL
+			   	  , ITEMS
+			   	  , SALE_TIME
+			   	  , CLO_DAY
+			   	  , DELI_TEXT
+			   	  , HASH_TEXT
+			   	  , CONTENT
+			   	  , J_CODE
+			   	  , AREA_COORDS
+			   	  , USE_YN
+			   	  , INSERT_ID
+			   	  , INSERT_DATE
+			   	  , UPDATE_ID
+			   	  , UPDATE_DATE
+		   )VALUES ( 
+			   	  #{marketSeq, jdbcType=VARCHAR}
+			   	, #{marketType, jdbcType=VARCHAR}
+			   	, #{tyGroupCode, jdbcType=VARCHAR}
+			   	, #{marketNo, jdbcType=VARCHAR}
+			   	, #{marketName, jdbcType=VARCHAR}
+			   	, #{owner, jdbcType=VARCHAR}
+			   	, #{tel, jdbcType=VARCHAR}
+			   	, #{items, jdbcType=VARCHAR}
+			   	, #{saleTime, jdbcType=VARCHAR}
+			   	, #{cloDay, jdbcType=VARCHAR}
+			   	, #{deliText, jdbcType=VARCHAR}
+			   	, #{hashText, jdbcType=VARCHAR}
+			   	, #{content, jdbcType=VARCHAR}
+			   	, #{jCode, jdbcType=VARCHAR}
+			   	, #{areaCoords, jdbcType=VARCHAR}
+			   	, 'Y'
+			   	, #{userId, jdbcType=VARCHAR}
+			   	, SYSDATE
+			   	, #{userId, jdbcType=VARCHAR}
+			   	, SYSDATE
+			)        
+        ]]>
+    </insert>
+    
+    <update id="update" >
+        <![CDATA[
+               UPDATE TB_MARKET_INFO 
+                      SET 
+                       MARKET_NAME = #{marketName, jdbcType=VARCHAR}
+				   	  , OWNER = #{owner, jdbcType=VARCHAR}
+				   	  , TEL = #{tel, jdbcType=VARCHAR}
+				   	  , ITEMS = #{iTems, jdbcType=VARCHAR}
+				   	  , SALE_TIME = #{saleTime, jdbcType=VARCHAR}
+				   	  , CLO_DAY = #{cloDay, jdbcType=VARCHAR}
+				   	  , DELI_TEXT= #{deliText, jdbcType=VARCHAR}
+				   	  , HASH_TEXT = #{hashText, jdbcType=VARCHAR}
+				   	  , CONTENT = #{content, jdbcType=VARCHAR}
+				   	  , J_CODE = #{jCode, jdbcType=VARCHAR}
+				   	  , AREA_COORDS = #{areaCoords, jdbcType=VARCHAR}
+				   	  , UPDATE_ID = #{userId, jdbcType=VARCHAR}
+				   	  , UPDATE_DATE = SYSDATE
+               WHERE MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+               AND MARKET_TYPE = #{marketType}
+			   AND MARKET_NO = #{marketNo}
+        ]]>
+    </update>
+    
+    <delete id="delete">
+	     <![CDATA[
+	     	DELETE FROM TB_MARKET_INFO
+	     	WHERE MARKET_SEQ = #{marketSeq}
+	     	AND MARKET_TYPE = #{marketType}
+			AND MARKET_NO = #{marketNo}
+	     ]]>
+    </delete>
+    
+    
+    <insert id="marketFileProc">
+		INSERT INTO TB_MARKET_FILE (
+		     FILE_SEQ
+		   , MARKET_SEQ
+		   , STRE_FILE_PATH
+		   , STRE_FILE_NM
+		   , ORIGNL_FILE_NM
+		   , THUMB_STRE_FILE_NM
+		   , FILE_EXTSN
+		   , FILE_CN
+		   , FILE_SIZE
+		   , INSERT_ID
+		   , INSERT_DATE
+		   , UPDATE_ID
+		   , UPDATE_DATE
+		)VALUES ( 
+			   #{fileSeq, jdbcType=VARCHAR}
+			 , #{marketSeq, jdbcType=VARCHAR}
+			 , #{streFilePath, jdbcType=VARCHAR}
+			 , #{streFileNm, jdbcType=VARCHAR}
+			 , #{orignlFileNm, jdbcType=VARCHAR}
+			 , #{thumbStreFileNm, jdbcType=VARCHAR}
+			 , #{fileExtsn, jdbcType=VARCHAR}
+			 , #{fileCn, jdbcType=VARCHAR}
+			 , #{fileSize, jdbcType=VARCHAR}
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+			 , #{id, jdbcType=VARCHAR}
+			 , SYSDATE
+		)
+	</insert>
+	
+	<select id="selectMarketFileList" parameterType="marketFileVO" resultMap="egovResultMap">
+		SELECT FILE_SEQ
+			 , MARKET_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_MARKET_FILE
+		WHERE 1=1
+		AND MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+	
+	</select>
+	
+	
+	<select id="getFileOne" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , MARKET_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_MARKET_FILE
+		WHERE 1=1
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+		AND MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+	</select>
+	
+	
+	<delete id="deleteFileOne">
+		DELETE FROM TB_MARKET_FILE
+		WHERE MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+		AND FILE_SEQ = #{fileSeq, jdbcType=VARCHAR}
+	</delete>
+	<!-- 
+	<delete id="fixSellFileDelProc">
+		DELETE FROM TB_MARKET_FILE
+		WHERE MARKET_SEQ = #{marketSeq, jdbcType=VARCHAR}
+	</delete>
+     -->
+
+</mapper>
+

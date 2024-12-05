@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.marketrent.AtMarketRentMapper">
+
+	<select id="selectMarketList" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        
+        	SELECT T2.ty_code
+			     , T2.ro_code
+			     , T2.rc_name
+			     , T2.rc_comp_name
+			     , T2.rc_business
+			     , T2.rc_event
+			     , T2.rc_tel
+			     , T2.rc_intro
+			     , T2.rc_hash_tag
+			     , T2.rc_img1_base64 AS rc_img1
+			     , T2.rc_img2_base64 AS rc_img2
+			     , T2.rc_img3_base64 AS rc_img3
+			FROM (
+					SELECT ty_code
+					     , ro_code 
+					FROM tb_object_room 
+					WHERE IS_RENTAL = 'Y' 
+					AND IS_DEL = 'N' 
+					<if test='searchTypeArr != null and searchTypeArr != ""'>
+						AND ty_code IN 
+						<foreach collection="searchTypeArr" item="item" index="index" open="(" close=")" separator=",">
+		           		#{item}
+		   		    	</foreach>
+					</if>
+			) T1
+			JOIN (
+				SELECT T3.ty_code
+				     , T3.ro_code
+				     , T4.rc_name
+				     , T4.rc_comp_name
+				     , T4.rc_business
+				     , T4.rc_event
+				     , T4.rc_tel
+				     , T4.rc_intro
+				     , T4.rc_hash_tag
+				     , T4.rc_img1_base64
+				     , T4.rc_img2_base64
+				     , T4.rc_img3_base64
+				FROM tb_object_lease T3
+				JOIN tb_rent_comp T4
+				ON T3.rc_seq = T4.rc_seq
+				WHERE T3.ol_status = '1'
+				<if test='searchRcName != null and searchRcName != ""'>
+					AND T4.rc_name LIKE CONCAT('%',#{searchRcName},'%')
+				</if>
+				<if test='searchRcCompName != null and searchRcCompName != ""'>
+					AND T4.rc_comp_name LIKE CONCAT('%',#{searchRcCompName},'%')
+				</if>
+			) T2
+			ON T1.ty_code = T2.ty_code 
+			AND T1.ro_code = T2.ro_code
+			ORDER BY T1.ty_code ASC, T1.ro_code ASC
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectMarketListCnt" resultType="java.lang.Integer">
+       	    SELECT COUNT(T2.ty_code)
+			FROM (
+					SELECT ty_code
+					     , ro_code 
+					FROM tb_object_room 
+					WHERE IS_RENTAL = 'Y' 
+					AND IS_DEL = 'N' 
+					<if test='searchTypeArr != null and searchTypeArr != ""'>
+						AND ty_code IN 
+						<foreach collection="searchTypeArr" item="item" index="index" open="(" close=")" separator=",">
+		           		#{item}
+		   		    	</foreach>
+					</if>
+			) T1
+			JOIN (
+				SELECT T3.ty_code
+				     , T3.ro_code
+				     , T4.rc_name
+				     , T4.rc_comp_name
+				     , T4.rc_business
+				     , T4.rc_event
+				     , T4.rc_tel
+				FROM tb_object_lease T3
+				JOIN tb_rent_comp T4
+				ON T3.rc_seq = T4.rc_seq
+				WHERE T3.ol_status = '1'
+				<if test='searchRcName != null and searchRcName != ""'>
+					AND T4.rc_name LIKE CONCAT('%',#{searchRcName},'%')
+				</if>
+				<if test='searchRcCompName != null and searchRcCompName != ""'>
+					AND T4.rc_comp_name LIKE CONCAT('%',#{searchRcCompName},'%')
+				</if>
+			) T2
+			ON T1.ty_code = T2.ty_code 
+			AND T1.ro_code = T2.ro_code
+    </select>
+     
+    <select id="selectMarketInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        
+        	SELECT T2.rc_seq AS MARKET_SEQ
+        	     , T2.ty_code
+			     , T2.ro_code
+			     , T2.rc_name
+			     , T2.rc_comp_name
+			     , T2.rc_business
+			     , T2.rc_event
+			     , T2.rc_tel
+			     , T2.rc_intro
+			     , T2.rc_hash_tag
+			     , T2.rc_img1
+			     , T2.rc_img2
+			     , T2.rc_img3
+			FROM (
+					SELECT ty_code
+					     , ro_code 
+					FROM tb_object_room 
+					WHERE IS_RENTAL = 'Y' 
+					AND IS_DEL = 'N' 
+					AND ty_code = #{tyCode}
+					AND ro_code = #{roCode}
+			) T1
+			JOIN (
+				SELECT T4.rc_seq
+				     , T3.ty_code
+				     , T3.ro_code
+				     , T4.rc_name
+				     , T4.rc_comp_name
+				     , T4.rc_business
+				     , T4.rc_event
+				     , T4.rc_tel
+				     , T4.rc_intro
+				     , T4.rc_hash_tag
+				     , T4.rc_img1_base64 AS rc_img1
+				     , T4.rc_img2_base64 AS rc_img2
+				     , T4.rc_img3_base64 AS rc_img3
+				FROM tb_object_lease T3
+				JOIN tb_rent_comp T4
+				ON T3.rc_seq = T4.rc_seq
+				WHERE T3.ol_status = '1'
+			) T2
+			ON T1.ty_code = T2.ty_code 
+			AND T1.ro_code = T2.ro_code
+    </select>
+    
+    
+    <select id="getMarketAtList" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+        
+        	SELECT T2.rc_seq AS MARKET_SEQ
+        	     , T2.ty_code
+			     , T2.ro_code
+			     , T2.rc_name
+			     , T2.rc_comp_name
+			     , T2.rc_business
+			     , T2.rc_event
+			     , T2.rc_tel
+			     , T2.rc_intro
+			     , T2.rc_hash_tag
+			     , T2.rc_img1
+			FROM (
+					SELECT ty_code
+					     , ro_code 
+					FROM tb_object_room 
+					WHERE IS_RENTAL = 'Y' 
+					AND IS_DEL = 'N' 
+					AND ty_code IN 
+					<foreach collection="searchTypeArr" item="item" index="index" open="(" close=")" separator=",">
+	           		#{item}
+	   		    	</foreach>
+					<if test='tyGroupCode == "4"'>
+					OR (
+					    ty_code = '41' AND ro_code IN ('232','235','236','240','243','244','248','247','251','252')
+					) 
+					</if>
+					<if test='tyGroupCode == "3"'>
+					OR (
+					    ty_code = '45' AND ro_code IN ('302')
+					) 
+					</if>
+			) T1
+			JOIN (
+				SELECT T4.rc_seq
+				     , T3.ty_code
+				     , T3.ro_code
+				     , T4.rc_name
+				     , T4.rc_comp_name
+				     , T4.rc_business
+				     , T4.rc_event
+				     , T4.rc_tel
+				     , T4.rc_intro
+				     , T4.rc_hash_tag
+				     , IFNULL(NULLIF(TRIM(T4.rc_img2_base64),''),T4.rc_img1_base64) as rc_img1
+				FROM tb_object_lease T3
+				JOIN tb_rent_comp T4
+				ON T3.rc_seq = T4.rc_seq
+				WHERE T3.ol_status = '1'
+				<if test='searchKeyword != null and searchKeyword != ""'>
+					<if test='searchCondition == "ownerName" '>
+						AND T4.rc_name LIKE CONCAT('%',#{searchKeyword},'%')
+					</if>
+					<if test='searchCondition == "compName" '>
+						AND T4.rc_comp_name LIKE CONCAT('%',#{searchKeyword},'%')
+					</if>
+				</if>
+			) T2
+			ON T1.ty_code = T2.ty_code 
+			AND T1.ro_code = T2.ro_code
+			<if test='tyGroupCode == "3"'>
+			AND T1.ro_code NOT IN ('232','235','236','240','243','244','248','247','251','252')
+			</if>
+			ORDER BY T1.ty_code ASC, T1.ro_code ASC
+    </select>
+    
+    <select id="getAtMarketInfo" resultType="egovframework.rte.psl.dataaccess.util.EgovMap">
+   			SELECT T3.ty_code
+			     , T3.ro_code
+			     , T4.rc_name
+			     , T4.rc_comp_name
+			     , T4.rc_business
+			     , T4.rc_event
+			     , T4.rc_tel
+			     , T4.rc_intro
+			     , T4.rc_hash_tag
+			     , T4.rc_img1_base64 AS rc_img1
+			     , T4.rc_img2_base64 AS rc_img2
+			     , T4.rc_img3_base64 AS rc_img3
+			FROM tb_object_lease T3
+			JOIN tb_rent_comp T4
+			ON T3.rc_seq = T4.rc_seq
+			WHERE T3.ol_status = '1'
+			AND T3.ty_code = #{tyCode}
+			AND T3.ro_code = #{roCode}
+    </select>
+    
+    
+    
+
+</mapper>
+

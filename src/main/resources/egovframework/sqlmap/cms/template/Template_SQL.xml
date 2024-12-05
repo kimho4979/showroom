@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.template.service.impl.TemplateMapper">
+
+	<resultMap id="templateInfo" type="egovframework.cms.template.vo.TemplateInfoVO">
+		<result property="tplId" column="TPL_ID"/>
+		<result property="tplNm" column="TPL_NM"/>
+		<result property="position" column="POSITION"/>
+		<result property="useAt" column="USE_AT"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<resultMap id="templateFile" type="egovframework.cms.template.vo.TemplateFileVO">
+		<result property="tplFileId" column="TPL_FILE_ID"/>
+		<result property="tplId" column="TPL_ID"/>
+		<result property="fileGb" column="FILE_GB"/>
+		<result property="fileNm" column="FILE_NM"/>
+		<result property="fileDc" column="FILE_DC"/>
+		<result property="fileCn" column="FILE_CN"/>
+		<result property="position" column="POSITION"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectTemplateInfoList" parameterType="templateInfoVO" resultMap="templateInfo">
+		SELECT  TPL_ID
+			 ,  TPL_NM
+		  FROM  WMS_TEMPLATE_INFO
+		 WHERE  1=1
+		<if test='useAt != null and useAt != ""'>
+		   AND	USE_AT = #{useAt}
+		</if>
+	  ORDER BY  POSITION ASC
+	</select>
+
+	<select id="selectTemplateInfo" parameterType="templateInfoVO" resultMap="templateInfo">
+		SELECT  TPL_ID
+			 ,  TPL_NM
+		  FROM  WMS_TEMPLATE_INFO
+		 WHERE  TPL_ID = #{tplId}
+	</select>
+
+	<insert id="insertTemplateInfo">
+		INSERT
+		  INTO  WMS_TEMPLATE_INFO
+		     (  TPL_ID
+			 ,  TPL_NM
+			 ,  POSITION
+			 ,  USE_AT
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  #{tplId}
+			 ,  #{tplNm}
+			 ,  #{position}
+			 ,  'Y'
+			 ,  SYSDATE
+			 ,  #{registId}
+		     )
+	</insert>
+
+	<update id="updateTemplateInfo">
+		UPDATE  WMS_TEMPLATE_INFO
+		   SET  TPL_NM = #{tplNm}
+			 ,  USE_AT = #{useAt}
+			 ,  POSITION = #{position}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId}
+		 WHERE  TPL_ID = #{tplId}
+	</update>
+
+    <delete id="deleteTemplateInfo">
+		DELETE
+		  FROM  WMS_TEMPLATE_INFO
+		 WHERE  TPL_ID = #{tplId}
+    </delete>
+
+	<select id="selectTemplateFileList" parameterType="templateFileVO" resultMap="templateFile">
+		SELECT  TPL_ID
+			 ,  TPL_FILE_ID
+			 ,  FILE_GB
+			 ,  FILE_NM
+			 ,  FILE_DC
+		  FROM  WMS_TEMPLATE_FILE
+		 WHERE  1=1
+		<if test='tplId != null and tplId != ""'>
+		   AND  TPL_ID = #{tplId}
+		</if>
+		<if test='fileGb != null and fileGb != ""'>
+		   AND	FILE_GB = #{fileGb}
+		</if>
+	  ORDER BY  POSITION ASC
+	</select>
+
+	<select id="selectTemplateFile" parameterType="templateFileVO" resultMap="templateFile">
+		SELECT  TPL_FILE_ID
+			 ,  TPL_ID
+			 ,  FILE_GB
+			 ,  FILE_NM
+			 ,  FILE_DC
+			 ,  FILE_CN
+			 ,  POSITION
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+			 ,  UPDATE_DTTM
+			 ,  UPDATE_ID
+		  FROM  WMS_TEMPLATE_FILE
+		 WHERE  TPL_ID = #{tplId}
+		   AND  FILE_GB = #{fileGb}
+		   AND  FILE_NM = #{fileNm}
+	</select>
+
+	<insert id="insertTemplateFile">
+		INSERT
+		  INTO  WMS_TEMPLATE_FILE
+		     (  TPL_FILE_ID
+			 ,  TPL_ID
+			 ,  FILE_GB
+			 ,  FILE_NM
+			 ,  FILE_DC
+			 ,  FILE_CN
+			 ,  POSITION
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+		     )
+		VALUES
+		     (  #{tplFileId}
+			 ,  #{tplId}
+			 ,  #{fileGb}
+			 ,  #{fileNm}
+			 ,  #{fileDc}
+			 ,  #{fileCn}
+			 ,  #{position}
+			 ,  SYSDATE
+			 ,  #{registId}
+		     )
+	</insert>
+
+	<update id="updateTemplateFile">
+		UPDATE  WMS_TEMPLATE_FILE
+		   SET  FILE_DC = #{fileDc}
+			 ,  FILE_CN = #{fileCn}
+			 ,  POSITION = #{position}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId}
+		 WHERE  FILE_GB = #{fileGb}
+		   AND  FILE_NM = #{fileNm}
+	</update>
+
+    <delete id="deleteTemplateFile">
+		DELETE
+		  FROM  WMS_TEMPLATE_FILE
+		 WHERE  TPL_ID = #{tplId}
+		<if test='fileGb != null and fileGb != ""'>
+		   AND  FILE_GB = #{fileGb}
+		</if>
+		<if test='fileNm != null and fileNm != ""'>
+		   AND	FILE_NM = #{fileNm}
+		</if>
+    </delete>
+
+</mapper>

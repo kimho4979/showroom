@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.system.authority.service.impl.AuthorityMapper">
+
+	<resultMap id="authorityLevel" type="egovframework.cms.system.authority.vo.AuthorityLevelVO">
+		<result property="levelId" column="LEVEL_ID"/>
+		<result property="levelNm" column="LEVEL_NM"/>
+		<result property="levelDc" column="LEVEL_DC"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<resultMap id="authorityGroup" type="egovframework.cms.system.authority.vo.AuthorityGroupVO">
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="groupNm" column="GROUP_NM"/>
+		<result property="groupDc" column="GROUP_DC"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+	</resultMap>
+
+	<select id="selectAuthorityGroupList" parameterType="authorityGroupVO" resultMap="authorityGroup">
+		SELECT  GROUP_ID
+			 ,  GROUP_NM
+			 ,  GROUP_DC
+		  FROM	WMS_AUTHOR_GROUP
+	  ORDER BY  GROUP_ID ASC
+	</select>
+
+	<select id="selectAuthorityGroup" parameterType="authorityGroupVO" resultMap="authorityGroup">
+		SELECT  GROUP_ID
+		     ,  GROUP_NM
+		     ,  GROUP_DC
+		  FROM  WMS_AUTHOR_GROUP
+         WHERE  GROUP_ID = #{groupId}
+	</select>
+
+	<insert id="insertAuthorityGroup">
+		INSERT
+		  INTO  WMS_AUTHOR_GROUP
+		     (  GROUP_ID
+			 ,  GROUP_NM
+			 ,  GROUP_DC
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+			 )
+		VALUES
+		     (  #{groupId}
+			 ,  #{groupNm}
+			 ,  #{groupDc}
+			 ,  SYSDATE
+			 ,  #{registId}
+			 )
+	</insert>
+
+	<update id="updateAuthorityGroup">
+		UPDATE  WMS_AUTHOR_GROUP
+		   SET  GROUP_NM = #{groupNm}
+			 ,  GROUP_DC = #{groupDc}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId}
+	  	 WHERE  GROUP_ID = #{groupId}
+	</update>
+
+	<delete id="deleteAuthorityGroup">
+		DELETE
+		  FROM  WMS_AUTHOR_GROUP
+		 WHERE  GROUP_ID = #{groupId}
+	</delete>
+
+	<select id="selectAuthorityLevelList" parameterType="authorityLevelVO" resultMap="authorityLevel">
+		SELECT  LEVEL_ID
+			 ,  LEVEL_NM
+			 ,  LEVEL_DC
+		  FROM  WMS_AUTHOR_LEVEL
+	  ORDER BY  LEVEL_ID ASC
+	</select>
+
+	<select id="selectAuthorityLevel" parameterType="authorityLevelVO" resultMap="authorityLevel">
+		SELECT  LEVEL_ID
+		     ,  LEVEL_NM
+		     ,  LEVEL_DC
+		  FROM  WMS_AUTHOR_LEVEL
+         WHERE  LEVEL_ID = #{levelId}
+	</select>
+
+	<insert id="insertAuthorityLevel">
+		INSERT
+		  INTO  WMS_AUTHOR_LEVEL
+		     (  LEVEL_ID
+			 ,  LEVEL_NM
+			 ,  LEVEL_DC
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+			 )
+		VALUES
+		     (  #{levelId}
+			 ,  #{levelNm}
+			 ,  #{levelDc}
+			 ,  SYSDATE
+			 ,  #{registId}
+			 )
+	</insert>
+
+	<update id="updateAuthorityLevel">
+		UPDATE  WMS_AUTHOR_LEVEL
+		   SET  LEVEL_NM = #{levelNm}
+			 ,  LEVEL_DC = #{levelDc}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId}
+	  	 WHERE  LEVEL_ID = #{levelId}
+	</update>
+
+	<delete id="deleteAuthorityLevel">
+		DELETE
+		  FROM  WMS_AUTHOR_LEVEL
+		 WHERE  LEVEL_ID = #{levelId}
+	</delete>
+
+</mapper>

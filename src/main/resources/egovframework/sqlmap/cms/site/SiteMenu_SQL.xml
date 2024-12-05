@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.cms.site.service.impl.SiteMenuMapper">
+
+
+	<resultMap id="siteMenu" type="egovframework.cms.site.vo.SiteMenuVO">
+		<result property="siteId" column="SITE_ID"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="parntsMenuId" column="PARNTS_MENU_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="menuGb" column="MENU_GB"/>
+		<result property="linkTarget" column="LINK_TARGET"/>
+		<result property="linkUrl" column="LINK_URL"/>
+		<result property="linkMenuId" column="LINK_MENU_ID"/>
+		<result property="linkBoardId" column="LINK_BOARD_ID"/>
+		<result property="linkParam" column="LINK_PARAM"/>
+		<result property="popupParam" column="POPUP_PARAM"/>
+		<result property="template" column="TEMPLATE"/>
+		<result property="layout" column="LAYOUT"/>
+		<result property="appointStaffAt" column="APPOINT_STAFF_AT"/>
+		<result property="mngDeptId" column="MNG_DEPT_ID"/>
+		<result property="mngStaffId" column="MNG_STAFF_ID"/>
+		<result property="mngUserIds" column="MNG_USER_IDS"/>
+		<result property="showSatisAt" column="SHOW_SATIS_AT"/>
+		<result property="showCpyrgtAt" column="SHOW_CPYRGT_AT"/>
+		<result property="showAt" column="SHOW_AT"/>
+		<result property="showSnsAt" column="SHOW_SNS_AT"/>
+		<result property="mainMenuAt" column="MAIN_MENU_AT"/>
+		<result property="useAt" column="USE_AT"/>
+		<result property="permitLevelId" column="PERMIT_LEVEL_ID"/>
+		<result property="limitGroupIds" column="LIMIT_GROUP_IDS"/>
+		<result property="lft" column="LFT"/>
+		<result property="rgt" column="RGT"/>
+		<result property="lvl" column="LVL"/>
+		<result property="registDttm" column="REGIST_DTTM"/>
+		<result property="registId" column="REGIST_ID"/>
+		<result property="updateDttm" column="UPDATE_DTTM"/>
+		<result property="updateId" column="UPDATE_ID"/>
+		<result property="summary" column="SUMMARY"/>
+		<result property="imgUrl" column="IMG_URL"/>
+		<result property="imgText" column="IMG_TEXT"/>
+	</resultMap>
+
+	<resultMap id="siteMenuJson" type="egovframework.cms.site.vo.SiteMenuJsonVO">
+		<result property="siteId" column="SITE_ID"/>
+		<result property="menuId" column="MENU_ID"/>
+		<result property="parntsMenuId" column="PARNTS_MENU_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="menuGb" column="MENU_GB"/>
+		<result property="linkTarget" column="LINK_TARGET"/>
+		<result property="linkUrl" column="LINK_URL"/>
+		<result property="linkMenuId" column="LINK_MENU_ID"/>
+		<result property="linkBoardId" column="LINK_BOARD_ID"/>
+		<result property="linkParam" column="LINK_PARAM"/>
+		<result property="popupParam" column="POPUP_PARAM"/>
+		<result property="template" column="TEMPLATE"/>
+		<result property="layout" column="LAYOUT"/>
+		<result property="mainMenuAt" column="MAIN_MENU_AT"/>
+		<result property="permitLevelId" column="PERMIT_LEVEL_ID"/>
+		<result property="limitGroupIds" column="LIMIT_GROUP_IDS"/>
+	</resultMap>
+
+	<select id="selectSiteMenuList" parameterType="siteMenuVO" resultMap="siteMenu">
+		SELECT  SITE_ID
+			 ,  MENU_ID
+			 ,  PARNTS_MENU_ID
+			 ,  MENU_NM
+			 ,  MENU_GB
+			 ,  SHOW_AT
+			 ,  USE_AT
+			 ,  LVL
+		FROM	WMS_SITE_MENU
+		WHERE	1=1
+		AND		SITE_ID = 'flower'
+		ORDER BY LFT ASC
+	</select>
+
+	<select id="selectSiteMenuRootMenuId" parameterType="siteMenuVO" resultType="int">
+		SELECT  NVL(MAX(MENU_ID),0) AS menuId
+		  FROM  WMS_SITE_MENU
+		 WHERE  SITE_ID = 'flower'
+		   AND  PARNTS_MENU_ID = 0
+	</select>
+
+	<select id="selectParntsSiteMenuList" parameterType="siteMenuVO" resultMap="siteMenu">
+		SELECT  PARENT.SITE_ID
+			 ,  PARENT.MENU_ID
+			 ,  PARENT.PARNTS_MENU_ID
+			 ,  PARENT.MENU_NM
+			 ,  PARENT.MENU_GB
+			 ,  PARENT.LINK_TARGET
+			 ,  PARENT.LINK_MENU_ID
+			 ,  PARENT.LINK_BOARD_ID
+			 ,  PARENT.LINK_URL
+			 ,  PARENT.LINK_PARAM
+			 ,  PARENT.TEMPLATE
+			 ,  PARENT.LAYOUT
+			 ,  PARENT.SHOW_AT
+			 ,  PARENT.USE_AT
+			 ,  PARENT.MAIN_MENU_AT
+			 ,  PARENT.LVL
+		  FROM  WMS_SITE_MENU NODE
+		     ,  WMS_SITE_MENU PARENT
+		 WHERE  NODE.LFT BETWEEN PARENT.LFT AND PARENT.RGT
+		   AND  PARENT.MENU_ID != #{menuId}
+		   AND  NODE.MENU_ID = #{menuId}
+		   AND  PARENT.SITE_ID = 'flower'
+		   AND  NODE.SITE_ID = 'flower'
+	  ORDER BY  PARENT.LFT ASC
+	</select>
+
+	<select id="selectSiteMenu" parameterType="siteMenuVO" resultMap="siteMenu">
+		SELECT  A.SITE_ID
+			 ,  A.MENU_ID
+			 ,  A.PARNTS_MENU_ID
+			 ,  A.MENU_NM
+			 ,  A.MENU_GB
+			 ,  A.LINK_TARGET
+			 ,  A.LINK_MENU_ID
+			 ,  A.LINK_BOARD_ID
+			 ,  A.LINK_URL
+			 ,  A.LINK_PARAM
+			 ,  A.TEMPLATE
+			 ,  A.LAYOUT
+			 ,  A.APPOINT_STAFF_AT
+			 ,  A.MNG_DEPT_ID
+			 ,  A.MNG_STAFF_ID
+			 ,  A.MNG_USER_IDS
+			 ,  A.SHOW_SATIS_AT
+			 ,  A.SHOW_CPYRGT_AT
+			 ,  A.SHOW_AT
+			 ,  A.SHOW_SNS_AT
+			 ,  A.MAIN_MENU_AT
+			 ,  A.USE_AT
+			 ,  A.LIMIT_GROUP_IDS
+			 ,  A.PERMIT_LEVEL_ID
+			 ,  A.LFT
+			 ,  A.RGT
+			 ,  A.LVL
+			 ,  (
+					SELECT  REPLACE(SUBSTR(XMLAGG(XMLELEMENT(x,'|||',PARENT.MENU_NM) ORDER BY PARENT.LFT).EXTRACT('//text()'),4),'|||',' > ')
+					  FROM  WMS_SITE_MENU NODE
+					     ,  WMS_SITE_MENU PARENT
+					 WHERE  NODE.LFT BETWEEN PARENT.LFT AND PARENT.RGT
+					   AND  PARENT.LVL != 1
+					   AND  NODE.MENU_ID = A.MENU_ID
+					   AND  PARENT.SITE_ID = A.SITE_ID
+					   AND  NODE.SITE_ID = A.SITE_ID
+			 ) AS menuPath
+			 , A.SUMMARY
+			 , A.IMG_URL
+			 , A.IMG_TEXT
+		  FROM  WMS_SITE_MENU A
+		 WHERE  A.SITE_ID = 'flower'
+		   AND  A.MENU_ID = #{menuId}
+	</select>
+
+	<insert id="insertSiteMenu" parameterType="siteMenuVO">
+		<selectKey keyProperty="menuId" resultType="integer" order="BEFORE">
+			SELECT  NVL(MAX(MENU_ID),0)+1 FROM WMS_SITE_MENU WHERE SITE_ID = 'flower'
+		</selectKey>
+		<![CDATA[
+		INSERT
+		  INTO  WMS_SITE_MENU
+		     (  SITE_ID
+			 ,  MENU_ID
+			 ,  PARNTS_MENU_ID
+			 ,  MENU_NM
+			 ,  MENU_GB
+			 ,  LINK_TARGET
+			 ,  LINK_MENU_ID
+			 ,  LINK_BOARD_ID
+			 ,  LINK_URL
+			 ,  LINK_PARAM
+			 ,  POPUP_PARAM
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  APPOINT_STAFF_AT
+			 ,  MNG_DEPT_ID
+			 ,  MNG_STAFF_ID
+			 ,  MNG_USER_IDS
+			 ,  SHOW_SATIS_AT
+			 ,  SHOW_CPYRGT_AT
+			 ,  SHOW_AT
+			 ,  SHOW_SNS_AT
+			 ,  MAIN_MENU_AT
+			 ,  USE_AT
+			 ,  LIMIT_GROUP_IDS
+			 ,  PERMIT_LEVEL_ID
+			 ,  LFT
+			 ,  RGT
+			 ,  LVL
+			 ,  REGIST_DTTM
+			 ,  REGIST_ID
+			 ,  SUMMARY
+			 ,  IMG_URL
+			 ,  IMG_TEXT
+		     )
+		VALUES
+		     (  'flower'
+			 ,  #{menuId}
+			 ,  #{parntsMenuId}
+			 ,  #{menuNm}
+			 ,  #{menuGb, jdbcType=VARCHAR}
+			 ,  #{linkTarget, jdbcType=VARCHAR}
+			 ,  #{linkMenuId}
+			 ,  #{linkBoardId, jdbcType=VARCHAR}
+			 ,  #{linkUrl, jdbcType=VARCHAR}
+			 ,  #{linkParam, jdbcType=VARCHAR}
+			 ,  #{popupParam, jdbcType=VARCHAR}
+			 ,  #{template, jdbcType=VARCHAR}
+			 ,  #{layout, jdbcType=VARCHAR}
+			 ,  #{appointStaffAt}
+			 ,  #{mngDeptId, jdbcType=VARCHAR}
+			 ,  #{mngStaffId, jdbcType=VARCHAR}
+			 ,  #{mngUserIds, jdbcType=VARCHAR}
+			 ,  #{showSatisAt}
+			 ,  #{showCpyrgtAt}
+			 ,  #{showAt}
+			 ,  #{showSnsAt}
+			 ,  #{mainMenuAt}
+			 ,  #{useAt}
+			 ,  #{limitGroupIds}
+			 ,  #{permitLevelId}
+			 ,  #{lft}
+			 ,  #{rgt}
+			 ,  #{lvl}
+			 ,  SYSDATE
+			 ,  #{registId, jdbcType=VARCHAR}
+			 ,  #{summary, jdbcType=VARCHAR}
+			 ,  #{imgUrl, jdbcType=VARCHAR}
+			 ,  #{imgText, jdbcType=VARCHAR}
+		     )
+		]]>
+	</insert>
+
+	<update id="updateSiteMenu">
+		UPDATE  WMS_SITE_MENU
+		   SET  MENU_NM = #{menuNm}
+			 ,  MENU_GB = #{menuGb, jdbcType=VARCHAR}
+			 ,  LINK_TARGET = #{linkTarget, jdbcType=VARCHAR}
+			 ,  LINK_MENU_ID = #{linkMenuId}
+			 ,  LINK_BOARD_ID = #{linkBoardId, jdbcType=VARCHAR}
+			 ,  LINK_URL = #{linkUrl, jdbcType=VARCHAR}
+			 ,  LINK_PARAM = #{linkParam, jdbcType=VARCHAR}
+			 ,  POPUP_PARAM = #{popupParam, jdbcType=VARCHAR}
+			 ,  TEMPLATE = #{template, jdbcType=VARCHAR}
+			 ,  LAYOUT = #{layout, jdbcType=VARCHAR}
+			 ,  APPOINT_STAFF_AT = #{appointStaffAt}
+			 ,  MNG_DEPT_ID = #{mngDeptId, jdbcType=VARCHAR}
+			 ,  MNG_STAFF_ID = #{mngStaffId, jdbcType=VARCHAR}
+			 ,  MNG_USER_IDS = #{mngUserIds, jdbcType=VARCHAR}
+			 ,  SHOW_SATIS_AT = #{showSatisAt}
+			 ,  SHOW_CPYRGT_AT = #{showCpyrgtAt}
+			 ,  SHOW_AT = #{showAt}
+			 ,  SHOW_SNS_AT = #{showSnsAt}
+			 ,  MAIN_MENU_AT = #{mainMenuAt}
+			 ,  USE_AT = #{useAt}
+			 ,  LIMIT_GROUP_IDS = #{limitGroupIds}
+			 ,  PERMIT_LEVEL_ID = #{permitLevelId}
+			 ,  UPDATE_DTTM = SYSDATE
+			 ,  UPDATE_ID = #{updateId, jdbcType=VARCHAR}
+			 ,  SUMMARY = #{summary, jdbcType=VARCHAR}
+			 ,  IMG_URL = #{imgUrl, jdbcType=VARCHAR}
+			 ,  IMG_TEXT = #{imgText, jdbcType=VARCHAR}
+		 WHERE  SITE_ID = 'flower'
+		   AND  MENU_ID = #{menuId}
+	</update>
+
+	<update id="updateChldrnSiteMenu">
+		UPDATE  WMS_SITE_MENU
+		   SET  SITE_ID = 'flower'
+			<if test='updateChldrnsLayout != null and updateChldrnsLayout == "Y"'>
+			 ,  TEMPLATE = #{template}
+			 ,  LAYOUT = #{layout}
+			</if>
+			<if test='updateChldrnsMngStaff != null and updateChldrnsMngStaff == "Y"'>
+			 ,  APPOINT_STAFF_AT = #{appointStaffAt}
+			 ,  MNG_DEPT_ID = #{mngDeptId}
+			 ,  MNG_STAFF_ID = #{mngStaffId}
+			</if>
+			<if test='updateChldrnsSatis != null and updateChldrnsSatis == "Y"'>
+			 ,  SHOW_SATIS_AT = #{showSatisAt}
+			</if>
+			<if test='updateChldrnsCpyrgtAt != null and updateChldrnsCpyrgtAt == "Y"'>
+			,  SHOW_CPYRGT_AT = #{showCpyrgtAt}
+			</if>
+			<if test='updateChldrnsSnsAt != null and updateChldrnsSnsAt == "Y"'>
+			,  SHOW_SNS_AT = #{showSnsAt}
+			</if>
+			<if test='updateChldrnsMngUserIds != null and updateChldrnsMngUserIds == "Y"'>
+			,  MNG_USER_IDS = #{mngUserIds}
+			</if>
+		<![CDATA[
+		 WHERE  SITE_ID = 'flower'
+		   AND  (LFT > #{lft} AND RGT < #{rgt})
+		]]>
+	</update>
+
+	<update id="updateSiteMenuLftForInsert">
+	<![CDATA[
+		UPDATE  WMS_SITE_MENU
+		   SET  LFT = LFT + 2
+		 WHERE  SITE_ID = 'flower'
+		   AND  LFT > #{lft}
+	]]>
+	</update>
+
+	<update id="updateSiteMenuRgtForInsert">
+	<![CDATA[
+		UPDATE  WMS_SITE_MENU
+		   SET  RGT = RGT + 2
+		 WHERE  SITE_ID = 'flower'
+		   AND  RGT > #{rgt}
+	]]>
+	</update>
+
+    <delete id="deleteSiteMenu">
+		DELETE
+		  FROM  WMS_SITE_MENU
+		 WHERE  SITE_ID = 'flower'
+		   AND  LFT BETWEEN #{lft}
+		   AND  #{rgt}
+    </delete>
+
+    <delete id="deleteSiteMenuBySiteId">
+		DELETE
+		  FROM  WMS_SITE_MENU
+		 WHERE  SITE_ID = 'flower'
+    </delete>
+
+	<update id="updateSiteMenuLftForDelete">
+	<![CDATA[
+		UPDATE  WMS_SITE_MENU
+		   SET  LFT = LFT - #{width}
+		 WHERE  SITE_ID = 'flower'
+		   AND  LFT > #{lft}
+	]]>
+	</update>
+
+	<update id="updateSiteMenuRgtForDelete">
+	<![CDATA[
+		UPDATE  WMS_SITE_MENU
+		   SET  RGT = RGT - #{width}
+		 WHERE  SITE_ID = 'flower'
+		   AND  RGT > #{rgt}
+	]]>
+	</update>
+
+	<update id="updateSiteMenuMove">
+		UPDATE  WMS_SITE_MENU
+		   SET  PARNTS_MENU_ID = #{parntsMenuId}
+			 ,  LVL = #{lvl}
+			 ,  LFT = #{lft}
+			 ,  RGT = #{rgt}
+		 WHERE  SITE_ID = 'flower'
+		   AND  MENU_ID = #{menuId}
+	</update>
+
+	<select id="selectSiteMenuJsonList" parameterType="siteMenuJsonVO" resultMap="siteMenuJson">
+		SELECT  SITE_ID
+			 ,  MENU_ID
+			 ,  PARNTS_MENU_ID
+			 ,  MENU_NM
+			 ,  MENU_GB
+			 ,  LINK_TARGET
+			 ,  LINK_MENU_ID
+			 ,  LINK_BOARD_ID
+			 ,  LINK_URL
+			 ,  LINK_PARAM
+			 ,  TEMPLATE
+			 ,  LAYOUT
+			 ,  MAIN_MENU_AT
+			 ,  LVL
+			 ,  LIMIT_GROUP_IDS
+			 ,  PERMIT_LEVEL_ID
+		  FROM  WMS_SITE_MENU
+		 WHERE  SITE_ID = 'flower'
+		   AND  USE_AT = 'Y'
+		   AND  SHOW_AT = 'Y'
+	  ORDER BY  LFT ASC
+	</select>
+
+</mapper>

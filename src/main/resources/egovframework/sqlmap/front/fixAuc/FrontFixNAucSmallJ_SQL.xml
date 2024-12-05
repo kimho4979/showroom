@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.front.fixNAuc.service.impl.FrontFixNAucSmallJMapper">
+	<sql id="stateWhere">
+		<if test='searchFixState != null and searchFixState != ""'>
+			<choose>
+				<!-- 
+				<when test='searchFixState == "3"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '3'), 'YYYY-MM-DD HH24:MI')-1
+				</when> -->
+				<when test='searchFixState == "7"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					AND SYSDATE &gt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>
+				<when test='searchFixState == "8"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>
+				<when test='searchFixState == "9"'>
+					AND FIX_STATE = '3'
+					AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+				</when>
+				<otherwise>
+					AND FIX_STATE = #{searchFixState}
+				</otherwise>
+			</choose>
+			
+		</if>
+	</sql>
+	
+	<resultMap id="egovResultMap" type="egovframework.rte.psl.dataaccess.util.EgovMap">
+		<result property="AUC_BAN_TEXT" column="AUC_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="ITEM_TEXT" column="ITEM_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="CHUL_BAN_TEXT" column="CHUL_BAN_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="REQ_TEXT" column="REQ_TEXT" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+	
+	<select id="getTime" resultType="egovMap">
+		SELECT BUN_CHK
+			 , TIME_TYPE
+			 , STR_TIME
+			 , END_TIME
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , CASE WHEN TO_CHAR(SYSDATE, 'd') IN ('3','5','6') AND TO_CHAR(SYSDATE, 'HH24:MI') BETWEEN '00:00' AND END_TIME THEN 'Y'
+                    WHEN TO_CHAR(SYSDATE, 'd') NOT IN ('3','5','6') THEN 'Y'
+			   ELSE 'N' END AS TIME_CHECK
+		FROM TB_TIME
+		WHERE BUN_CHK = 'N'
+		AND TIME_TYPE = #{timeType}
+	</select>
+	
+	<select id="getFixBuyList" resultMap="egovResultMap">
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT FIX_DEAL_SEQ
+			     , BUN_CHK
+			     , CHUL_CODE
+			     , PUM_CODE
+			     , PUM_NAME
+			     , MOK_CODE
+			     , MOK_NAME
+			     , CHUL_LEVEL
+			     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+			     , TWIN_CNT
+			     , BOX_CNT
+			     , SOK_CNT
+			     , GROUP_CODE
+			     , DEAL_TYPE
+			     , UNIT_PRICE
+			     , CHUL_DATE
+			     , NVL(AUC_DATE, '-') AS AUC_DATE
+			     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     	 , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+		       	   ELSE FIX_STATE END AS FIX_STATE_TWO	
+			     , AUC_BAN_TEXT
+			     , ITEM_TEXT
+			     , THUMB_IMG
+			     , LOGIN_ID
+			     , MEMBER_ID
+			     , INSERT_ID
+			     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+			     , INSERT_DATE AS INSERT_DATE_SORT
+			     , UPDATE_ID
+			     , UPDATE_DATE
+			     , NVL((SELECT MIN('/uploads/fixSmallAuc/N/' || THUMB_STRE_FILE_NM) FROM TB_FIX_SMALL_FILE
+				   		WHERE FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ),'/img/noimage.png') AS THUMB_PATH  
+			     , BID_CNT
+			     , UNIT_SOK
+			     , PUM_KG
+			     , TRANS
+			     , UP_DAY
+			     , UP_NO
+			     , F_UP_DAY
+			     , F_UP_NO
+            FROM (SELECT T2.*
+                       , (SELECT COUNT(BID_SEQ) FROM TB_FIX_SMALL_BID WHERE FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ AND J_CODE = #{code}) AS BID_CNT
+                  FROM TB_FIX_SMALL_DEAL T2
+                  LEFT JOIN FLOWER.V_RETURN T3
+                  ON T2.F_UP_DAY = T3.PAN_DAY
+                  AND T2.F_UP_NO = T3.PAN_NO
+                  AND T2.BUN_CHK = T3.BUN_CHK
+                  WHERE T2.BUN_CHK = 'N'
+                  AND T2.FIX_STATE IN ('3', '4', '5', '6')
+                  AND T3.PAN_DAY IS NULL 
+                  AND T3.PAN_NO IS NULL
+                  AND T3.BUN_CHK IS NULL
+                 ) T1
+            WHERE 1=1
+            AND (FIX_STATE = '3' OR (FIX_STATE IN ('4', '5', '6') AND BID_CNT &gt; 0))
+            <if test='searchStartDt != null and searchStartDt != ""'>
+			   AND AUC_DATE &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND AUC_DATE &lt;= #{searchEndDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+			ORDER BY DECODE(FIX_STATE, '7', 1, '3', 2, '8',3,4) ASC, AUC_DATE DESC, UP_NO ASC
+		) TB ) <!-- WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage} -->
+	</select>
+	
+	<select id="getFixBuyListCnt" resultType="java.lang.Integer">
+			SELECT COUNT(FIX_DEAL_SEQ) AS CNT
+			FROM (SELECT T2.*
+                       , (SELECT COUNT(BID_SEQ) FROM TB_FIX_SMALL_BID WHERE FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ AND J_CODE = #{code}) AS BID_CNT
+                  FROM TB_FIX_SMALL_DEAL T2
+                  LEFT JOIN FLOWER.V_RETURN T3
+                  ON T2.F_UP_DAY = T3.PAN_DAY
+                  AND T2.F_UP_NO = T3.PAN_NO
+                  AND T2.BUN_CHK = T3.BUN_CHK
+                  WHERE T2.BUN_CHK = 'N'
+                  AND T2.FIX_STATE IN ('3', '4', '5', '6')
+                  AND T3.PAN_DAY IS NULL 
+                  AND T3.PAN_NO IS NULL
+                  AND T3.BUN_CHK IS NULL
+                 ) T1
+            WHERE 1=1
+            AND (FIX_STATE = '3' OR (FIX_STATE IN ('4', '5', '6') AND BID_CNT &gt; 0))
+			<if test='searchStartDt != null and searchStartDt != ""'>
+			   AND AUC_DATE &gt;= #{searchStartDt}
+			</if>
+			<if test='searchEndDt != null and searchEndDt != ""'>
+			   AND AUC_DATE &lt;= #{searchEndDt}
+			</if>
+			<include refid="stateWhere"/>
+			<if test='searchChulCode != null and searchChulCode != ""'>
+			   AND CHUL_CODE LIKE '%'||#{searchChulCode}||'%'
+			</if>
+			<if test='searchMokCode != null and searchMokCode != ""'>
+			   AND (
+			   		MOK_CODE LIKE '%'||#{searchMokCode}||'%'
+			   		OR
+			   		MOK_NAME LIKE '%'||#{searchMokCode}||'%'
+			   		)
+			</if>
+			<if test='searchPumCode != null and searchPumCode != ""'>
+			   AND (
+			   		PUM_CODE LIKE '%'||#{searchPumCode}||'%'
+			   		OR
+			   		PUM_NAME LIKE '%'||#{searchPumCode}||'%'
+			   		)
+			</if>
+	</select>
+	
+	<select id="getBidBuyInfo" resultType="egovMap">
+		SELECT BID_SEQ
+			 , FIX_DEAL_SEQ
+			 , BUN_CHK
+			 , J_CODE
+			 , BID_BOX_CNT
+			 , BID_SOK_CNT
+			 , BID_UNIT_PRICE
+			 , BID_STATE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+			 , BID_ADMIN_YN
+			 , BID_CANCEL_TEXT
+			 , NAK_SOK_CNT
+		FROM TB_FIX_SMALL_BID
+		WHERE 1=1
+		AND BUN_CHK = 'N'
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND J_CODE = #{code, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getFixBuyArticle" resultMap="egovResultMap">
+		SELECT FIX_DEAL_SEQ
+		     , BUN_CHK
+		     , CHUL_CODE
+		     , PUM_CODE
+		     , PUM_NAME
+		     , MOK_CODE
+		     , MOK_NAME
+		     , CHUL_LEVEL
+		     , NVL(CHUL_LEVEL_CUSTOM,CHUL_LEVEL_NAME) AS CHUL_LEVEL_NAME
+		     , TWIN_CNT
+		     , BOX_CNT
+		     , SOK_CNT
+		     , GROUP_CODE
+		     , DEAL_TYPE
+		     , UNIT_PRICE
+		     , CHUL_DATE
+		     , AUC_DATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt;= TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+					   	THEN '7'
+					   	WHEN FIX_STATE = '3' AND SYSDATE &gt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT END_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT END_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))
+					   	THEN '8'
+			       ELSE FIX_STATE END AS FIX_STATE
+		     , CASE WHEN FIX_STATE = '3' AND SYSDATE &lt; TO_DATE(NVL(AUC_DATE, CHUL_DATE) || ' ' || (SELECT STR_TIME FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd')), 'YYYY-MM-DD HH24:MI')-(SELECT STR_FEW_DAY FROM TB_NEW_TIME WHERE BUN_CHK = 'N' AND TIME_TYPE = '4' AND DAY_TYPE = TO_CHAR(TO_DATE(NVL(AUC_DATE, CHUL_DATE),'YYYY-MM-DD'), 'd'))  
+				   		THEN '9'
+			       ELSE FIX_STATE END AS FIX_STATE_TWO	
+		     , AUC_BAN_TEXT
+		     , ITEM_TEXT
+		     , THUMB_IMG
+		     , LOGIN_ID
+			 , MEMBER_ID
+		     , INSERT_ID
+		     , TO_CHAR(INSERT_DATE, 'YYYY-MM-DD') AS INSERT_DATE
+		     , INSERT_DATE AS INSERT_DATE_SORT
+		     , UPDATE_ID
+		     , UPDATE_DATE
+		     , (SELECT NVL(SUM(BID_SOK_CNT),0) FROM TB_FIX_SMALL_BID WHERE BUN_CHK = 'N' AND FIX_DEAL_SEQ = T1.FIX_DEAL_SEQ AND BID_STATE != '5') AS BID_SOK_CNT
+		     , UNIT_SOK
+		     , PUM_KG
+			 , TRANS
+			 , UP_DAY
+			 , UP_NO
+			 , F_UP_DAY
+			 , F_UP_NO
+		FROM TB_FIX_SMALL_DEAL T1
+		WHERE 1=1 
+		AND BUN_CHK = 'N'
+		AND FIX_STATE IN ('3','4','5','6')
+		AND FIX_DEAL_SEQ = #{fixDealSeq}
+		
+	</select>
+	
+	<select id="getFixFileList" resultType="egovMap">
+		SELECT FILE_SEQ
+			 , FIX_DEAL_SEQ
+			 , STRE_FILE_PATH
+			 , STRE_FILE_NM
+			 , ORIGNL_FILE_NM
+			 , THUMB_STRE_FILE_NM
+			 , FILE_EXTSN
+			 , FILE_CN
+			 , FILE_SIZE
+			 , INSERT_ID
+			 , INSERT_DATE
+			 , UPDATE_ID
+			 , UPDATE_DATE
+		FROM TB_FIX_SMALL_FILE
+		WHERE 1=1
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertBid">
+		INSERT INTO TB_FIX_SMALL_BID (
+		   BID_SEQ
+		 , FIX_DEAL_SEQ
+		 , BUN_CHK
+		 , BID_DATE
+		 , J_CODE
+		 , BID_BOX_CNT
+		 , BID_SOK_CNT
+		 , BID_UNIT_PRICE
+		 , BID_STATE
+		 , INSERT_ID
+		 , INSERT_DATE
+		 , UPDATE_ID
+		 , UPDATE_DATE
+		 , BID_ADMIN_YN) 
+		VALUES ( #{bidSeq, jdbcType=VARCHAR}
+		 , #{fixDealSeq, jdbcType=VARCHAR}
+		 , 'N'
+		 , TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		 , #{code, jdbcType=VARCHAR}
+		 , #{bidBoxCnt, jdbcType=VARCHAR}
+		 , #{bidSokCnt, jdbcType=VARCHAR}
+		 , #{bidUnitPrice, jdbcType=VARCHAR}
+		 , '1'
+		 , #{id, jdbcType=VARCHAR}
+		 , SYSDATE
+		 , #{id, jdbcType=VARCHAR}
+		 , SYSDATE 
+		 , NULL
+		)
+	</insert>
+	
+	<update id="updateBid">
+		UPDATE TB_FIX_SMALL_BID
+		   SET BID_BOX_CNT = #{bidBoxCnt, jdbcType=VARCHAR}
+			 , BID_SOK_CNT = #{bidSokCnt, jdbcType=VARCHAR}
+			 , BID_UNIT_PRICE = #{bidUnitPrice, jdbcType=VARCHAR}
+			 , BID_STATE = '1'
+			 , UPDATE_ID = #{id, jdbcType=VARCHAR}
+			 , UPDATE_DATE = SYSDATE
+			 , BID_ADMIN_YN = NULL
+		WHERE BID_SEQ = #{bidSeq, jdbcType=VARCHAR}  
+		AND FIX_DEAL_SEQ = #{fixDealSeq, jdbcType=VARCHAR}
+		AND J_CODE = #{code, jdbcType=VARCHAR}
+		
+	</update>
+	
+	<select id="getFixSmallSangJangList" resultType="java.util.HashMap">
+		SELECT UP_NO
+			 , CONCAT(CONCAT(SUBSTR(CHUL_CODE, 0, 4), '-'),SUBSTR(CHUL_CODE, 5, 4)) AS CHUL_CODE
+			 , NVL((SELECT NAME FROM FLOWER.A_CHUL_INFO WHERE CODE = T1.CHUL_CODE),'정보없음') AS CHUL_NAME
+			 , SUBSTR(T1.PUM_CODE, 0, 4) AS MOK_CODE
+			 , PUM_CODE
+			 , (SELECT P_MOK_NAME FROM FLOWER.A_PUM_MOK_INFO WHERE FLOWER_CODE = SUBSTR(T1.PUM_CODE, 0, 1) AND P_MOK_CODE = SUBSTR(T1.PUM_CODE, 2, 3)) AS MOK_NAME
+			 , (SELECT P_JONG_NAME FROM FLOWER.A_PUM_JONG_INFO WHERE PUM_CODE = T1.PUM_CODE) AS PUM_NAME
+			 , CHUL_LEVEL
+			 , ACC_LEVEL
+			 , BOX_TYPE
+			 , TRANS
+			 , BOX_CNT
+			 , SOK_CNT
+		  FROM FLOWER.A_SANG_JANG T1
+		 WHERE BUN_CHK = 'N'
+		   AND UP_DAY = REPLACE(#{upDay, jdbcType=VARCHAR},'-','')
+		 ORDER BY UP_NO ASC
+	</select>
+	
+	<select id="getFixSmallBidList" resultType="java.util.HashMap">
+		SELECT T1.FIX_DEAL_SEQ 
+		     , UP_NO
+			 , T2.UNIT_PRICE
+			 , T2.J_CODE
+			 , NVL((SELECT BIGO FROM FLOWER.A_SANG_JANG WHERE BUN_CHK = 'N' AND UP_DAY = T1.UP_DAY AND UP_NO = T1.UP_NO), '') AS BIGO
+		  FROM TB_FIX_SMALL_DEAL T1
+		     , (
+		         SELECT FIX_DEAL_SEQ
+		              , NVL(BID_UNIT_PRICE, '0') AS UNIT_PRICE
+		              , NVL(J_CODE, '정보없음') AS J_CODE
+		           FROM TB_FIX_SMALL_BID
+		          WHERE BUN_CHK = 'N'
+		        ) T2
+		 WHERE T1.FIX_DEAL_SEQ = T2.FIX_DEAL_SEQ
+		   AND BUN_CHK = 'N'
+		   AND UP_DAY = REPLACE(#{upDay, jdbcType=VARCHAR},'-','')
+		 ORDER BY UP_NO ASC
+	</select>
+	
+</mapper>
