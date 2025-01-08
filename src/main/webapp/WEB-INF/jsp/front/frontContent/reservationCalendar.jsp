@@ -272,10 +272,19 @@
 				var validDtStart = new Date;
 				var validDtEnd = new Date;
 
-				validDtStart.setDate(validDtStart.getDate()+7);
-				validDtEnd.setMonth(validDtEnd.getMonth()+2)
-				validDtEnd.setDate(1);
-				validDtEnd.setDate(validDtEnd.getDate()-1);
+				 // 시작 날짜: 현재 날짜 + 7일
+		                validDtStart.setDate(validDtStart.getDate() + 7); // ex) 12월 1일이라면 12월 8일로 설정됨
+		
+		                 if (validDtStart.getMonth() === 11) { // 12월일 경우
+		                     validDtEnd.setMonth(validDtEnd.getMonth() + 1); 
+		
+		                 } else {
+		                   // 종료 날짜 계산 (2개월 후)
+		                   validDtEnd.setMonth(validDtEnd.getMonth() + 2); 
+		                  }
+		
+		                   validDtEnd.setDate(1); // 해당 월의 첫째 날
+		                   validDtEnd.setDate(validDtEnd.getDate() - 1); // 그 전날로 설정 (해당 월의 마지막 날)
 				
 				return {
 					start: validDtStart,
