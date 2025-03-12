@@ -32,7 +32,7 @@
 		// 신규 추가 아이피 : 115.89.203.83 
 		
   }else{
-	response.sendRedirect("/yfmc/");
+// 	response.sendRedirect("/yfmc/");
   }
   
 %>
