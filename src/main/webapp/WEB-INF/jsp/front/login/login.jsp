@@ -37,7 +37,12 @@
 					<a style="position:absolute; right:45px; top:0;" href="javascript:loginWithKakao();" class="btn_sns kakao" title="카카오 로그인 (새 창으로 이동)"><img src="${pageContext.request.contextPath}/img/icon_logo_kakao.png" alt=""></a>
 					<!-- <a href="javascript:faceLogin();" class="btn_sns fb"><img src="${pageContext.request.contextPath}/img/icon_logo_fb.png" alt="페이스북로그인"></a> -->
 				</div>
-				<script type="text/javascript" src="${pageContext.request.contextPath}/js/sns.js"></script>
+	<!-- 25.03 2.4 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/sha256.js"></script>				
+	
+	
+	<script type="text/javascript" src="${pageContext.request.contextPath}/js/sns.js"></script>
 				 <script type="text/javascript">
 				 $( document ).ready(function() {
 		        	   var message = $("#message").val();

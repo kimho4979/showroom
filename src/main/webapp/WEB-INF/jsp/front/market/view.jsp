@@ -169,8 +169,11 @@
 									<c:if test="${paramMap.tyGroupCode eq '6'}">
 									<p class="txt_01">7시 ~ 21시</p>
 									</c:if>
-									<c:if test="${paramMap.tyGroupCode eq '5'}">
+									<c:if test="${paramMap.tyGroupCode eq '5' and mResult.rcCompName ne '(주)원예자재왕농사'}">
 									<p class="txt_01">7시 ~ 21시</p>
+									</c:if>
+									<c:if test="${mResult.rcCompName eq '(주)원예자재왕농사' and paramMap.tyGroupCode eq '5'}">
+									<p class="txt_01">9시 ~ 17시30분</p>
 									</c:if>
 									<c:if test="${paramMap.tyGroupCode eq '0' or paramMap.tyGroupCode eq '7'}">
 									<p class="txt_01">9시 ~ 18시</p>
@@ -189,8 +192,11 @@
 									<c:if test="${paramMap.tyGroupCode eq '6'}">
 									<p class="txt_01">일요일 격주 휴무 및 영업</p>
 									</c:if>
-									<c:if test="${paramMap.tyGroupCode eq '5'}">
+									<c:if test="${paramMap.tyGroupCode eq '5' and mResult.rcCompName ne '(주)원예자재왕농사'}">
 									<p class="txt_01">연중무휴</p>
+									</c:if>
+									<c:if test="${mResult.rcCompName eq '(주)원예자재왕농사' and paramMap.tyGroupCode eq '5'}">
+									<p class="txt_01">평일(주말 제외)</p>
 									</c:if>
 									<c:if test="${paramMap.tyGroupCode eq '0' or paramMap.tyGroupCode eq '7'}">
 									<p class="txt_01">공휴일 휴무</p>
@@ -234,12 +240,6 @@
 		</form>
 		<div class="upload_rate">
 			<div class="ur_top">
-				<!-- 
-				<span class="member_face">
-					<img src="/yfmc/img/member_face.png" alt="회원얼굴사진">
-				</span>
-				<p class="member_id"><input type="text" name="nickName" id="nickName" placeholder="닉네임을 입력해 주세요"></p>
-				 -->
 				<div class="score_box" title="총 5점 중 5점">
 					<span class="star on" onclick="starClick('1')" tabindex="0"></span>
 					<span class="star on" onclick="starClick('2')" tabindex="0"></span>
@@ -256,22 +256,6 @@
 				</c:if>
 			</div>
 			
-			<!-- 
-			<form id="fileForm" name="fileForm" method="post" enctype="multipart/form-data">
-			<div class="ur_bottom">
-				
-				<div class="text_photo">
-					<textarea id="content" name="content" placeholder="최소 10자 이상 등록해주세요."></textarea>
-					<label for="review"></label> 
-					<input id="inputFile" type="file" onchange="fn_fileSelect(this);" accept="image/*" style="display:none"/>
-					<a href="javascript:fn_fileClick();" class="btn_photo">사진첨부</a>
-				</div>
-				<button type="button" onClick="fn_review('${result.marketSeq}')" class="btn_upload">등록</button>
-			</div>
-			</form> 
-			<div class="ur_choose_img" id="reviewImgDiv">
-				
-			</div>-->
 		</div>
 		<!-- 이용후기 글 남기기(E) -->
 		
@@ -313,36 +297,6 @@
 
 		<script type="text/javascript">
 		
-		function fn_fileSelect(fileObj){
-			console.log(fileObj);
-			
-			var formData = new FormData(); 
-			formData.append("imgFile", $("#inputFile")[0].files[0]); 
-			$.ajax({ 
-				url: '/yfmc/front/market/saveImgFile.json', 
-				data: formData, 
-				processData: false, 
-				contentType: false, 
-				type: 'POST', 
-				success: function(data){ 
-					// /uploads/market/review/
-					console.log("/uploads/market/review/"+data.uploadFileList[0].streFileNm);
-					var saveFilePath = contextPath+"/uploads/market/review/"+data.uploadFileList[0].streFileNm;
-					var html = "";
-					html+="<div class=\"answer_box\">                                ";
-					html+="	<span class=\"big_img\">                                 ";
-					html+="		<img src=\""+saveFilePath+"\" alt=\"\">      ";
-					html+="	</span>                                                ";
-					html+="</div>                                                  ";
-					
-					$("#reviewImgDiv").append(html);
-					
-				} 
-			});
-
-			
-			
-		}
 		
 		function starClick(i){
 			

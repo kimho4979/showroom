@@ -1,7 +1,7 @@
 					var domainOri = "https://flower.at.or.kr/";
-				 	var domain = "http://localhost:8088/yfmc/";
+				 	//var domain = "http://localhost/yfmc/";
 				 	//var domain = "http://flower.kdev.co.kr:56989/yfmc/";
-					//var domain = "https://flower.at.or.kr/yfmc/";
+					var domain = "https://flower.at.or.kr/yfmc/";
 	        	 	
 				 	//var redirect_uri = "http://flower.kdev.co.kr:56989/naverLogin.do";
 				 	
@@ -141,7 +141,10 @@
 			         function atLogin(){
 					  		var id = $("#logId").val();
 					  		var pw = $("#logPw").val();
-					  		
+
+							//25.02 2.4
+							pw = CryptoJS.SHA256(pw).toString();					  		
+
 					  		$.ajax({
 					   			url: domain+"/front/atlogin.json",
 					  	        type: 'POST',

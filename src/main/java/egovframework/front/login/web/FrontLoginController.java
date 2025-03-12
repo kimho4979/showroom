@@ -133,54 +133,17 @@ public class FrontLoginController {
 	
 	@RequestMapping(value = "/front/atlogin.json")
 	public String loginProc(HttpServletRequest request, @RequestParam Map<String, Object> paramMap, ModelMap model) throws Exception {
-		
-		paramMap.put("pw", encrypt(String.valueOf(paramMap.get("pw")))) ;
+	
+		// paramMap.put("pw", encrypt(String.valueOf(paramMap.get("pw")))) ;
+		//25.03 2.4 데이터 평문 전송 – 취약(1) 대응
+		paramMap.put("pw", String.valueOf(paramMap.get("pw"))) ;
+
 		paramMap.put("id", String.valueOf(paramMap.get("id")).trim()) ;
 		
 		Map<String, Object> snsLoginVO = (Map<String, Object>) request.getSession().getAttribute("snsLoginVO");
 		
 		request.getSession().invalidate();
 		
-		if(String.valueOf(paramMap.get("id")).trim().equals("1")){
-			model.addAttribute("result", 1);
-			EgovMap atLoginVO = new EgovMap();
-			atLoginVO.put("loginId", "gildong");
-			atLoginVO.put("member_id", "1");
-			atLoginVO.put("name", "홍길동");
-			atLoginVO.put("phone", "010-0000-0000");
-			atLoginVO.put("email", "test@test.test");
-			atLoginVO.put("aucType", "07");
-			request.getSession().setAttribute("atLoginVO", atLoginVO);
-			request.getSession().setAttribute("nFloLoginVO", atLoginVO);
-			request.getSession().setAttribute("cFloLoginVO", atLoginVO);
-			request.getSession().setAttribute("yFloLoginVO", atLoginVO);
-			model.addAttribute("atLoginVO", atLoginVO);
-			model.addAttribute("nFloLoginVO", atLoginVO);
-			model.addAttribute("ctLoginVO", atLoginVO);
-			model.addAttribute("ytLoginVO", atLoginVO);
-			
-			return "jsonView";
-		}
-		if(String.valueOf(paramMap.get("id")).trim().equals("2")){
-			model.addAttribute("result", 1);
-			EgovMap atLoginVO = new EgovMap();
-			atLoginVO.put("loginId", "chulsu");
-			atLoginVO.put("member_id", "2");
-			atLoginVO.put("name", "김철수");
-			atLoginVO.put("phone", "010-0000-0000");
-			atLoginVO.put("email", "test@test.test");
-			atLoginVO.put("aucType", "07");
-			request.getSession().setAttribute("atLoginVO", atLoginVO);
-			request.getSession().setAttribute("nFloLoginVO", atLoginVO);
-			request.getSession().setAttribute("cFloLoginVO", atLoginVO);
-			request.getSession().setAttribute("yFloLoginVO", atLoginVO);
-			model.addAttribute("atLoginVO", atLoginVO);
-			model.addAttribute("nFloLoginVO", atLoginVO);
-			model.addAttribute("ctLoginVO", atLoginVO);
-			model.addAttribute("ytLoginVO", atLoginVO);
-			
-			return "jsonView";
-		}
 		
 		try {
 			
@@ -862,14 +825,6 @@ public class FrontLoginController {
 		
 		
 		String loginOracle = String.valueOf(request.getSession().getAttribute("loginOracle"));
-
-		if(loginOracle == "null"){
-			System.out.println("loginOracle: " + loginOracle);
-			System.out.println("loginOracle: " + atLoginVO);
-			System.out.println("loginOracle: " + "마이페이지");
-			model.addAttribute("contentPath", "login/mypage.jsp");
-			return "/front/layout/loginLayout";
-		}
 
 		System.out.println("  atLoginVO: " + atLoginVO);
 		System.out.println("loginOracle: " + loginOracle);

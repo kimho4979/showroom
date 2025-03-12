@@ -189,21 +189,17 @@ public class MarketController {
 	
 	
 	
-	
-	@RequestMapping(value="/front/market/saveImgFile.json")
-	public String ajaxFixSellList(HttpServletRequest request
-			, HttpServletResponse response
-			, @RequestParam Map<String, Object> paramMap
-			, MultipartHttpServletRequest multiRequest
-			, ModelMap model) throws Exception {
-		
-			
-		List<FileVO> uploadFileList = uploadThumbFile(model, multiRequest);
-		
-		model.addAttribute("uploadFileList",uploadFileList);
-		
-		return "jsonView";
-	}
+	// 25.03. 2.3 프로세스 검증 누락 – 취약(1) 대응	
+	// @RequestMapping(value="/front/market/saveImgFile.json")
+	// public String ajaxFixSellList(HttpServletRequest request
+	// 		, HttpServletResponse response
+	// 		, @RequestParam Map<String, Object> paramMap
+	// 		, MultipartHttpServletRequest multiRequest
+	// 		, ModelMap model) throws Exception {
+	// 	List<FileVO> uploadFileList = uploadThumbFile(model, multiRequest);
+	// 	model.addAttribute("uploadFileList",uploadFileList);
+	// 	return "jsonView";
+	// }
 	
      private List<FileVO> uploadThumbFile(ModelMap model, MultipartHttpServletRequest multiRequest) throws Exception{
 		
