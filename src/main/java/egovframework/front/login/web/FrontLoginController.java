@@ -48,7 +48,11 @@ import egovframework.rte.fdl.idgnr.impl.Base64;
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
+ * 
  * @Class Name : EgovSampleController.java
  * @Description : EgovSample Controller Class
  * @Modification Information
@@ -95,6 +99,8 @@ public class FrontLoginController {
 	@Resource(name="bannerService")
 	private BannerService bannerService;
 
+	private static final Logger logger 
+		= LoggerFactory.getLogger(FrontLoginController.class);
 	
 	@RequestMapping(value = "/front/login.do")
 	public String login(HttpServletRequest request,
@@ -115,18 +121,43 @@ public class FrontLoginController {
 	
 	
 	public static String encrypt(String data) throws Exception {
+
 		if (data == null) {
 			return "";
 		}
 		
 		byte[] plainText = null;
-		byte[] hashValue = null;
+		byte[] bytes = null;
 		plainText = data.getBytes();
 		
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
-		hashValue = md.digest(plainText);
+		bytes = md.digest(plainText);		
+
+		//25.03 2.4 데이터 평문 전송 – 취약(1) 대응
+//		StringBuffer test = new StringBuffer();
+//		for(int i=0;i<bytes.length;i++) {
+//			test.append(String.format("%02x", bvtes[i]));
+//		}
 		
-		return new String( Base64.encode(hashValue));
+		
+		logger.info("--------------->>> " + Base64.encode(bytes));
+		return new String(Base64.encode(bytes));
+	}
+	
+	//25.03 2.4 데이터 평문 전송 – 취약(1) 대응
+	public static String encrypt2(String data) throws Exception {
+
+		
+		String s = data.toString();
+		int len = s.length();
+		byte[] bytes = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			bytes[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+			        + Character.digit(s.charAt(i + 1), 16));
+		}		
+
+		logger.info("--------------->>> " + Base64.encode(bytes));
+		return new String(Base64.encode(bytes));
 	}
 	
 	
@@ -134,8 +165,12 @@ public class FrontLoginController {
 	@RequestMapping(value = "/front/atlogin.json")
 	public String loginProc(HttpServletRequest request, @RequestParam Map<String, Object> paramMap, ModelMap model) throws Exception {
 	
-		// paramMap.put("pw", encrypt(String.valueOf(paramMap.get("pw")))) ;
-		//25.03 2.4 데이터 평문 전송 – 취약(1) 대응
+		String pass = paramMap.get("pw").toString();
+		logger.info("--------------->>> " + String.valueOf(paramMap.get("pw")));
+		paramMap.put("pw", encrypt2(pass));
+		
+
+
 		paramMap.put("pw", String.valueOf(paramMap.get("pw"))) ;
 
 		paramMap.put("id", String.valueOf(paramMap.get("id")).trim()) ;

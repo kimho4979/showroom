@@ -21,7 +21,7 @@
 				<div class="log_ip mt10">
 					<input type="password" id="logPw" placeholder="비밀번호를 입력해주세요." onkeydown="fn_enter();" title="비밀번호 입력"><label for="logPw"></label>
 				</div>
-				<a href="javascript:atLogin();" class="btn_login mt25">로그인</a>
+				<a href="javascript:atLogin2();" class="btn_login mt25">로그인</a>
 
 				<div class="btn_log_box mt20">
 					<a href="https://member.at.or.kr/customer/m100002/memberForm.action" target="_blank" title="회원가입 (새 창으로 이동)">회원가입</a>
@@ -44,6 +44,13 @@
 	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/sns.js"></script>
 				 <script type="text/javascript">
+
+
+
+
+
+
+
 				 $( document ).ready(function() {
 		        	   var message = $("#message").val();
 		        	   if(message != null && message != ""){
@@ -56,7 +63,7 @@
 				 
 				 function fn_enter(){
 					 if (window.event.keyCode == 13) {
-						 atLogin();
+						 atLogin2();
 			        }
 				 }
 				 </script> 

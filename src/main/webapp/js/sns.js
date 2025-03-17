@@ -2,6 +2,7 @@
 				 	//var domain = "http://localhost/yfmc/";
 				 	//var domain = "http://flower.kdev.co.kr:56989/yfmc/";
 					var domain = "https://flower.at.or.kr/yfmc/";
+					// var domain = "http://localhost:8080/yfmc";
 	        	 	
 				 	//var redirect_uri = "http://flower.kdev.co.kr:56989/naverLogin.do";
 				 	
@@ -137,13 +138,39 @@
 			                 
 			         }
 			         
+			         function atLogin2(){
+					  		var id = $("#logId").val();
+
+							//25.02 2.4
+							var pw = $("#logPw").val();
+							var hash = CryptoJS.SHA256($("#logPw").val());
+					  		var pw2 = hash.toString(CryptoJS.enc.Base64);
+					  		var pw3 = hash.toString(CryptoJS.enc.Hex);
+
+					  		$.ajax({
+					   			url: domain+"/front/atlogin.json",
+					  	        type: 'POST',
+					  	        data:{
+					  	        	"id": id,
+					  	        	"pw": pw3
+					  	        	// "pw2": pw2,
+					  	        	// "pw3": pw3
+					  	        },
+					  	        success: function (res) {
+					  	           if(res.result == 1){
+					  	        	   //console.log(res);
+					  	        	   location.href = domain+"/front/mypage.do";
+					  	           }else{
+					  	        	   alert("회원정보가 일치하지않습니다.");
+					  	           }
+					  	        }
+					 	   });
+					  	}
 			         
 			         function atLogin(){
 					  		var id = $("#logId").val();
-					  		var pw = $("#logPw").val();
 
-							//25.02 2.4
-							pw = CryptoJS.SHA256(pw).toString();					  		
+					  		var pw = $("#logPw").val();
 
 					  		$.ajax({
 					   			url: domain+"/front/atlogin.json",
